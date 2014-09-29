@@ -1,0 +1,765 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>demo_gmap_d3</title>
+        <link rel="stylesheet" type="text/css" href="css/main.css" />
+        <link rel="stylesheet" type="text/css" href="css/gbtags.css" />
+        <link rel="stylesheet" type="text/css" href="css/slider_bar_date.css" />
+        <style type="text/css">
+		.stations, .stations svg {
+  			position: absolute;
+		}
+		
+		path {
+  			stroke: #000;
+		}
+		
+		circle {
+  			fill: #000;
+  			pointer-events: none;
+		}
+	</style>
+</head>
+
+<body>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+	<script src="libs/jquery-1.11.1.min.js"></script>
+	<script src="libs/jquery-ui.js"></script>
+	<script src="libs/tiny-pubsub.js"></script>
+	<script src="libs/d3.js"></script>
+        <script src="libs/datetimepicker.js"></script>
+        <script src="libs/blur.js"></script>
+        <script src="libs/jquery.flip.min.js"></script>
+        <script src="scripts/tidmarsh.js"></script>
+	<script src="scripts/global_vars.js"></script>
+	<script src="scripts/gmap_manager_d3.js"></script>
+	<script src="scripts/voronoi_geo.js"></script>
+        <script src="scripts/server_manager.js"></script>
+        <script src="scripts/ui_slider_bar.js"></script>
+        <script src="scripts/data_factory.js"></script>
+        <script src="scripts/windhistory_graph.js"></script>
+        <script src="scripts/gmap_ghost.js"></script>
+        <script>
+		var sManager;
+		var gMap;
+		
+		var selectDevice = null;
+		var selectSensor = null;
+		
+		// incoming message effect
+		var _animTimer;
+		var _incomingObj;
+		var _ghostList;
+		var _lastTarget;	// 最后一个动画的目标，保存device的title
+		var _sensorTable;
+		
+		var _sensorIdx = 0;
+						
+		function initialize() 
+		{
+			// ui
+			$("#wgraphcontainer").on('click', onWGraphContainerClick);
+			
+			initSliderBar();
+			updateWindow();
+			
+			jQuery.subscribe(SERVER_INIT, onServerInit);
+			sManager = new ServerManager("http://chain-api.media.mit.edu/devices/?site_id=7");
+			sManager.init();
+		}
+		window.onload = initialize;
+		
+		function onServerInit()
+		{
+			jQuery.unsubscribe(SERVER_INIT, onServerInit);
+			
+			$('#map-canvas').css('visibility', 'hidden');
+			jQuery.subscribe(GMAP_INIT, onGmapInit);
+			jQuery.subscribe(GMAP_INIT_SHOW, onGmapInitShow);	
+			var canvas = document.getElementById('map-canvas');
+			gMap = new MapManager(canvas);
+		}
+		
+		function onGmapInit() 
+		{
+			jQuery.unsubscribe(GMAP_INIT, onGmapInit);
+			jQuery.subscribe(GMAP_CLICK, onGmapClick);
+			jQuery.subscribe(GMAP_CIRCLE_CLICK, onGmapCircleClick)
+			gMap.initVGraph(sManager.devices);
+		}
+		
+		function onGmapInitShow()
+		{
+			jQuery.unsubscribe(GMAP_INIT_SHOW, onGmapInitShow);
+			
+			$('#map-canvas').css('visibility', 'visible');
+			$('#map-canvas').css('opacity', '0');
+			$("#map-canvas").animate({opacity:'1'}, 'slow', 'swing');
+			showUIMenu(true);
+			
+			// initalize ghost list
+			_ghostList = new Array();
+			for(var i = 0; i < gMap.ghostNum; i++) {
+				var ghost = new GmapGhost(gMap._vertices[i]);
+				_ghostList.push(ghost);
+			}
+			singleGhost();
+			
+			// initalize sensor table
+			_sensorTable = [{sid:'sht_temperature', flg:false}, 
+					{sid:'illuminance', flg:false}, 
+					{sid:'bmp_pressure', flg:false},
+					{sid:'sht_humidity', flg:false},
+					{sid:'battery_voltage', flg:false}];
+			
+			// 打开incoming message center
+			startGhost();
+			handleIncomingMessage();
+		}
+		
+		/////////////////////////////////////////////
+		// Incoming Message
+		/////////////////////////////////////////////
+		function handleIncomingMessage()
+		{
+			var websocket = new WebSocket('ws://chain-api.media.mit.edu/ws/site-7');
+       			websocket.onopen = function(evt) {
+            			console.log('onopen');
+       			};
+        		websocket.onclose = function(evt) {
+            			console.log('onclose');
+        		};
+        		websocket.onmessage = function(evt) {
+				//console.log(evt);
+				if(gMap.state == 1 || gMap.state == 4 || gMap.state == 5) {
+					
+					var tmpobj = $.parseJSON(evt.data);
+					var href = tmpobj['_links']['ch:sensor']['href'];
+					var iobj = sManager.getDeviceBySensor(href);
+					if(iobj != null) {
+						processMessage(iobj.did, iobj.sid, tmpobj.value);
+					}
+				}
+        		};
+        		websocket.onerror = function(evt) {
+            			console.log('onerror');
+        		};
+		}
+		
+		function processMessage(did, sid, value) 
+		{
+			// 先找到空闲的ghost
+			var ghost = null;
+			for(var i = 0; i < _ghostList.length; i++) {
+				if(_ghostList[i].state != GHOST_STATE_ACTIVE && 
+					_ghostList[i].state != GHOST_STATE_DISABLE) {
+					ghost = _ghostList[i];
+					//break;
+				}
+			}
+			
+			//console.log(ghost);
+			if(ghost != null) {
+				if(_lastTarget != did) {		
+					// filter sensor data
+					var over = false;
+					for(var j = 0; j < _sensorTable.length; j++) {
+						if(sid == _sensorTable[j].sid) {
+							if(!_sensorTable[j].flg) {
+								_sensorTable[j].flg = true;
+							} else {
+								over = true;
+							}
+							break;	
+						}
+					}
+					if(over) return;
+								
+					//console.log(did + ", " + sid );
+							
+					var conf = getConfigBySensor(sid);
+					var mstr = String(value.toFixed(2)) + conf.unit;
+					var testobj = {did:did, sid:sid, msg:mstr, value:value};
+					var _endX, _endY;
+					var isfind = false;
+								
+					/*for(var i = 0; i < gMap._verticeInfos.length; i++) {
+						if(gMap._verticeInfos[i].type != 'cell')
+							continue;
+					
+						if(gMap._verticeInfos[i].device.title == did) {
+							//console.log(gMap._verticeInfos[i].device.title + ", " + iobj.did);
+							_endX = gMap._vertices[i][0] - 0.2;
+							_endY = gMap._vertices[i][1] - 0.2;
+							isfind = true;
+							break;
+						}
+					}*/
+										
+					// FOR TEST
+					for(var i = 0; i < gMap._verticeInfos.length; i++) {
+						if(gMap._verticeInfos[i].device.title == did) {
+							_endX = gMap._vertices[i][0] - 0.2;
+							_endY = gMap._vertices[i][1] - 0.2;
+							isfind = true;
+							break;
+						}
+					}
+								
+					if(isfind) {
+						//console.log(_endX + ", " + _endY);
+						ghost.active(_endX, _endY, testobj);	
+						_lastTarget = did;
+					}					
+				}
+			}
+				
+			// check sensor table 
+			var isfind = false;
+			for(var j = 0; j < _sensorTable.length; j++) {
+				if(!_sensorTable[j].flg) {
+					isfind = true;
+					break;	
+				}
+			}
+			// if can't find any available flag, restore table
+			if(!isfind) {
+				for(var j = 0; j < _sensorTable.length; j++) {
+					_sensorTable[j].flg = false;
+				}
+			}
+		}
+		
+		/////////////////////////////////////////////
+		// Menu
+		/////////////////////////////////////////////
+		$(function() 
+		{
+			$('dd').filter(':nth-child(n)').addClass('hidden');
+
+			$('dl').on('click', 'dt', function() {
+				$(this).next().slideDown(300).siblings('dd').slideUp(300);
+			});
+			
+			// default choose
+			$("#main_menu").find("svg").css("visibility", "hidden");
+			$("#menu_normal").find("svg").css("visibility", "visible");
+			$("#menu_03").next().slideDown(300).siblings('dd').slideUp(300);
+			
+			// menu click listener
+			$("#menu_temperature").on('click', onMenuClick);
+			$("#menu_illuminance").on('click', onMenuClick);
+			$("#menu_pressure").on('click', onMenuClick);
+			$("#menu_humidity").on('click', onMenuClick);
+			$("#menu_battery").on('click', onMenuClick);
+			$("#menu_awc").on('click', onMenuClick);
+			$("#menu_bird").on('click', onMenuClick);
+			$("#menu_normal").on('click', onMenuClick);
+			$("#menu_area").on('click', onMenuClick);
+			$("#menu_transmit").on('click', onMenuClick);
+		});
+		
+		function onMenuClick(e) 
+		{
+			// menu indicator
+			$("#main_menu").find("svg").css("visibility", "hidden");
+			$(e.currentTarget).find("svg").css("visibility", "visible");
+			
+			switch(e.currentTarget.id)
+			{
+				case "menu_temperature":
+					selectSensor = 'sht_temperature';
+					getDevicesDataBySensorMenu();
+					break;
+				case "menu_illuminance":
+					selectSensor = 'illuminance';
+					getDevicesDataBySensorMenu();
+					break;
+				case "menu_pressure":
+					selectSensor = 'bmp_pressure';
+					getDevicesDataBySensorMenu();
+					break;
+				case "menu_humidity":
+					selectSensor = 'sht_humidity';
+					getDevicesDataBySensorMenu();
+					break;
+				case "menu_battery":
+					selectSensor = 'battery_voltage';
+					getDevicesDataBySensorMenu();
+					break;
+				case "menu_awc":
+					gMap.enterFarmMode(true);
+					break;
+				case "menu_bird":
+					gMap.enterFarmMode(false);
+					break;
+				case "menu_normal":
+					selectSensor = null;
+					$('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
+						$('#bar').css('visibility', 'hidden');
+					});
+					// 关闭tooltip
+					$('#map_tooltip').css('visibility', 'hidden');
+					
+					if(gMap.state != 1)
+						gMap.restoreVGraph(1);						
+					break;
+				case "menu_area":
+					selectSensor = null;
+					$('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
+						$('#bar').css('visibility', 'hidden');
+					});
+					// 关闭tooltip
+					$('#map_tooltip').css('visibility', 'hidden');
+					// 停止ghost模式
+					stopGhost();
+					
+					if(gMap.state != 3)
+						gMap.restoreVGraph(3);
+					break;
+				case "menu_transmit":
+					selectSensor = null;
+					$('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
+						$('#bar').css('visibility', 'hidden');
+					});
+					// 关闭tooltip
+					$('#map_tooltip').css('visibility', 'hidden');
+					
+					if(gMap.state != 4)
+						gMap.restoreVGraph(4);
+					break;
+			}
+		}
+		
+		function getDevicesDataBySensorMenu()
+		{
+			// 停止ghost模式
+			stopGhost();
+			// 清除地图
+			gMap.clearVGraph();
+			// 更新状态
+			gMap.state = 2;
+			
+			// 关闭tooltip
+			$('#map_tooltip').css('visibility', 'hidden');
+			
+			// 如果打开了wind history graph，关闭之
+			if($('#wgraphcontainer').css('visibility'))
+				onWGraphContainerClick();
+			
+			var arr = new Array();
+			for(var i = 0; i < sManager.devices.length; i++) {
+				arr.push(sManager.devices[i].title);
+			}
+			
+			jQuery.subscribe(SERVER_DEVICE_LIST_START, onDeviceData);
+			jQuery.subscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
+			sManager.fetchMultiDevicesByDate(arr, [selectSensor],
+				{year:sliderYear, month:sliderMonth, day:sliderDay, hour:0, minu:0, sec:0}, 
+				{year:sliderYear, month:sliderMonth, day:sliderDay, hour:23, minu:59, sec:59});
+		}
+		
+		function onDeviceData(e, i)
+		{
+			if(e.type == SERVER_DEVICE_LIST_START) {
+				// 开始载入数据集
+				jQuery.unsubscribe(SERVER_DEVICE_LIST_START, onDeviceData);
+				console.log("开始载入数据集!");
+				// 隐藏菜单
+				if($('#bar').css('visibility') != 'hidden') {
+					$('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
+						$('#bar').css('visibility', 'hidden');
+					});
+				}
+			
+				showUIMenu(false);
+			} else if(e.type == SERVER_DEVICE_LIST_COMPLETE) {
+				jQuery.unsubscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
+				console.log("数据集载入完毕!");
+				
+				// 显示菜单, 默认载入中午
+				updateSliderInfo(bar.offsetLeft + bar_line.offsetLeft + bar_line.offsetWidth/2, 0.5);
+				updateVGraphBySlider();
+				$('#bar').css('visibility', 'visible');
+				$('#bar').css('bottom', '-100px');
+				$('#bar').animate({bottom:'50px'}, 'slow', 'swing');
+				
+				showUIMenu(true);
+			}
+		}
+		
+		/////////////////////////////////////////////
+		// CLICK MAP CIRCLE
+		/////////////////////////////////////////////
+		function onGmapCircleClick(e, i)
+		{
+			if(gMap.state == 3) {
+				var did = i.cid.substr(0, i.cid.indexOf('_c'));
+				
+				if($('#map_tooltip').css('visibility') == 'hidden') {
+					$('#map_tooltip').css('left', i.px);
+					$('#map_tooltip').css('top', i.py);
+					$('#map_tooltip').css('visibility', 'visible');
+				}
+				$('#map_tooltip').animate({left:i.px+50, top:i.py-30, opacity:1})
+				$('#tooltip_did').text(did);
+				
+				// get lastest data
+				jQuery.subscribe(SERVER_LASTEST_DATA, onLastestData);
+				sManager.getLastestData(did);
+			}
+		}
+		
+		function onLastestData(e, i)
+		{
+			jQuery.unsubscribe(SERVER_LASTEST_DATA, onLastestData);
+			
+			var arr = i.arr;
+			// update tooltip
+			for(var k = 0; k < arr.length; k++) {
+				var sobj = arr[k];
+				var txt = sobj.value.toFixed(2) + " " + rollupUnit(sobj.unit);
+				var date = new Date(sobj.updated);
+				if(sobj.metric == 'sht_temperature') {
+					$('#tooltip_temperature').text("temperature: " + txt);
+					$('#tooltip_date').text("received date: " + date.toTimeString());
+				} else if(sobj.metric == 'bmp_pressure') {
+					$('#tooltip_pressure').text("pressure: " + txt);
+				} else if(sobj.metric == 'illuminance') {
+					$('#tooltip_illuminance').text("illuminance: " + txt);
+				} else if(sobj.metric == 'battery_voltage') {
+					$('#tooltip_battery').text("battery voltage: " + txt);
+				} else if(sobj.metric == 'sht_humidity') {
+					$('#tooltip_humidity').text("humidity: " + txt);
+				}
+
+			}
+		}
+		
+		/////////////////////////////////////////////
+		// CLICK MAP - OPEN WIND HISTORY
+		/////////////////////////////////////////////
+		function onGmapClick(e, i)
+		{	
+			if(selectSensor == null)
+				return;
+			
+			// 记录选择的设备
+			selectDevice = i;
+				
+			// 显示图表
+			$("#wgraphcontainer").css("visibility", "visible");
+			$('#bar').css('visibility', 'hidden');
+			// 隐藏菜单
+			showUIMenu(false);
+			
+			var did = i;
+			var gwid = 400;
+			var ghei = 400;
+			var sw = window.innerWidth;
+			var sh = window.innerHeight;
+			d3.select("#wgraphcontainer")
+				.append("g")
+				.attr("id", selectSensor)
+  				.attr("transform", "scale(-1 0.5) translate(" + [-sw/2-gwid/2, 90] + ")")
+				.transition()
+				.duration(500)
+				.attr("transform", "scale(1 1) translate(" + [sw/2-gwid/2, 90] + ")");
+				
+			var st = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);
+			var ed = new Date(sliderYear, sliderMonth, sliderDay, 23, 59, 59);
+				
+			// 初始化wind history graph
+			var conf = getConfigBySensor(selectSensor);
+			var gra = new WindHistoryGraph(gwid, ghei, "#"+selectSensor, selectSensor, conf, st, ed);
+			gra.initGraphScale();
+				
+			// 绘制数据
+			var arr = sManager.fetchDataById(did, selectSensor);
+			gra.drawBigWindrose(arr);
+		}
+		
+		// wind history graph for a week
+		function onWeekWindhistoryGraph() 
+		{
+			if(selectSensor == null)
+				return;
+			
+			d3.select('#wgraphcontainer')
+				.selectAll('g')
+				.remove();
+				
+			// 显示图表
+			$("#wgraphcontainer").css("visibility", "visible");
+			$('#bar').css('visibility', 'hidden');
+			
+			var did = selectDevice;
+			var gwid = 200;
+			var ghei = 200;
+			var sw = window.innerWidth;
+			var sh = window.innerHeight;
+			
+			for(var i = 0; i < 7; i++) {
+				d3.select("#wgraphcontainer").append("g")
+					.attr("id", selectSensor + i.toString())
+					.attr("transform", "translate(" + [210 * i, sh/2-ghei/2] + ")");
+				
+				var st = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);
+				var ed = new Date(sliderYear, sliderMonth, sliderDay, 23, 59, 59);
+				
+				// 初始化wind history graph
+				var conf = getConfigBySensor(selectSensor);
+				var gra = new WindHistoryGraph(gwid, ghei, "#"+selectSensor+i.toString(), selectSensor, conf, st, ed);
+				gra.initGraphScale();
+				
+				// 绘制数据
+				var arr = sManager.fetchDataById(did, selectSensor);
+				gra.drawBigWindrose(arr);
+			}
+		}
+		
+		// click wind history graph container
+		function onWGraphContainerClick()
+		{		
+			var sw = window.innerWidth;
+			var sh = window.innerHeight;	
+			d3.select('#wgraphcontainer')
+				.select('g')
+				.transition()
+				.duration(800)
+				.attr("transform", "translate(" + [sw/2-200, 850] + ")")
+				.each("end", function() {
+					d3.select(this).remove();
+					$('#wgraphcontainer').css('visibility', 'hidden');
+					$('#bar').css('bottom', '-100px');
+					$('#bar').css('visibility', 'visible');
+					$('#bar').animate({bottom:'50px'}, 'slow', 'swing');
+					
+					// 显示菜单
+					showUIMenu(true);
+				});
+		}
+		
+		/////////////////////////////////////////////
+		// UI - ANIMATION
+		/////////////////////////////////////////////
+		function showUIMenu(flg)
+		{
+			if(flg) {
+				$('#title').css('top', '-160px');
+				$('#title').animate({top:'8px'}, 'slow');
+				$('#main_menu').css('right', '-160px');
+				$('#main_menu').delay(300).animate({right:'0px'}, 'slow');
+				if($('#weather').css('bottom') == '-27px') {
+					$('#weather').css('bottom', '-27px');
+					$('#weather').delay(600).animate({bottom:'0px'}, 'slow');
+				}
+			} else {
+				$('#title').animate({top:'-160px'}, 'slow');
+				$('#main_menu').delay(300).animate({right:'-160px'}, 'slow');	
+				//$('#weather').delay(600).animate({bottom:'-27px'}, 'slow');
+			}
+		}
+		
+		/////////////////////////////////////////////
+		// Incoming Message - ANIMATION
+		/////////////////////////////////////////////
+		function startGhost()
+		{
+			jQuery.subscribe(GHOST_ANIM_COMPLETE, onGhostAnim);
+			if(_animTimer == null)
+				_animTimer = setInterval(doCounter, 20);
+		}
+		
+		function stopGhost()
+		{
+			for(var i = 0; i < _ghostList.length; i++) {
+				if(_ghostList[i].state != GHOST_STATE_DISABLE)
+					_ghostList[i].sleep();
+			}
+			
+			// not use...
+			/*jQuery.unsubscribe(GHOST_ANIM_COMPLETE, onGhostAnim);
+			window.clearInterval(animTimer);
+			animTimer = null;*/
+		}
+		
+		function singleGhost()
+		{
+			for(var i = 1; i < _ghostList.length; i++) {
+				_ghostList[i].disable();
+			}
+		}
+		
+		function multiGhost()
+		{
+			for(var i = 1; i < _ghostList.length; i++) {
+				_ghostList[i].sleep();
+			}
+		}
+		
+		function doCounter() 
+		{
+			var allSleep = true;
+			for(var i = 0; i < _ghostList.length; i++) {
+				//if(_ghostList[i].state != GHOST_STATE_SLEEP) {
+					_ghostList[i].update();
+					allSleep = false;
+				//}
+			}
+			
+			// if all ghost sleep, do nothing...
+			if(!allSleep)
+				gMap._redraw();
+		}
+		
+		function onGhostAnim(e, i) 
+		{
+			gMap.showIncomingMessage(i.did, i.sid, i.msg, i.value);
+		}
+		
+		/////////////////////////////////////////////
+		// SYSTEM EVENT - SIZE CHANGE
+		/////////////////////////////////////////////
+		function updateWindow()
+		{
+			var wid = $('#bar').css('width').replace('px', '');
+			var px = window.innerWidth / 2 - wid / 2;
+			$("#bar").css('left', px + 'px');
+		}
+		window.onresize = updateWindow;
+		
+		/////////////////////////////////////////////
+		// JUST FOR TEST 
+		/////////////////////////////////////////////
+		function onKeyboardDown()
+		{
+			// 返回键退出
+			if(d3.event.keyCode == 66) 	// B:
+			{
+				// 模拟incoming message
+				if(gMap.state == 1 || gMap.state == 4 || gMap.state == 5) {
+					var idx = getRandomInt(0, sManager.devices.length-1);
+					var device = sManager.devices[idx];
+					var sarr = ["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage"];
+					//var iidx = getRandomInt(0, sarr.length-1);
+					var sid = sarr[_sensorIdx];
+					var conf = getConfigBySensor(sid);
+					var v = getRandomArbitrary(conf.min, conf.max);
+					
+					var iiidx = getRandomInt(0, 40);
+					var devtitle = 'fake_' + iiidx;
+					
+					processMessage(devtitle, sid, v);
+					
+					_sensorIdx++;
+					if(_sensorIdx == 5)
+						_sensorIdx = 0;
+				}
+			}
+			else if(d3.event.keyCode == 67) 	// C: 
+			{
+				singleGhost();
+			}
+			else if(d3.event.keyCode == 68) 	// D: 
+			{
+				multiGhost();
+			}
+			else if(d3.event.keyCode == 73)	// I: 
+			{
+				
+			}
+		}
+		d3.select("body").on("keydown", onKeyboardDown);
+		
+		
+		function getRandomInt(min, max) 
+		{
+  			return Math.floor(Math.random() * (max - min)) + min;
+		}
+		
+		function getRandomArbitrary(min, max) 
+		{
+  			return Math.random() * (max - min) + min;
+		}
+	</script>
+        
+        <div id="map-canvas"></div>
+        <div id="map_tooltip">
+          <table width="100%" height="244" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="42%" rowspan="5" align="center" valign="bottom"><img src="images/sensor_photo_circle.png" width="100" height="100" /></td>
+              <td width="58%" height="22">&nbsp;</td>
+            </tr>
+            <tr>
+              <td valign="bottom" id="tooltip_temperature">temperature: </td>
+            </tr>
+            <tr>
+              <td valign="bottom" id="tooltip_illuminance">illuminance:</td>
+            </tr>
+            <tr>
+              <td valign="bottom" id="tooltip_pressure">pressure:</td>
+            </tr>
+            <tr>
+              <td height="31" valign="bottom" id="tooltip_humidity">humidity:</td>
+            </tr>
+            <tr>
+              <td width="42%" align="center" valign="bottom" id="tooltip_did">0x8110</td>
+              <td valign="bottom" id="tooltip_battery">battery voltage:</td>
+            </tr>
+            <tr>
+              <td width="42%" align="center" valign="middle">&nbsp;</td>
+              <td height="40">&nbsp;</td>
+            </tr>
+            <tr>
+              <td colspan="2" id="tooltip_date"> received date:</td>
+            </tr>
+          </table>
+	</div>
+        
+        <svg id="wgraphcontainer"></svg>
+	<div id="wgraphtooltip"><p><span id="value">100</span></p></div>
+     
+        <!-- Float on the Page -->
+        <div id='bar'>
+       	  	<div id="bar_line"></div>
+	  	<div id='slider'></div>
+         	<input id='info' readonly onclick="chooseSliderDate()"></input>
+                <div id='subday'></div>
+  		<div class="bar_button">DECLINE</div>
+  	  	<div class="bar_button2">ACCPET</div>
+	</div>
+        
+        <div id="title">
+        	<h1>Tidmarsh </h1>
+        	<h1>Living </h1>
+        	<h1>Observatory</h1>
+    	</div>
+	<div id="weather">
+		<div id="forecast">getting weather...</div>
+        	<div id="sunrise_sunset"></div>
+	</div>
+        <dl id="main_menu">
+		<dt id="menu_01">Sensors</dt>
+        	<dd>
+            		<div id="menu_temperature" class="sensor_menu"><svg class="menu_block"></svg>temperature</div>
+    			<div id="menu_illuminance" class="sensor_menu"><svg class="menu_block"></svg>illuminance</div>
+                        <div id="menu_pressure" class="sensor_menu"><svg class="menu_block"></svg>pressure</div>
+    			<div id="menu_humidity" class="sensor_menu"><svg class="menu_block"></svg>humidity</div>
+                  <div id="menu_battery" class="sensor_menu"><svg class="menu_block"></svg>battery</div>
+            	</dd>
+		<dt id="menu_02">Ecology</dt>
+		<dd>
+            		<div id="menu_awc" class="sensor_menu"><svg class="menu_block"></svg>awc</div>
+    			<div id="menu_bird" class="sensor_menu"><svg class="menu_block"></svg>bird</div>
+            	</dd>
+		<dt id="menu_03">Network</dt>
+		<dd> 
+            		<div id="menu_normal" class="sensor_menu"><svg class="menu_block"></svg>normal</div>
+    			<div id="menu_area" class="sensor_menu"><svg class="menu_block"></svg>topyology</div>
+    			<div id="menu_transmit" class="sensor_menu"><svg class="menu_block"></svg>transmit</div>
+		</dd>
+	</dl>
+</body>
+</html>

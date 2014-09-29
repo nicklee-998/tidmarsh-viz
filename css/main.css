@@ -1,0 +1,176 @@
+@charset "UTF-8";
+/* CSS Document */
+html, body, #map-canvas {
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	overflow:hidden;
+}
+
+#map-canvas-cover {
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	background-color:'rgb(247,247,247)';
+}
+
+#svgcontainer {
+	position:absolute;
+}
+
+/***********************************************
+ * Blur Layer
+ ***********************************************/
+.blurlayer {
+	position:absolute;
+	left:0px;
+	top:0px;
+	-webkit-box-shadow:0 2px 2px #000, 0 1px 0 #fff inset;
+	-moz-box-shadow:0 2px 2px #000, 0 1px 0 #fff inset;
+	box-shadow:0 2px 2px #000, 0 1px 0 #fff inset;
+			
+	width:255px;
+	height:255px;
+			
+	-webkit-border-radius:127px;
+	-moz-border-radius:127px;
+	border-radius:127px;
+			
+	cursor:move;
+/*	visibility:hidden;
+*/}
+
+/***********************************************
+ * Tooltip on voronoi graph - device name
+ ***********************************************/
+#map_tooltip {
+	position: absolute;
+	width: 350px;
+	height: 247px;
+	padding: 0px;
+	background-color: #f5d328;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 15px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+	bottom: 45px;
+	right: 15px;
+	font-size: 16px;
+	visibility:hidden;
+	font-family: "Roboto";
+}
+
+#tooltip_date {
+	padding-left: 20px;
+	font-size: 12px;
+	text-align: left;
+}
+
+/***********************************************
+ * Title
+ ***********************************************/
+#title {
+	top:-160px;
+	left:8px;
+	position:fixed;
+	font-size: 18px;
+	width: 250px;
+	margin: 0px;
+	visibility:visible;
+}
+
+#title h1 {
+	margin:8px;
+}
+
+/***********************************************
+ * Wind History graph
+ ***********************************************/
+#wgraphcontainer {
+	font-size: 15px;
+	left: 0; top: 0; right: 0; bottom: 0;
+	position: absolute;
+	width:100%;
+	height:100%;
+    	padding: 0px;
+	visibility:hidden;
+}
+
+#wgraphtooltip {
+	position: absolute;
+	width: auto;
+	height:auto;
+	left: -200px;
+	top: 0px;
+	padding-left:10px;
+	padding-right:10px;
+	background-color: white;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+	font-family: "Roboto";
+	font-size: 12px;
+}
+
+.wgraph_caption {
+	font-family: "Roboto Medium";
+	font-size: 28px;
+	text-anchor: 'middle';
+	fill: rgba(255,255,255,1);
+}
+
+.calmcaption {
+	font-style: normal; 
+	font-variant: normal; 
+	font-weight: normal; 
+	font-size: 14px; 
+	line-height: normal; 
+	font-family: sans-serif; 
+	text-anchor: middle;
+	color:#FFF;
+}
+
+
+/***********************************************
+ * Weather
+ ***********************************************/
+#weather{
+	position:fixed;
+	padding: 6px;
+	bottom: -27px;
+	left:0px;
+	right:0px;
+	height:15px;
+	color: white;
+	font-size:14px;
+	font-family:Roboto;
+	background-color: rgba(0,0,0,1);
+	visibility:visible;
+}
+#heading{
+	position:absolute;
+	text-align:left;
+}
+#forecast{
+	position:absolute;
+	left:10px;
+	float:right;
+	text-align:left;
+	/*word-wrap:break-word;*/
+}
+#sunrise_sunset{
+	position:absolute;
+	right:10px;
+	float:right;
+	text-align:right;
+	word-wrap:break-word;
+}
