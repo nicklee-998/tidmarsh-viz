@@ -174,3 +174,27 @@ html, body, #map-canvas {
 	text-align:right;
 	word-wrap:break-word;
 }
+
+/***********************************************
+ * Checkbox of Sensors
+ ***********************************************/
+#checkboxSensors {
+    position: absolute;
+    right: 20px;
+    bottom: 40px;
+    font-size:14px;
+    font-family:Roboto;
+    opacity: 0;
+}
+
+/***********************************************
+ * Loading Animation
+ ***********************************************/
+#loading-canvas {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,0.8);
+}

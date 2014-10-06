@@ -11,7 +11,8 @@ function WindHistoryGraph(wid, hei, container, captionText, conf, start, end)
 	this._vmax = conf.max;
 	this._step = conf.step;
 	this._unit = conf.unit;
-	this._crange = ["hsl(" + conf.hue + ", 70%, 90%)", "hsl(" + conf.hue + ", 70%, 30%)"];
+	this._crange = ["hsl(" + conf.hueL + ", " + conf.saturationL + "%, " + conf.lightnessL + "%)",
+			"hsl(" + conf.hueR + ", " + conf.saturationR + "%, " + conf.lightnessR + "%)"];
 	
 	// 刻度的数量
 	this._start = start;
@@ -103,6 +104,7 @@ WindHistoryGraph.prototype.initGraphScale = function()
 				.clamp(true);
 	
 	// Circles representing chart ticks
+	var cnum = 0;
     	this._vis.append("svg:g")
         	.attr("class", "axes")
       		.selectAll("circle")
@@ -113,15 +115,25 @@ WindHistoryGraph.prototype.initGraphScale = function()
 		.style("stroke-width", "0.8px")
         	.attr("cx", this._center)
 		.attr("cy", this._center)
-        	.attr("r", vRangeScale);
+        	.attr("r", function(d) {
+			cnum++;
+			return vRangeScale(d);
+		});
 		
     	// Text representing chart tickmarks
-    	this._vis.append("svg:g").attr("class", "tickmarks")
+    	this._vis.append("svg:g")
+		.attr("class", "tickmarks")
         	.selectAll("text")
         	.data(tickmarks).enter()
 		.append("svg:text")
-        	.text(function(d) {return d;})
-		.style( {font:'14px Roboto', 'text-anchor':'middle', 'fill':'rgba(247,247,247,0.6)'})
+        	.text(function(d, i) {
+			if((i+1) == cnum) {
+				return "";
+			} else {
+				return d;
+			}
+		})
+		.style( {font:'12px Roboto', 'text-anchor':'middle', 'fill':'rgba(247,247,247,0.6)'})
         	.attr("dy", "-3px")
         	.attr("transform", function(d) {
             		var y = self._center - vRangeScale(d) - 1;
@@ -130,27 +142,34 @@ WindHistoryGraph.prototype.initGraphScale = function()
         
     	// Labels: degree markers
 	var tRangeScale = d3.scale.linear()
-				.domain([1, this._scalenum])
+				.domain([0, 360])
 				.range([0, 360])
 				.clamp(true);
 						
-/*    	this._vis.append("svg:g")
+   	this._vis.append("svg:g")
       		.attr("class", "labels")
       		.selectAll("text")
-        	.data(d3.range(1, this._scalenum, 1)).enter()
+        	.data(d3.range(0, 360, 1)).enter()
 		.append("svg:text")
-        	.attr("dy", "-4px")
+        	.attr("dy", "10px")
         	.attr("transform", function(d) { 
             		return "translate(" + self._center + "," + self._outer_p + ") rotate(" + tRangeScale(d) + ",0," + (self._center - self._outer_p) + ")";
-		})        
-        	.text(function(dir, i) { 
+		})
+		.style( {font:'12px Roboto Light', 'text-anchor':'middle', 'fill':'rgba(247,247,247,0.6)'})
+        	.text(function(d, i) {
 			var str = "";
-			if(i % 4 == 0) {
-				var day = dir / 4;
-				str = Math.ceil(day);
+			var idx = Math.floor(tRangeScale(i));
+			if(idx == 0) {
+				str = "midnight";
+			} else if(idx == 90) {
+				str = "6AM";
+			} else if(idx == 180) {
+				str = "noon";
+			} else if(idx == 270) {
+				str = "6PM";
 			}
-			return str; 
-		});*/
+			return str;
+		});
 			
 			
 	//Style the plots, this doesn't capture everything from windhistory.com  

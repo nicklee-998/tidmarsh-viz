@@ -6,6 +6,7 @@
         <link rel="stylesheet" type="text/css" href="css/main.css" />
         <link rel="stylesheet" type="text/css" href="css/gbtags.css" />
         <link rel="stylesheet" type="text/css" href="css/slider_bar_date.css" />
+        <link rel="stylesheet" type="text/css" href="css/loading.css" />
         <style type="text/css">
 		.stations, .stations svg {
   			position: absolute;
@@ -31,6 +32,7 @@
         <script src="libs/datetimepicker.js"></script>
         <script src="libs/blur.js"></script>
         <script src="libs/jquery.flip.min.js"></script>
+        <script src="libs/spin.min.js"></script>
         <script src="scripts/tidmarsh.js"></script>
 	<script src="scripts/global_vars.js"></script>
 	<script src="scripts/gmap_manager_d3.js"></script>
@@ -48,12 +50,15 @@
 		var selectSensor = null;
 		
 		// incoming message effect
-		var _animTimer;
+		var _animTimer = null;
 		var _incomingObj;
 		var _ghostList;
 		var _lastTarget;	// 最后一个动画的目标，保存device的title
 		var _sensorTable;
-		
+
+                // loading animation
+                var _spinner;
+
 		var _sensorIdx = 0;
 						
 		function initialize() 
@@ -67,6 +72,8 @@
 			jQuery.subscribe(SERVER_INIT, onServerInit);
 			sManager = new ServerManager("http://chain-api.media.mit.edu/devices/?site_id=7");
 			sManager.init();
+
+
 		}
 		window.onload = initialize;
 		
@@ -97,6 +104,7 @@
 			$('#map-canvas').css('opacity', '0');
 			$("#map-canvas").animate({opacity:'1'}, 'slow', 'swing');
 			showUIMenu(true);
+                        showSensorTable(true);
 			
 			// initalize ghost list
 			_ghostList = new Array();
@@ -107,13 +115,14 @@
 			singleGhost();
 			
 			// initalize sensor table
-			_sensorTable = [{sid:'sht_temperature', flg:false}, 
-					{sid:'illuminance', flg:false}, 
-					{sid:'bmp_pressure', flg:false},
-					{sid:'sht_humidity', flg:false},
-					{sid:'battery_voltage', flg:false}];
+			_sensorTable = [{sid:'sht_temperature', flg:false},
+                                        {sid:'illuminance', flg:false},
+                                        {sid:'bmp_pressure', flg:false},
+                                        {sid:'sht_humidity', flg:false},
+                                        {sid:'battery_voltage', flg:false}];
 			
 			// 打开incoming message center
+                        _flgProcessing = false;
 			startGhost();
 			handleIncomingMessage();
 		}
@@ -132,15 +141,14 @@
         		};
         		websocket.onmessage = function(evt) {
 				//console.log(evt);
-				if(gMap.state == 1 || gMap.state == 4 || gMap.state == 5) {
-					
-					var tmpobj = $.parseJSON(evt.data);
-					var href = tmpobj['_links']['ch:sensor']['href'];
-					var iobj = sManager.getDeviceBySensor(href);
-					if(iobj != null) {
-						processMessage(iobj.did, iobj.sid, tmpobj.value);
-					}
-				}
+                                if(gMap.state == 1 || gMap.state == 4 || gMap.state == 5 || gMap.state == 6) {
+                                        var tmpobj = $.parseJSON(evt.data);
+                                        var href = tmpobj['_links']['ch:sensor']['href'];
+                                        var iobj = sManager.getDeviceBySensor(href);
+                                        if(iobj != null) {
+                                                processMessage(iobj.did, iobj.sid, tmpobj.value);
+                                        }
+                                }
         		};
         		websocket.onerror = function(evt) {
             			console.log('onerror');
@@ -151,51 +159,42 @@
 		{
 			// 先找到空闲的ghost
 			var ghost = null;
-			for(var i = 0; i < _ghostList.length; i++) {
+			for(var i = 0; i < _ghostList.length; i++)
+                        {
 				if(_ghostList[i].state != GHOST_STATE_ACTIVE && 
-					_ghostList[i].state != GHOST_STATE_DISABLE) {
+					_ghostList[i].state != GHOST_STATE_DISABLE)
+                                {
 					ghost = _ghostList[i];
 					//break;
 				}
 			}
 			
 			//console.log(ghost);
-			if(ghost != null) {
-				if(_lastTarget != did) {		
+			if(ghost != null)
+                        {
+				if(_lastTarget != did)
+                                {
 					// filter sensor data
-					var over = false;
+					var over = true;
 					for(var j = 0; j < _sensorTable.length; j++) {
+                                                //console.log(sid + ", " + _sensorTable[j].sid );
 						if(sid == _sensorTable[j].sid) {
 							if(!_sensorTable[j].flg) {
 								_sensorTable[j].flg = true;
-							} else {
-								over = true;
+                                                                over = false;
 							}
 							break;	
 						}
 					}
 					if(over) return;
 								
-					//console.log(did + ", " + sid );
+					//console.log("****** " + over + ", " + did + ", " + sid );
 							
 					var conf = getConfigBySensor(sid);
 					var mstr = String(value.toFixed(2)) + conf.unit;
 					var testobj = {did:did, sid:sid, msg:mstr, value:value};
 					var _endX, _endY;
 					var isfind = false;
-								
-					/*for(var i = 0; i < gMap._verticeInfos.length; i++) {
-						if(gMap._verticeInfos[i].type != 'cell')
-							continue;
-					
-						if(gMap._verticeInfos[i].device.title == did) {
-							//console.log(gMap._verticeInfos[i].device.title + ", " + iobj.did);
-							_endX = gMap._vertices[i][0] - 0.2;
-							_endY = gMap._vertices[i][1] - 0.2;
-							isfind = true;
-							break;
-						}
-					}*/
 										
 					// FOR TEST
 					for(var i = 0; i < gMap._verticeInfos.length; i++) {
@@ -230,7 +229,87 @@
 				}
 			}
 		}
-		
+
+                /////////////////////////////////////////////
+                // Loading Animation
+                /////////////////////////////////////////////
+                $(function()
+                {
+                        var opts = {
+                                lines: 13, // The number of lines to draw
+                                length: 13, // The length of each line
+                                width: 2, // The line thickness
+                                radius: 13, // The radius of the inner circle
+                                corners: 1, // Corner roundness (0..1)
+                                rotate: 0, // The rotation offset
+                                direction: 1, // 1: clockwise, -1: counterclockwise
+                                color: '#000', // #rgb or #rrggbb or array of colors
+                                speed: 1, // Rounds per second
+                                trail: 60, // Afterglow percentage
+                                shadow: false, // Whether to render a shadow
+                                hwaccel: false, // Whether to use hardware acceleration
+                                className: 'spinner', // The CSS class to assign to the spinner
+                                zIndex: 2e9, // The z-index (defaults to 2000000000)
+                                top: '50%', // Top position relative to parent
+                                left: '50%' // Left position relative to parent
+                        };
+                        var target = document.getElementById('loading-canvas');
+                        _spinner = new Spinner(opts).spin(target);
+                        showLoading(false);
+                });
+
+                function showLoading(flg)
+                {
+                        if(flg) {
+                                var target = document.getElementById('loading-canvas');
+                                _spinner.spin(target);
+                                $("#loading-canvas").css("visibility", "visible");
+                                $("#loading-canvas").css("opacity", 0);
+                                $("#loading-canvas").animate({opacity:1}, 'fast');
+                        } else {
+                                _spinner.stop();
+                                $("#loading-canvas").css("opacity", 1);
+                                $("#loading-canvas").animate({opacity:0}, 'slow', function() {
+                                        $("#loading-canvas").css("visibility", "hidden");
+                                });
+                        }
+                }
+
+                /////////////////////////////////////////////
+                // Checkbox of Sensors
+                /////////////////////////////////////////////
+                $(function()
+                {
+                        $("#cbSensors :checkbox").prop('checked', true);
+                        $("#cbSensors :checkbox").click(function() {
+                                var $this = $(this);
+
+                                // $this will contain a reference to the checkbox
+                                if ($this.is(':checked')) {
+                                        // added to sensor table
+                                        var isfind = false;
+                                        for(var i = 0; i < _sensorTable.length; i++) {
+                                                if(_sensorTable[i].sid == $this.attr('name')) {
+                                                        isfind = true;
+                                                        break;
+                                                }
+                                        }
+                                        if(!isfind) {
+                                                _sensorTable.push({sid:$this.attr('name'), flg:false});
+                                        }
+                                } else {
+                                        // remove from sensor table
+                                        for(var i = 0; i < _sensorTable.length; i++) {
+                                                if(_sensorTable[i].sid == $this.attr('name')) {
+                                                        _sensorTable.splice(i, 1);
+                                                        break;
+                                                }
+                                        }
+                                }
+                                _sensorIdx = 0;
+                        });
+                });
+
 		/////////////////////////////////////////////
 		// Menu
 		/////////////////////////////////////////////
@@ -258,6 +337,7 @@
 			$("#menu_normal").on('click', onMenuClick);
 			$("#menu_area").on('click', onMenuClick);
 			$("#menu_transmit").on('click', onMenuClick);
+                        $("#menu_health").on('click', onMenuClick);
 		});
 		
 		function onMenuClick(e) 
@@ -289,10 +369,18 @@
 					getDevicesDataBySensorMenu();
 					break;
 				case "menu_awc":
-					gMap.enterFarmMode(true);
+					gMap.enterFarmMode();
+
+                                        $('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
+                                                $('#bar').css('visibility', 'hidden');
+                                        });
+                                        // 关闭tooltip
+                                        $('#map_tooltip').css('visibility', 'hidden');
+                                        // 显示sensor table菜单
+                                        showSensorTable(true);
 					break;
 				case "menu_bird":
-					gMap.enterFarmMode(false);
+					gMap.exitFarmMode();
 					break;
 				case "menu_normal":
 					selectSensor = null;
@@ -301,9 +389,13 @@
 					});
 					// 关闭tooltip
 					$('#map_tooltip').css('visibility', 'hidden');
+                                        // 显示sensor table菜单
+                                        showSensorTable(true);
+                                        // resotre sensor idx
+                                        _sensorIdx = 0;
 					
 					if(gMap.state != 1)
-						gMap.restoreVGraph(1);						
+						gMap.restoreVGraph(1);
 					break;
 				case "menu_area":
 					selectSensor = null;
@@ -314,8 +406,10 @@
 					$('#map_tooltip').css('visibility', 'hidden');
 					// 停止ghost模式
 					stopGhost();
-					
-					if(gMap.state != 3)
+                                        // 隐藏sensor table菜单
+                                        showSensorTable(false);
+
+                                        if(gMap.state != 3)
 						gMap.restoreVGraph(3);
 					break;
 				case "menu_transmit":
@@ -325,8 +419,10 @@
 					});
 					// 关闭tooltip
 					$('#map_tooltip').css('visibility', 'hidden');
-					
-					if(gMap.state != 4)
+                                        // 显示sensor table菜单
+                                        showSensorTable(true);
+
+                                        if(gMap.state != 4)
 						gMap.restoreVGraph(4);
 					break;
 			}
@@ -336,11 +432,11 @@
 		{
 			// 停止ghost模式
 			stopGhost();
-			// 清除地图
-			gMap.clearVGraph();
-			// 更新状态
-			gMap.state = 2;
-			
+			// 进入传感器模式
+                        gMap.restoreVGraph(2);
+                        // 隐藏sensor table菜单
+                        showSensorTable(false);
+
 			// 关闭tooltip
 			$('#map_tooltip').css('visibility', 'hidden');
 			
@@ -372,8 +468,9 @@
 						$('#bar').css('visibility', 'hidden');
 					});
 				}
-			
+
 				showUIMenu(false);
+                                showLoading(true);
 			} else if(e.type == SERVER_DEVICE_LIST_COMPLETE) {
 				jQuery.unsubscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
 				console.log("数据集载入完毕!");
@@ -386,6 +483,7 @@
 				$('#bar').animate({bottom:'50px'}, 'slow', 'swing');
 				
 				showUIMenu(true);
+                                showLoading(false);
 			}
 		}
 		
@@ -561,6 +659,16 @@
 				//$('#weather').delay(600).animate({bottom:'-27px'}, 'slow');
 			}
 		}
+
+                function showSensorTable(flg)
+                {
+                        if(flg) {
+                                $("#checkboxSensors").css("opacity", 0);
+                                $("#checkboxSensors").animate({opacity:1}, 'slow');
+                        } else {
+                                $("#checkboxSensors").css("opacity", 0);
+                        }
+                }
 		
 		/////////////////////////////////////////////
 		// Incoming Message - ANIMATION
@@ -638,25 +746,7 @@
 			// 返回键退出
 			if(d3.event.keyCode == 66) 	// B:
 			{
-				// 模拟incoming message
-				if(gMap.state == 1 || gMap.state == 4 || gMap.state == 5) {
-					var idx = getRandomInt(0, sManager.devices.length-1);
-					var device = sManager.devices[idx];
-					var sarr = ["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage"];
-					//var iidx = getRandomInt(0, sarr.length-1);
-					var sid = sarr[_sensorIdx];
-					var conf = getConfigBySensor(sid);
-					var v = getRandomArbitrary(conf.min, conf.max);
-					
-					var iiidx = getRandomInt(0, 40);
-					var devtitle = 'fake_' + iiidx;
-					
-					processMessage(devtitle, sid, v);
-					
-					_sensorIdx++;
-					if(_sensorIdx == 5)
-						_sensorIdx = 0;
-				}
+                                simulateIncomingData();
 			}
 			else if(d3.event.keyCode == 67) 	// C: 
 			{
@@ -666,13 +756,45 @@
 			{
 				multiGhost();
 			}
+                        else if(d3.event.keyCode == 69)         // E:
+                        {
+                                if(gMap.state == 2) {
+                                        gMap.restoreVGraph(22);
+                                }
+                        }
 			else if(d3.event.keyCode == 73)	// I: 
 			{
-				
+
 			}
 		}
 		d3.select("body").on("keydown", onKeyboardDown);
-		
+
+                function simulateIncomingData()
+                {
+                        //console.log("wwwwww");
+                        // 模拟incoming message
+                        if(gMap.state == 1 || gMap.state == 4 || gMap.state == 5 || gMap.state == 6) {
+                                //var idx = getRandomInt(0, sManager.devices.length-1);
+                                //var device = sManager.devices[idx];
+                                //var sarr = ["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage"];
+                                //var iidx = getRandomInt(0, sarr.length-1);
+                                //console.log(_sensorIdx);
+                                var sid = _sensorTable[_sensorIdx].sid;
+                                var conf = getConfigBySensor(sid);
+                                var v = getRandomArbitrary(conf.min, conf.max);
+
+                                var iiidx = getRandomInt(0, gMap._verticeInfos.length-1);
+                                var devtitle = gMap._verticeInfos[iiidx].device.title;
+
+                                if(devtitle.indexOf('ghost') == -1) {
+                                        processMessage(devtitle, sid, v);
+
+                                        _sensorIdx++;
+                                        if(_sensorIdx == _sensorTable.length)
+                                                _sensorIdx = 0;
+                                }
+                        }
+                }
 		
 		function getRandomInt(min, max) 
 		{
@@ -720,7 +842,9 @@
         
         <svg id="wgraphcontainer"></svg>
 	<div id="wgraphtooltip"><p><span id="value">100</span></p></div>
-     
+
+        <div id="loading-canvas"></div>
+
         <!-- Float on the Page -->
         <div id='bar'>
        	  	<div id="bar_line"></div>
@@ -730,6 +854,15 @@
   		<div class="bar_button">DECLINE</div>
   	  	<div class="bar_button2">ACCPET</div>
 	</div>
+        <div id="checkboxSensors">
+                <form id="cbSensors">
+                        <input type="checkbox" name="sht_temperature"/><span>temperature</span>
+                        <input type="checkbox" name="illuminance"/><span>illuminance</span>
+                        <input type="checkbox" name="bmp_pressure"/><span>pressure</span>
+                        <input type="checkbox" name="sht_humidity"/><span>humidity</span>
+                        <input type="checkbox" name="battery_voltage"/><span>battery</span>
+                </form>
+        </div>
         
         <div id="title">
         	<h1>Tidmarsh </h1>
@@ -752,13 +885,14 @@
 		<dt id="menu_02">Ecology</dt>
 		<dd>
             		<div id="menu_awc" class="sensor_menu"><svg class="menu_block"></svg>awc</div>
-    			<div id="menu_bird" class="sensor_menu"><svg class="menu_block"></svg>bird</div>
+    			<!--<div id="menu_bird" class="sensor_menu"><svg class="menu_block"></svg>bird</div>-->
             	</dd>
 		<dt id="menu_03">Network</dt>
 		<dd> 
             		<div id="menu_normal" class="sensor_menu"><svg class="menu_block"></svg>normal</div>
-    			<div id="menu_area" class="sensor_menu"><svg class="menu_block"></svg>topyology</div>
+    			<div id="menu_area" class="sensor_menu"><svg class="menu_block"></svg>topology</div>
     			<div id="menu_transmit" class="sensor_menu"><svg class="menu_block"></svg>transmit</div>
+                        <div id="menu_health" class="sensor_menu"><svg class="menu_block"></svg>health</div>
 		</dd>
 	</dl>
 </body>

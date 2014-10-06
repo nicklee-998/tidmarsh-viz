@@ -76,10 +76,12 @@ function getConfigBySensor(sname)
 			config.max = 50;
 			config.avg = 20;
 			config.step = 10;
-			config.hue = 0;
-			config.saturation = 90;
-			config.lightnessL = 95;
-			config.lightnessR = 35;
+			config.hueL = 60;
+			config.hueR = 10;
+			config.saturationL = 80;
+			config.saturationR = 100;
+			config.lightnessL = 70;
+			config.lightnessR = 30;
 			config.unit = "°C";
 			break;
 		case "illuminance":
@@ -88,10 +90,12 @@ function getConfigBySensor(sname)
 			config.max = 30000;
 			config.avg = 5000;
 			config.step = 5000;
-			config.hue = 42;
-			config.saturation = 100;
-			config.lightnessL = 12;
-			config.lightnessR = 62;
+			config.hueL = 0;
+			config.hueR = 0;
+			config.saturationL = 50;
+			config.saturationR = 82;
+			config.lightnessL = 90;
+			config.lightnessR = 33;
 			config.unit = "lux";
 			break;
 		case "bmp_pressure":	// 气压
@@ -100,8 +104,10 @@ function getConfigBySensor(sname)
 			config.max = 1200;
 			config.avg = 1000;
 			config.step = 150;
-			config.hue = 312;
-			config.saturation = 90;
+			config.hueL = 312;
+			config.hueR = 312;
+			config.saturationL = 30;
+			config.saturationR = 70;
 			config.lightnessL = 30;
 			config.lightnessR = 60;
 			config.unit = "hPa";
@@ -112,10 +118,12 @@ function getConfigBySensor(sname)
 			config.max = 120;
 			config.avg = 80;
 			config.step = 20;
-			config.hue = 225;
-			config.saturation = 90;
-			config.lightnessL = 30;
-			config.lightnessR = 80;
+			config.hueL = 215;
+			config.hueR = 233;
+			config.saturationL = 43;
+			config.saturationR = 92;
+			config.lightnessL = 72;
+			config.lightnessR = 40;
 			config.unit = "%";
 			break;
 		case "battery_voltage":
@@ -124,8 +132,10 @@ function getConfigBySensor(sname)
 			config.max = 8;
 			config.avg = 5;
 			config.step = 2;
-			config.hue = 145;
-			config.saturation = 90;
+			config.hueL = 145;
+			config.hueR = 145;
+			config.saturationL = 30;
+			config.saturationR = 70;
 			config.lightnessL = 85;
 			config.lightnessR = 38;
 			config.unit = "V";

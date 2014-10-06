@@ -2,7 +2,7 @@
 function MapManager(canvas)
 {
 	// map state
-	this.state = 1;			// 1.normal, 2.sensor, 3.topology, 4.ghost, 5.multi ghost
+	this.state = 1;			// 1.normal, 2.sensor, 22.sensor #2, 3.topology, 4.ghost, 5.multi ghost, 6.farm
 	// ghost state
 	this.ghostState = 'single'; 	// 1.single, 2.multiple
 	
@@ -43,7 +43,7 @@ function MapManager(canvas)
 	this.overlay.setMap(this.map); 
 	
 	this._farmBoundarys;
-	
+
 	this._mouseoverItem = null;
 	this._mouseoverOrigColor = null;
 	
@@ -52,8 +52,8 @@ function MapManager(canvas)
 	// ---------------------------------------------
 	// Drag Gesture
 	// ---------------------------------------------
-	this._origPosX;
-	this._origPosY;
+	this._prevPosX;
+	this._prevPosY;
 	
 	// ---------------------------------------------
 	// Overlay event fired after setOverlay()
@@ -128,12 +128,6 @@ function MapManager(canvas)
 	// -------------------
 	// voronoi graph
 	// -------------------
-	this.arrColor = ["rgb(77,146,33)", "rgb(222,119,174)", "rgb(241,182,218)", 
-			 "rgb(197,27,125)", "rgb(247,247,247)", "rgb(247,123,247)",
-			 "rgb(230,245,208)", "rgb(184,225,134)", "rgb(127,188,65)", 
-			 "rgb(253,224,239)"];
-	//this.arrColor = ["rgb(124,126,30)"];
-			 
 	this.blankColor = "rgb(247,247,247)";
 	this.ghostColor = "rgb(255,255,0)";
 	
@@ -141,6 +135,7 @@ function MapManager(canvas)
 	this._vgsvg;
 	this._vgpath;
 	this._vgclip;
+	this._vgboundary;
 	this._nodeNum = 300; 		// 图中点的数量
 	
 	this._vertices;
@@ -173,6 +168,7 @@ MapManager.prototype.initVGraph = function(devlist)
 		sobj.color = this.ghostColor;
 		sobj.origColor = this.ghostColor;
 		sobj.opacity = 1;
+		sobj.stroke = 'rgba(0,0,0,1)';
 		sobj.strokeWidth = 1;
 		sobj.pointerEvents = 'none';
 		this._vertices.push([px, py]);
@@ -188,12 +184,10 @@ MapManager.prototype.initVGraph = function(devlist)
 		
 		// 新增device的style信息
 		var sobj = {};
-		/*var end = this.arrColor.length - 2;
-		sobj.color = this.arrColor[i % end];
-		sobj.origColor = this.arrColor[i % end];*/
 		sobj.color = this.blankColor;
 		sobj.origColor = this.blankColor;
 		sobj.opacity = 1;
+		sobj.stroke = 'rgba(0,0,0,1)';
 		sobj.strokeWidth = 1;
 		sobj.pointerEvents = 'auto';
 		sobj.circleR = 17;
@@ -210,6 +204,7 @@ MapManager.prototype.initVGraph = function(devlist)
 			sobj.color = this.blankColor;
 			sobj.origColor = this.blankColor;
 			sobj.opacity = 1;
+			sobj.stroke = 'rgba(0,0,0,1)';
 			sobj.strokeWidth = 1;
 			sobj.pointerEvents = 'none';
 			this._vertices.push([px, py]);
@@ -330,53 +325,16 @@ MapManager.prototype.initVGraph = function(devlist)
 
 // -----------------------------------------------------------------------------------------
 // PUBLIC METHOD: 
-// 	clear voronoi layer
-// -----------------------------------------------------------------------------------------
-MapManager.prototype.clearVGraph = function(mode)
-{
-	var self = this;
-	this._vgpath
-		.transition().duration(500)
-		.style("fill", function(d, i) {
-			if(self._verticeInfos[i].type == 'ghost') {
-				self._verticeInfos[i].style.color = self.ghostColor;
-			} else {
-				self._verticeInfos[i].style.color = self.blankColor;
-			}
-			return self._verticeInfos[i].style.color;
-		})
-		.style('fill-opacity', function(d, i) {
-			self._verticeInfos[i].style.opacity = 1;
-			return 1;
-		})
-		.style('stroke-width', function(d, i) {
-			self._verticeInfos[i].style.strokeWidth = 1;
-			return 1;
-		});
-	this._vgsvg.selectAll("circle")
-		.transition().duration(500)
-		.attr("r", function(d, i) {
-			return 1.5;
-		})
-		.style("fill", 'rgb(0,0,0)')
-		.style("stroke-width", 0);
-	this._vgsvg.selectAll("text")
-		.attr("transform", function(d) {
-			var px = d[0];
-			var py = d[1];
-			py += 15;
-			return "translate(" + px + "," + py + ")";
-		})
-		.text('');
-}
-
-// -----------------------------------------------------------------------------------------
-// PUBLIC METHOD: 
 // 	restore voronoi layer
 //	mode: 
 // -----------------------------------------------------------------------------------------
 MapManager.prototype.restoreVGraph = function(mode)
 {
+	// If in farm mode, exit first
+	if(this.state == 6) {
+		this.exitFarmMode();
+	}
+
 	var self = this;
 	
 	if(mode == 1) {		// regular mode
@@ -426,7 +384,55 @@ MapManager.prototype.restoreVGraph = function(mode)
 		
 		this.state = 1;
 			
-	} else if(mode == 3) {		// topology mode
+	} else if(mode == 2) {
+		this._vgpath
+			.transition().duration(500)
+			.style("fill", function(d, i) {
+				self._verticeInfos[i].style.color = self.blankColor;
+				return self._verticeInfos[i].style.color;
+			})
+			.style('fill-opacity', function(d, i) {
+				self._verticeInfos[i].style.opacity = 1;
+				return 1;
+			})
+			.style('stroke-width', function(d, i) {
+				self._verticeInfos[i].style.strokeWidth = 1;
+				return 1;
+			});
+		this._vgsvg.selectAll("circle")
+			.transition().duration(500)
+			.attr("r", function(d, i) {
+				return 1.5;
+			})
+			.style("fill", 'rgb(0,0,0)')
+			.style("stroke-width", 0);
+		this._vgsvg.selectAll("text")
+			.attr("transform", function(d) {
+				var px = d[0];
+				var py = d[1];
+				py += 15;
+				return "translate(" + px + "," + py + ")";
+			})
+			.text('');
+
+		this.state = 2;
+
+	} else if(mode == 22) {
+		this._vgpath
+			.transition().duration(500)
+			.style('fill-opacity', function(d, i) {
+				if(self._verticeInfos[i].style.color == self.blankColor) {
+					self._verticeInfos[i].style.opacity = 0.1;
+				} else {
+					self._verticeInfos[i].style.opacity = 0.7;
+				}
+
+				return self._verticeInfos[i].style.opacity;
+			});
+
+		this.state = 22;
+
+	}else if(mode == 3) {		// topology mode
 		this._vgpath
 			.transition()
 			.duration(500)
@@ -485,6 +491,15 @@ MapManager.prototype.restoreVGraph = function(mode)
 		this._vgpath
 			.transition()
 			.duration(500)
+			.style('fill', function(d, i) {
+				if(self._verticeInfos[i].type == 'ghost') {
+					self._verticeInfos[i].style.color = self.ghostColor;
+					return self.ghostColor;
+				} else {
+					self._verticeInfos[i].style.color = self.blankColor;
+					return self.blankColor;
+				}
+			})
 			.style("fill-opacity", function(d, i) {
 				if(i < self.ghostNum) {
 					self._verticeInfos[i].style.opacity = 1;
@@ -502,17 +517,10 @@ MapManager.prototype.restoreVGraph = function(mode)
 			
 		this._vgsvg.selectAll("circle")
 			.transition().duration(500)
-			.style("fill", function(d, i) {
-				return self._verticeInfos[i].style.circleColor;
-			})
 			.style("stroke", 'rgba(0,0,0,0.8)')
 			.style("stroke-width", 1)
 			.attr("r", function(d, i) {
-				if(self._verticeInfos[i].type == 'cell') {
-					return self._verticeInfos[i].style.circleR;
-				} else {
-					return 0;
-				}
+				return 0;
 			});	
 			
 		this._vgsvg.selectAll("text")
@@ -548,11 +556,12 @@ MapManager.prototype.updateVGraph = function(objs)
 
 	this._vgpath
 		.style("fill", function(d, i) {
-			for(var i = 0; i < objs.length; i++) {
-				var obj = objs[i];
+			for(var j = 0; j < objs.length; j++) {
+				var obj = objs[j];
 				if(d3.select(this).attr("id") == obj.did) {
-					//console.log('###: ' + d3.select(this).attr("id") + ", " + obj.did);
+					//console.log('###: ' + obj.did + " - " + obj.value);
 					var fobj = self._genColorByValue(obj.did, obj.sid, obj.value);
+					self._verticeInfos[i].style.color = fobj.value;
 					return fobj.value;
 				} 
 			}
@@ -586,6 +595,11 @@ MapManager.prototype.showIncomingMessage = function(did, sid, msg, value)
 			if(d3.select(this).attr("id") == did) {
 				var fobj = self._genColorByValue(did, sid, value);
 				self._verticeInfos[i].style.color = fobj.value;
+				if(self.mode == 22) {
+					self._verticeInfos[i].style.opacity = 0.6;
+				} else {
+					self._verticeInfos[i].style.opacity = 1;
+				}
 				return fobj.value;
 			} else {
 				return d3.select(this).style("fill");	
@@ -619,48 +633,105 @@ MapManager.prototype.showIncomingMessage = function(did, sid, msg, value)
 		});
 }
 
-MapManager.prototype.enterFarmMode = function(flg)
+MapManager.prototype.enterFarmMode = function()
 {
 	var self = this;
-	
-	if(flg) {
-		this._vgsvg.attr('clip-path', function(d) {return "url(#farm-boundary)";});
-		
-		this._vgpath
-			.style("fill-opacity", function(d, i) {
-				if(self._verticeInfos[i].type == "ghost") {
-					self._verticeInfos[i].style.opacity = 1;
-				} else {
-					self._verticeInfos[i].style.opacity = 0.3;
-				}
-				
-				return self._verticeInfos[i].style.opacity;
-			});
-	} else {
-		this._vgsvg.attr('clip-path', function(d) {return "";});
-		
-		this._vgpath
-			.transition()
-			.duration(500)
-			.style("fill-opacity", function(d, i) {
+
+	this._vgsvg.attr('clip-path', function(d) {return "url(#farm-boundary)";});
+
+	this._vgpath
+		.transition()
+		.duration(500)
+		.style("fill-opacity", function(d, i) {
+			if(self._verticeInfos[i].type == "ghost") {
 				self._verticeInfos[i].style.opacity = 1;
-				return 1;
-			});
-	}
+			} else {
+				self._verticeInfos[i].style.opacity = 0;
+			}
+			return self._verticeInfos[i].style.opacity;
+		})
+		.style("stroke-width", function(d, i) {
+			if(self._verticeInfos[i].type == "ghost") {
+				self._verticeInfos[i].style.strokeWidth = 1;
+			} else {
+				self._verticeInfos[i].style.strokeWidth = 0;
+			}
+			return self._verticeInfos[i].style.strokeWidth;
+		});
+
+	this._vgsvg.selectAll("circle")
+		.transition()
+		.duration(500)
+		.attr("r", function(d, i) {
+			return 1.5;
+		})
+		.style("fill", 'rgb(0,0,0)')
+		.style("stroke-width", 0)
+		.style('pointer-events', 'none');
+
+	this._vgsvg.selectAll("text")
+		.attr("transform", function(d) {
+			var px = d[0];
+			var py = d[1];
+			py += 15;
+			return "translate(" + px + "," + py + ")";
+		})
+		.text('');
+
+	// add the boundary
+	this._vgboundary = this._vgsvg.append('svg')
+		.attr('id', 'fBoundary')
+		.selectAll('path')
+		.data(this._farmBoundarys, this._polygon)
+		.enter()
+		.append('path')
+		.attr("d", this._polygon)
+		.attr('id', function(d) {
+			return "d";
+		})
+		.style("stroke", "rgba(255,255,255,0.65)")
+		.style("stroke-width", 25)
+		.style("fill-opacity", 0);
+
+	this.state = 6;
+}
+
+MapManager.prototype.exitFarmMode = function()
+{
+	var self = this;
+
+	this._vgsvg.attr('clip-path', function(d) {return "";});
+
+	// remove the boundary
+	this._vgboundary.remove();
+
+	this._vgpath
+		.transition()
+		.duration(500)
+		.style("fill-opacity", function(d, i) {
+			self._verticeInfos[i].style.opacity = 1;
+			return 1;
+		});
 }
 
 MapManager.prototype._genColorByValue = function(deviceid, sensorid, value)
 {
 	var conf = getConfigBySensor(sensorid);
-	var c1 = "hsl(" + conf.hue + ", " + conf.saturation + "%, " + conf.lightnessL + "%)";
-	var c2 = "hsl(" + conf.hue + ", " + conf.saturation + "%, " + conf.lightnessR + "%)";
-	
-	var valueToColorScale = d3.scale.sqrt()
-				   .domain([conf.min, conf.max])
-				   .range([c1, c2])
-				   .interpolate(d3.interpolateHsl);
-	var obj = {name:deviceid, property:"color", value:valueToColorScale(value)};
-	
+	var obj;
+	if(value < conf.min) {
+		obj = {name:deviceid, property:"color", value:this.blankColor};
+	} else {
+		var c1 = "hsl(" + conf.hueL + ", " + conf.saturationL + "%, " + conf.lightnessL + "%)";
+		var c2 = "hsl(" + conf.hueR + ", " + conf.saturationR + "%, " + conf.lightnessR + "%)";
+
+		var valueToColorScale = d3.scale.sqrt()
+			.domain([conf.min, conf.max])
+			.range([c1, c2])
+			.interpolate(d3.interpolateHsl);
+
+		obj = {name:deviceid, property:"color", value:valueToColorScale(value)};
+	}
+
 	return obj;
 }
 
@@ -683,6 +754,9 @@ MapManager.prototype._redraw = function()
 		})
       		.style("fill", function(d, i) {
 			return self._verticeInfos[i].style.color;
+		})
+		.style('stroke', function(d, i) {
+			return self._verticeInfos[i].style.stroke;
 		})
 		.style('stroke-width', function(d, i) {
 			return self._verticeInfos[i].style.strokeWidth;
@@ -718,11 +792,21 @@ MapManager.prototype._redraw = function()
 			//Hide the tooltip
 			//d3.select("#tooltip").classed("hidden", true);
 		})
-		.on("click", function(d, i) {
-			// ----------------------------
-			// 发送点击事件
-			// ----------------------------
-			jQuery.publish(GMAP_CLICK, d3.select(this).attr('id'));
+                .on("mousedown", function(d) {
+			self._prevPosX = d3.event.screenX;
+			self._prevPosY = d3.event.screenY;
+                })
+		.on("mouseup", function() {
+			var px = d3.event.screenX;
+			var py = d3.event.screenY;
+			var dist = self._lineDistance(self._prevPosX, self._prevPosY, px, py);
+
+			if(dist < 20) {
+				// ----------------------------
+				// 发送点击事件
+				// ----------------------------
+				jQuery.publish(GMAP_CLICK, d3.select(this).attr('id'));
+			}
 		});
   	this._vgpath.order();
 }
