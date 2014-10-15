@@ -67,30 +67,12 @@ ServerManager.prototype.init = function()
 	
 	$.getJSON(this.websiteUrl, function(dat) {
 		self.devices = dat._links.items;
-		
-		// get lat&lng from local file
-		$.getJSON("res/map_data.json", function(dat) {
-			var _localDeviceInfos = dat;
-			
-			// from local file now, but in futher should from api
-			for(var i = 0; i < self.devices.length; i++)
-			{
-				for(var j = 0; j < _localDeviceInfos.length; j++)
-				{
-					if(_localDeviceInfos[j].device == self.devices[i].title)
-					{
-						self.devices[i].lat = _localDeviceInfos[j].lat;
-						self.devices[i].lng = _localDeviceInfos[j].lng;
-						break;
-					}
-				}
-			}
-			
-			// load all device info
-			self._loadIdx = 0;
-			self._getAllDeviceInfo();
-		});
-		//console.log(deviceList);
+
+		// load all device info
+		self._loadIdx = 0;
+		self._getAllDeviceInfo();
+
+		//console.log(self.devices);
 	});
 }
 
@@ -105,13 +87,18 @@ ServerManager.prototype._getAllDeviceInfo = function()
 	
 	var self = this;
 	var device = this.devices[this._loadIdx];
-	$.getJSON(device.href, function(dat) {	
+	$.getJSON(device.href, function(dat) {
 		device.building = dat.building;
 		device.room = dat.room;
 		device.floor = dat.floor;
 		device.description = dat.description;
-		//device.lat = 0;
-		//device.lng = 0;
+		if(dat.geoLocation) {
+			device.lat = dat.geoLocation.latitude;
+			device.lng = dat.geoLocation.longitude;
+		} else {
+			device.lat = 0;
+			device.lng = 0;
+		}
 						
 		$.getJSON(dat["_links"]["ch:sensors"]["href"], function(dat2) {
 				

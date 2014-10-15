@@ -1,0 +1,230 @@
+/***********************************************
+ * Checkbox of Sensors
+ ***********************************************/
+#checkboxSensors {
+    position: absolute;
+    right: 690px;
+    bottom: 83px;
+    font-size:14px;
+    font-family:"Roboto Light";
+    opacity: 0;
+}
+
+input[type="checkbox"] {
+    display:none;
+}
+
+/*******************************
+ * SQUARED ONE
+ *******************************/
+.squaredOne {
+    left: 0px;
+    top: 0px;
+    width: 130px;
+    height: 28px;
+    background: #53585f;
+    margin: 20px auto;
+    position: absolute;
+}
+
+.squaredOne span {
+    pointer-events: none;
+    position: absolute;
+    left: 24px;
+    top: 7px;
+}
+
+.squaredOne label:after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: alpha(opacity=0);
+    opacity: 0;
+    content: '';
+    position: absolute;
+    width: 130px;
+    height: 28px;
+    background: #ff5500;
+}
+
+.squaredOne label:hover::after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+    filter: alpha(opacity=30);
+    opacity: 0.3;
+}
+
+.squaredOne input[type=checkbox]:checked + label:after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    filter: alpha(opacity=100);
+    opacity: 1;
+}
+
+/*******************************
+ * SQUARED TWO
+ *******************************/
+.squaredTwo {
+    left: 0px;
+    top: 0px;
+    width: 130px;
+    height: 28px;
+    background: #53585f;
+    margin: 20px auto;
+    position: absolute;
+}
+
+.squaredTwo span {
+    pointer-events: none;
+    position: absolute;
+    left: 24px;
+    top: 7px;
+}
+
+.squaredTwo label:after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: alpha(opacity=0);
+    opacity: 0;
+    content: '';
+    position: absolute;
+    width: 130px;
+    height: 28px;
+    background: #ff0000;
+}
+
+.squaredTwo label:hover::after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+    filter: alpha(opacity=30);
+    opacity: 0.3;
+}
+
+.squaredTwo input[type=checkbox]:checked + label:after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    filter: alpha(opacity=100);
+    opacity: 1;
+}
+
+/*******************************
+ * SQUARED THREE
+ *******************************/
+.squaredThree {
+    left: 0px;
+    top: 0px;
+    width: 130px;
+    height: 28px;
+    background: #53585f;
+    margin: 20px auto;
+    position: absolute;
+}
+
+.squaredThree span {
+    pointer-events: none;
+    position: absolute;
+    left: 34px;
+    top: 7px;
+}
+
+.squaredThree label:after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: alpha(opacity=0);
+    opacity: 0;
+    content: '';
+    position: absolute;
+    width: 130px;
+    height: 28px;
+    background: #ff00cc;
+}
+
+.squaredThree label:hover::after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+    filter: alpha(opacity=30);
+    opacity: 0.3;
+}
+
+.squaredThree input[type=checkbox]:checked + label:after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    filter: alpha(opacity=100);
+    opacity: 1;
+}
+
+/*******************************
+ * SQUARED FOUR
+ *******************************/
+.squaredFour {
+    left: 0px;
+    top: 0px;
+    width: 130px;
+    height: 28px;
+    background: #53585f;
+    margin: 20px auto;
+    position: absolute;
+}
+
+.squaredFour span {
+    pointer-events: none;
+    position: absolute;
+    left: 34px;
+    top: 7px;
+}
+
+.squaredFour label:after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: alpha(opacity=0);
+    opacity: 0;
+    content: '';
+    position: absolute;
+    width: 130px;
+    height: 28px;
+    background: #0040ff;
+}
+
+.squaredFour label:hover::after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+    filter: alpha(opacity=30);
+    opacity: 0.3;
+}
+
+.squaredFour input[type=checkbox]:checked + label:after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    filter: alpha(opacity=100);
+    opacity: 1;
+}
+
+/*******************************
+ * SQUARED FIVE
+ *******************************/
+.squaredFive {
+    left: 0px;
+    top: 0px;
+    width: 130px;
+    height: 28px;
+    background: #53585f;
+    margin: 20px auto;
+    position: absolute;
+}
+
+.squaredFive span {
+    pointer-events: none;
+    position: absolute;
+    left: 37px;
+    top: 7px;
+}
+
+.squaredFive label:after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: alpha(opacity=0);
+    opacity: 0;
+    content: '';
+    position: absolute;
+    width: 130px;
+    height: 28px;
+    background: #00ff66;
+}
+
+.squaredFive label:hover::after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+    filter: alpha(opacity=30);
+    opacity: 0.3;
+}
+
+.squaredFive input[type=checkbox]:checked + label:after {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    filter: alpha(opacity=100);
+    opacity: 1;
+}

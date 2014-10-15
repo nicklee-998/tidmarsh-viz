@@ -136,7 +136,7 @@ function MapManager(canvas)
 	this._vgpath;
 	this._vgclip;
 	this._vgboundary;
-	this._nodeNum = 300; 		// 图中点的数量
+	this._nodeNum = 200; 		// 图中点的数量
 	
 	this._vertices;
 	this._verticeInfos;
@@ -211,7 +211,7 @@ MapManager.prototype.initVGraph = function(devlist)
 			this._verticeInfos.push({type:'blank', device:{title:'fake_' + i}, style:sobj});
 		}
 	}
-	
+
 	this._voronoi = d3.geom.voronoi().clipExtent([[0, 0], [this.wid, this.hei]]);
 	
 	this._vgsvg = this.layer.append("svg")
@@ -234,7 +234,9 @@ MapManager.prototype.initVGraph = function(devlist)
 				return self._verticeInfos[i].device.title + '_c';
 			return 'blank';
 		})
-    		.attr("transform", function(d) { return "translate(" + d + ")"; })
+    		.attr("transform", function(d) {
+			return "translate(" + d + ")";
+		})
     		.attr("r", 1.5)
 		.on("mouseover", function(d, i) {
 			
@@ -745,7 +747,6 @@ MapManager.prototype._redraw = function()
 		.append("path")
 		.attr('id', function(d, i) {
 			var idstr = self._verticeInfos[i].device.title;
-			//console.log(idstr);
 			return idstr;
 		})
 		.attr("d", this._polygon)
@@ -788,7 +789,7 @@ MapManager.prototype._redraw = function()
 		})
 		.on("mouseout", function() {
 			//d3.select(this).style('fill-opacity', 1);
-			
+
 			//Hide the tooltip
 			//d3.select("#tooltip").classed("hidden", true);
 		})

@@ -7,6 +7,7 @@
         <link rel="stylesheet" type="text/css" href="css/gbtags.css" />
         <link rel="stylesheet" type="text/css" href="css/slider_bar_date.css" />
         <link rel="stylesheet" type="text/css" href="css/loading.css" />
+        <link rel="stylesheet" type="text/css" href="css/sensor_checkbox.css" />
         <style type="text/css">
 		.stations, .stations svg {
   			position: absolute;
@@ -280,6 +281,15 @@
                 /////////////////////////////////////////////
                 $(function()
                 {
+                        // adjust checkbox position
+                        var i = 0;
+                        $("#cbSensors div").each(function() {
+                                $(this).css('left', (138 * i) + 'px');
+                                $(this).css('top', 0 + 'px');
+                                $(this).css('color', '#ffffff');
+                                i++;
+                        });
+
                         $("#cbSensors :checkbox").prop('checked', true);
                         $("#cbSensors :checkbox").click(function() {
                                 var $this = $(this);
@@ -718,8 +728,9 @@
 			}
 			
 			// if all ghost sleep, do nothing...
-			if(!allSleep)
-				gMap._redraw();
+			if(!allSleep) {
+                                gMap._redraw();
+                        }
 		}
 		
 		function onGhostAnim(e, i) 
@@ -856,11 +867,31 @@
 	</div>
         <div id="checkboxSensors">
                 <form id="cbSensors">
-                        <input type="checkbox" name="sht_temperature"/><span>temperature</span>
-                        <input type="checkbox" name="illuminance"/><span>illuminance</span>
-                        <input type="checkbox" name="bmp_pressure"/><span>pressure</span>
-                        <input type="checkbox" name="sht_humidity"/><span>humidity</span>
-                        <input type="checkbox" name="battery_voltage"/><span>battery</span>
+                        <div class="squaredOne">
+                                <input type="checkbox" value="none" id="squaredOne" name="sht_temperature"/>
+                                <label for="squaredOne"></label>
+                                <span>temperature</span>
+                        </div>
+                        <div class="squaredTwo">
+                                <input type="checkbox" value="none" id="squaredTwo" name="illuminance"/>
+                                <label for="squaredTwo"></label>
+                                <span>illuminance</span>
+                        </div>
+                        <div class="squaredThree">
+                                <input type="checkbox" value="none" id="squaredThree" name="bmp_pressure"/>
+                                <label for="squaredThree"></label>
+                                <span>pressure</span>
+                        </div>
+                        <div class="squaredFour">
+                                <input type="checkbox" value="none" id="squaredFour" name="sht_humidity"/>
+                                <label for="squaredFour"></label>
+                                <span>humidity</span>
+                        </div>
+                        <div class="squaredFive">
+                                <input type="checkbox" value="none" id="squaredFive" name="battery_voltage"/>
+                                <label for="squaredFive"></label>
+                                <span>battery</span>
+                        </div>
                 </form>
         </div>
         
