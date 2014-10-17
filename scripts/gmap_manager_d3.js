@@ -43,6 +43,7 @@ function MapManager(canvas)
 	this.overlay.setMap(this.map); 
 	
 	this._farmBoundarys;
+	this._wholeBoundary;		// 整个tidmarsh的边界
 
 	this._mouseoverItem = null;
 	this._mouseoverOrigColor = null;
@@ -91,7 +92,7 @@ function MapManager(canvas)
 		$('#vgraphroot').css('width', (sne.x - ssw.x) + 'px');
 		$('#vgraphroot').css('height', (ssw.y - sne.y) + 'px');
 		
-		self._setAllowedArea();
+		//self._setAllowedArea();
 	}
 	
 	this.overlay.onRemove = function() {
@@ -135,6 +136,7 @@ function MapManager(canvas)
 	this._vgsvg;
 	this._vgpath;
 	this._vgclip;
+	this._vgclipwhole;
 	this._vgboundary;
 	this._nodeNum = 200; 		// 图中点的数量
 	
@@ -163,7 +165,8 @@ MapManager.prototype.initVGraph = function(devlist)
 	this._verticeInfos = new Array();
 	for(var i = 0; i < this.ghostNum; i++) {
 		var px = Math.random() * this.wid;
-		var py = Math.random() * this.hei;
+		// TODO: adjust ghost init position, now we let ghost all in 1/3 upper space just for simplify.
+		var py = Math.random() * this.hei / 3;
 		var sobj = {};
 		sobj.color = this.ghostColor;
 		sobj.origColor = this.ghostColor;
@@ -219,7 +222,6 @@ MapManager.prototype.initVGraph = function(devlist)
     			.attr("width", this.wid)
     			.attr("height", this.hei)
 			.attr('viewBox', '0 0 '+ this.wid + ' ' + this.hei)
-			//.attr('clip-path', function(d) {return "url(#cut-off-bottom)";})
 			.style('left', this.sw.x + 'px')
 			.style('top', this.ne.y + 'px');
 		
@@ -295,7 +297,6 @@ MapManager.prototype.initVGraph = function(devlist)
 	
 	// load tidmarsh farm boundary
 	$.getJSON("res/map.geojson", function(dat) {
-
 		// find whole area and map center
 		self._farmBoundarys = new Array();
 		var tmparr = dat['features'];
@@ -322,6 +323,50 @@ MapManager.prototype.initVGraph = function(devlist)
 					.attr('id', function(d) {
 						return "d";
 					});
+	});
+
+	// load boundary
+	$.getJSON("res/boundary.geojson", function(dat) {
+		self._wholeBoundary = new Array();
+		var tmparr = dat['features'];
+		for(var i = 0; i < tmparr.length; i++) {
+			var mobj = tmparr[i];
+			var arr = new Array();
+			var geo = mobj.geometry.coordinates[0];
+			for(var j = 0; j < geo.length; j++) {
+				var pnt = self.LatlngToScreen(geo[j][1], geo[j][0]);
+				arr.push([pnt.x, pnt.y]);
+			}
+			self._wholeBoundary.push(arr);
+		}
+
+		self._vgclipwhole = self._vgsvg.append('clipPath')
+			.attr('id', 'whole-boundary')
+			.selectAll('path')
+			.data(self._wholeBoundary, self._polygon)
+			.enter()
+			.append('path')
+			.attr("d", self._polygon)
+			.attr('id', function(d) {
+				return "d";
+			});
+
+		self._vgsvg.attr('clip-path', function(d) {return "url(#whole-boundary)";});
+
+		// add the whole boundary
+		self._vgboundary = self._vgsvg.append('svg')
+			.attr('id', 'fBoundary')
+			.selectAll('path')
+			.data(self._wholeBoundary, self._polygon)
+			.enter()
+			.append('path')
+			.attr("d", self._polygon)
+			.attr('id', function(d) {
+				return "d";
+			})
+			.style("stroke", "rgba(255,0,0,0.45)")
+			.style("stroke-width", 35)
+			.style("fill-opacity", 0);
 	});
 }
 
@@ -363,7 +408,7 @@ MapManager.prototype.restoreVGraph = function(mode)
 			
 		this._vgpath.style('pointer-events', 'auto');
 		
-		self._vgsvg.attr('clip-path', function(d) {return "";})
+		//self._vgsvg.attr('clip-path', function(d) {return "";})
 			
 		this._vgsvg.selectAll("circle")
 			.transition()
@@ -702,10 +747,26 @@ MapManager.prototype.exitFarmMode = function()
 {
 	var self = this;
 
-	this._vgsvg.attr('clip-path', function(d) {return "";});
+	// restore to whole boundary
+	this._vgsvg.attr('clip-path', function(d) {return "url(#whole-boundary)";});
 
 	// remove the boundary
 	this._vgboundary.remove();
+
+	// add the whole boundary
+	this._vgboundary = this._vgsvg.append('svg')
+		.attr('id', 'fBoundary')
+		.selectAll('path')
+		.data(this._wholeBoundary, this._polygon)
+		.enter()
+		.append('path')
+		.attr("d", this._polygon)
+		.attr('id', function(d) {
+			return "d";
+		})
+		.style("stroke", "rgba(255,0,0,0.45)")
+		.style("stroke-width", 35)
+		.style("fill-opacity", 0);
 
 	this._vgpath
 		.transition()
