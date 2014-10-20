@@ -135,6 +135,9 @@ function MapManager(canvas)
 	this._voronoi;
 	this._vgsvg;
 	this._vgpath;
+	this._vginfo;			// 显示sensor信息（如温度、湿度等等）
+	this._vgid;			// 显示device ID
+	this._vgcenter;			// 每个cell的中点
 	this._vgclip;
 	this._vgclipwhole;
 	this._vgboundary;
@@ -144,7 +147,7 @@ function MapManager(canvas)
 	this._verticeInfos;
 	
 	// ghost 
-	this.ghostNum = 10;		// ghost总数量
+	this.ghostNum = 5;		// ghost总数量
 		
 	var self = this;
 	
@@ -159,7 +162,8 @@ function MapManager(canvas)
 MapManager.prototype.initVGraph = function(devlist)
 {
 	var self = this;
-	
+	var tmpvertices = new Array();	// 临时记录device的坐标，为了blank区域不要生成在sensor区中
+
 	// voronoi graph 
 	this._vertices = new Array();
 	this._verticeInfos = new Array();
@@ -184,6 +188,8 @@ MapManager.prototype.initVGraph = function(devlist)
 					
 		var pnt = this.LatlngToScreen(devlist[i].lat, devlist[i].lng);
 		this._vertices.push([pnt.x, pnt.y]);
+		// tmp vertices
+		tmpvertices.push([pnt.x, pnt.y]);
 		
 		// 新增device的style信息
 		var sobj = {};
@@ -200,23 +206,44 @@ MapManager.prototype.initVGraph = function(devlist)
 	// 如果vertice数量不够，再随机补充一些
 	if(this._vertices.length < this._nodeNum) {
 		var len = this._vertices.length;
-		for(var i = 0; i < (this._nodeNum - len); i++) {
+		var i = 0;
+		while(i < (this._nodeNum - len)) {
 			var px = Math.random() * this.wid;
 			var py = Math.random() * this.hei;
-			var sobj = {};
-			sobj.color = this.blankColor;
-			sobj.origColor = this.blankColor;
-			sobj.opacity = 1;
-			sobj.stroke = 'rgba(0,0,0,1)';
-			sobj.strokeWidth = 1;
-			sobj.pointerEvents = 'none';
-			this._vertices.push([px, py]);
-			this._verticeInfos.push({type:'blank', device:{title:'fake_' + i}, style:sobj});
+
+			// For protecting blank area filled into sensor area.
+			// TODO: put the range(#now = 312) into configration file
+			var isinside = false;
+			for(var j = 0; j < tmpvertices.length; j++) {
+				var dist = this._lineDistance(px, py, tmpvertices[j][0], tmpvertices[j][1]);
+				//console.log(px + ", " + py + " - " + dist + ", " + this.wid + ", " + this.hei);
+				if(dist < 50) {
+					isinside = true;
+					break;
+				}
+			}
+
+			if(!isinside) {
+				var sobj = {};
+				sobj.color = this.blankColor;
+				sobj.origColor = this.blankColor;
+				sobj.opacity = 1;
+				sobj.stroke = 'rgba(0,0,0,1)';
+				sobj.strokeWidth = 1;
+				sobj.pointerEvents = 'none';
+				this._vertices.push([px, py]);
+				this._verticeInfos.push({type:'blank', device:{title:'fake_' + i}, style:sobj});
+
+				i++;
+			}
 		}
 	}
 
 	this._voronoi = d3.geom.voronoi().clipExtent([[0, 0], [this.wid, this.hei]]);
-	
+
+	/***************************************************
+	 * 开始绘制地图
+	 ***************************************************/
 	this._vgsvg = this.layer.append("svg")
 			.attr('id', 'vgraphroot')
     			.attr("width", this.wid)
@@ -224,11 +251,14 @@ MapManager.prototype.initVGraph = function(devlist)
 			.attr('viewBox', '0 0 '+ this.wid + ' ' + this.hei)
 			.style('left', this.sw.x + 'px')
 			.style('top', this.ne.y + 'px');
-		
+
 	this._vgpath = this._vgsvg.append("g").selectAll("path");
+	this._vgcenter = this._vgsvg.append("g");
+	this._vginfo = this._vgsvg.append("g");
+	this._vgid = this._vgsvg.append("g");
 
 	// 绘制点
-	this._vgsvg.selectAll("circle")
+	this._vgcenter.selectAll("circle")
     		.data(this._vertices)
   		.enter().append("circle")
 		.attr('id', function(d, i) {
@@ -277,7 +307,7 @@ MapManager.prototype.initVGraph = function(devlist)
 		});
 		
 	// 绘制文字区
-	this._vgsvg.selectAll("text")
+	this._vginfo.selectAll("text")
 		.data(this._vertices)
 		.enter().append("text")
 		.attr("name", function(d, i) {
@@ -292,6 +322,29 @@ MapManager.prototype.initVGraph = function(devlist)
 		.style('text-anchor', 'middle')
 		.style('pointer-events', 'none')
 		.text(function(d) {return "";});
+
+	// 绘制设备ID
+	this._vgid.selectAll("text")
+		.data(this._vertices)
+		.enter().append("text")
+		.attr("name", function(d, i) {
+			return self._verticeInfos[i].device.title;
+		})
+		.attr("transform", function(d) {
+			var px = d[0];
+			var py = d[1];
+			py += 10;
+			py -= 15;
+			return "translate(" + px + "," + py + ")";
+		})
+		.attr("class", "gmap_deviceid")
+		.text(function(d, i) {
+			if(self._verticeInfos[i].type == "cell") {
+				return self._verticeInfos[i].device.title;
+			} else {
+				return "";
+			}
+		});
 
 	this._redraw();
 	
@@ -409,8 +462,8 @@ MapManager.prototype.restoreVGraph = function(mode)
 		this._vgpath.style('pointer-events', 'auto');
 		
 		//self._vgsvg.attr('clip-path', function(d) {return "";})
-			
-		this._vgsvg.selectAll("circle")
+
+		this._vgcenter.selectAll("circle")
 			.transition()
 			.duration(500)
 			.attr("r", function(d, i) {
@@ -419,8 +472,8 @@ MapManager.prototype.restoreVGraph = function(mode)
 			.style("fill", 'rgb(0,0,0)')
 			.style("stroke-width", 0)
 			.style('pointer-events', 'none');
-				
-		this._vgsvg.selectAll("text")
+
+		this._vginfo.selectAll("text")
 			.attr("transform", function(d) {
 				var px = d[0];
 				var py = d[1];
@@ -446,14 +499,14 @@ MapManager.prototype.restoreVGraph = function(mode)
 				self._verticeInfos[i].style.strokeWidth = 1;
 				return 1;
 			});
-		this._vgsvg.selectAll("circle")
+		this._vgcenter.selectAll("circle")
 			.transition().duration(500)
 			.attr("r", function(d, i) {
 				return 1.5;
 			})
 			.style("fill", 'rgb(0,0,0)')
 			.style("stroke-width", 0);
-		this._vgsvg.selectAll("text")
+		this._vginfo.selectAll("text")
 			.attr("transform", function(d) {
 				var px = d[0];
 				var py = d[1];
@@ -491,8 +544,8 @@ MapManager.prototype.restoreVGraph = function(mode)
 				self._verticeInfos[i].style.strokeWidth = 0;
 				return 0;
 			});
-		
-		this._vgsvg.selectAll("circle")
+
+		this._vgcenter.selectAll("circle")
 			.attr("r", function(d, i) {
 				if(self._verticeInfos[i].type == 'cell') {
 					return 1.5;
@@ -514,8 +567,8 @@ MapManager.prototype.restoreVGraph = function(mode)
 					return 0;
 				}
 			});
-			
-		this._vgsvg.selectAll("text")
+
+		this._vginfo.selectAll("text")
 			.text(function(d, i) {
 				if(self._verticeInfos[i].type == 'cell') {
 					var title = self._verticeInfos[i].device.title;
@@ -561,16 +614,16 @@ MapManager.prototype.restoreVGraph = function(mode)
 				self._verticeInfos[i].style.strokeWidth = 1.5;
 				return 1.5;
 			});
-			
-		this._vgsvg.selectAll("circle")
+
+		this._vgcenter.selectAll("circle")
 			.transition().duration(500)
 			.style("stroke", 'rgba(0,0,0,0.8)')
 			.style("stroke-width", 1)
 			.attr("r", function(d, i) {
 				return 0;
-			});	
-			
-		this._vgsvg.selectAll("text")
+			});
+
+		this._vginfo.selectAll("text")
 			.text(function(d, i) {
 				return '';
 			})
@@ -615,8 +668,8 @@ MapManager.prototype.updateVGraph = function(objs)
 			//console.log('============');
 			return d3.select(this).style("fill");
 		});
-		
-	this._vgsvg.selectAll("text")
+
+	this._vginfo.selectAll("text")
 		.text(function(d, i) {
 			for(var i = 0; i < objs.length; i++) {
 				var obj = objs[i];
@@ -652,8 +705,8 @@ MapManager.prototype.showIncomingMessage = function(did, sid, msg, value)
 				return d3.select(this).style("fill");	
 			}
 		});
-	
-	this._vgsvg.selectAll("text")
+
+	this._vginfo.selectAll("text")
 		.text(function(d, i) {
 			if(d3.select(this).attr("name") == did) {
 				var startclr, endclr;
@@ -706,7 +759,7 @@ MapManager.prototype.enterFarmMode = function()
 			return self._verticeInfos[i].style.strokeWidth;
 		});
 
-	this._vgsvg.selectAll("circle")
+	this._vgcenter.selectAll("circle")
 		.transition()
 		.duration(500)
 		.attr("r", function(d, i) {
@@ -716,7 +769,7 @@ MapManager.prototype.enterFarmMode = function()
 		.style("stroke-width", 0)
 		.style('pointer-events', 'none');
 
-	this._vgsvg.selectAll("text")
+	this._vginfo.selectAll("text")
 		.attr("transform", function(d) {
 			var px = d[0];
 			var py = d[1];
@@ -989,6 +1042,14 @@ MapManager.prototype._setAllowedZoom = function()
 			self.map.setZoom(self._allowZoomMin);
 		} else if(self.map.getZoom() > self._allowZoomMax) {
 			self.map.setZoom(self._allowZoomMax);
+		}
+
+		// 只有在最大地图的状态下，显示设备ID
+		console.log(self.map.getZoom() + ", " + self._allowZoomMax);
+		if(self.map.getZoom() == self._allowZoomMax) {
+			self._vgid.selectAll("text").style("visibility", "visible");
+		} else {
+			self._vgid.selectAll("text").style("visibility", "hidden");
 		}
    	});
 }

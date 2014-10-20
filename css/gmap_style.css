@@ -1,0 +1,22 @@
+/****************************************
+ * CSS Document
+ * Define the style of gMap things
+ ****************************************/
+
+#svgcontainer {
+    position:absolute;
+}
+
+#fBoundary {
+     pointer-events: none;
+}
+
+.gmap_deviceid {
+    text-anchor: middle;
+    pointer-events: none;
+    visibility: hidden;
+
+    font-family: Roboto;
+    font-size: 20px;
+    fill: rgba(200,200,200,0.5);
+}

@@ -66,13 +66,17 @@ ServerManager.prototype.init = function()
 	var self = this;
 	
 	$.getJSON(this.websiteUrl, function(dat) {
-		self.devices = dat._links.items;
+		// TODO: That's use a little trick way to get all sensors from on request, maybe change the way in future...
+		var url = self.websiteUrl + '&limit=' + dat.totalCount + '&offset=0';
+		$.getJSON(url, function(dat2) {
+			self.devices = dat2._links.items;
 
-		// load all device info
-		self._loadIdx = 0;
-		self._getAllDeviceInfo();
+			// load all device info
+			self._loadIdx = 0;
+			self._getAllDeviceInfo();
 
-		//console.log(self.devices);
+			//console.log(self.devices);
+		});
 	});
 }
 

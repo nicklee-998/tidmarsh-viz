@@ -2,12 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>demo_gmap_d3</title>
+	<title>Tidmarsh Living Observatory - Viz</title>
         <link rel="stylesheet" type="text/css" href="css/main.css" />
         <link rel="stylesheet" type="text/css" href="css/gbtags.css" />
         <link rel="stylesheet" type="text/css" href="css/slider_bar_date.css" />
         <link rel="stylesheet" type="text/css" href="css/loading.css" />
         <link rel="stylesheet" type="text/css" href="css/sensor_checkbox.css" />
+        <link rel="stylesheet" type="text/css" href="css/gmap_style.css" />
         <style type="text/css">
 		.stations, .stations svg {
   			position: absolute;
@@ -113,7 +114,7 @@
 				var ghost = new GmapGhost(gMap._vertices[i]);
 				_ghostList.push(ghost);
 			}
-			singleGhost();
+                        multiGhost();
 			
 			// initalize sensor table
 			_sensorTable = [{sid:'sht_temperature', flg:false},
