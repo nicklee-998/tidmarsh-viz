@@ -61,7 +61,7 @@ function MapManager(canvas)
 	// ---------------------------------------------
 	this.overlay.onAdd = function() {
 		
-		self._setAllowedZoom();
+		//self._setAllowedZoom();
 				
 		var project = self.overlay.getProjection();
 	
@@ -141,16 +141,29 @@ function MapManager(canvas)
 	this._vgclip;
 	this._vgclipwhole;
 	this._vgboundary;
-	this._nodeNum = 200; 		// 图中点的数量
+	this._nodeNum = 300; 		// 图中点的数量
 	
 	this._vertices;
 	this._verticeInfos;
+
+	// -------------------
+	// poisson disc
+	// -------------------
+	this._k;
+	this._R;
+	this._radius2;
+	this._cellSize;
+	this._gridWidth = 0;
+	this._gridHeight = 0;
+	this._grid;
+	this._queue = [];
+	this._queueSize = 0;
+	this._sampleSize = 0;
 	
 	// ghost 
 	this.ghostNum = 5;		// ghost总数量
 		
 	var self = this;
-	
 }
 
 //------------------------------------------------------
@@ -163,6 +176,17 @@ MapManager.prototype.initVGraph = function(devlist)
 {
 	var self = this;
 	var tmpvertices = new Array();	// 临时记录device的坐标，为了blank区域不要生成在sensor区中
+
+	// Poisson Disc
+	// TODO: radius should put in config file
+	var radius = this.wid / 100;
+	this._k = 30;
+	this._radius2 = radius * radius;
+	this._R = 3 * this._radius2;
+	this._cellSize = radius * Math.SQRT1_2;
+	this._gridWidth = Math.ceil(this.wid / this._cellSize);
+	this._gridHeight = Math.ceil(this.hei / this._cellSize);
+	this._grid = new Array(this._gridWidth * this._gridHeight);
 
 	// voronoi graph 
 	this._vertices = new Array();
@@ -188,6 +212,8 @@ MapManager.prototype.initVGraph = function(devlist)
 					
 		var pnt = this.LatlngToScreen(devlist[i].lat, devlist[i].lng);
 		this._vertices.push([pnt.x, pnt.y]);
+		// poisson dict -
+		this._sample(pnt.x, pnt.y);
 		// tmp vertices
 		tmpvertices.push([pnt.x, pnt.y]);
 		
@@ -207,23 +233,14 @@ MapManager.prototype.initVGraph = function(devlist)
 	if(this._vertices.length < this._nodeNum) {
 		var len = this._vertices.length;
 		var i = 0;
-		while(i < (this._nodeNum - len)) {
-			var px = Math.random() * this.wid;
-			var py = Math.random() * this.hei;
+		var over = false;
+		while(i < (this._nodeNum - len) && !over) {
+			var s = this._poissonDiscSampler();
+			//console.log(i + ", " + s);
+			if(s) {
+				var px = s[0];
+				var py = s[1];
 
-			// For protecting blank area filled into sensor area.
-			// TODO: put the range(#now = 312) into configration file
-			var isinside = false;
-			for(var j = 0; j < tmpvertices.length; j++) {
-				var dist = this._lineDistance(px, py, tmpvertices[j][0], tmpvertices[j][1]);
-				//console.log(px + ", " + py + " - " + dist + ", " + this.wid + ", " + this.hei);
-				if(dist < 50) {
-					isinside = true;
-					break;
-				}
-			}
-
-			if(!isinside) {
 				var sobj = {};
 				sobj.color = this.blankColor;
 				sobj.origColor = this.blankColor;
@@ -235,6 +252,8 @@ MapManager.prototype.initVGraph = function(devlist)
 				this._verticeInfos.push({type:'blank', device:{title:'fake_' + i}, style:sobj});
 
 				i++;
+			} else {
+				over = true;
 			}
 		}
 	}
@@ -954,6 +973,64 @@ MapManager.prototype.LatlngToScreen = function(lat, lng)
 }
 
 //----------------------------------------------
+// PRIVATE METHOD - Poisson Disc
+//----------------------------------------------
+MapManager.prototype._poissonDiscSampler = function()
+{
+	while(this._queueSize) {
+		var i = Math.random() * this._queueSize | 0;
+		var s = this._queue[i];
+
+		for(var j = 0; j < this._k; ++j) {
+			var a = 2 * Math.PI * Math.random();
+			var r = Math.sqrt(Math.random() * this._R + this._radius2);
+			var x = s[0] + r * Math.cos(a);
+			var y = s[1] + r * Math.sin(a);
+
+			if(0 <= x && x < this.wid && 0 <= y && y < this.hei && this._far(x, y))
+				return this._sample(x, y);
+		}
+
+		this._queue[i] = this._queue[--this._queueSize];
+		this._queue.length = this._queueSize;
+	}
+}
+
+MapManager.prototype._far = function(x, y)
+{
+	var i = x / this._cellSize | 0;
+	var j = y / this._cellSize | 0;
+	var i0 = Math.max(i - 2, 0);
+	var j0 = Math.max(j - 2, 0);
+	var i1 = Math.min(i + 3, this._gridWidth);
+	var j1 = Math.min(j + 3, this._gridHeight);
+
+	for(j = j0; j < j1; ++j) {
+		var o = j * this._gridWidth;
+		for(i = i0; i < i1; ++i) {
+			if(s = this._grid[o + i]) {
+				var s;
+				var dx = s[0] - x;
+				var dy = s[1] - y;
+				if(dx * dx + dy * dy < this._radius2)
+					return false;
+			}
+		}
+	}
+	return true;
+}
+
+MapManager.prototype._sample = function(x, y)
+{
+	var s = [x, y];
+	this._queue.push(s);
+	this._grid[this._gridWidth * (y / this._cellSize | 0) + (x / this._cellSize | 0)] = s;
+	++this._sampleSize;
+	++this._queueSize;
+	return s;
+}
+
+//----------------------------------------------
 // PRIVATE METHOD - GOOGLE MAP EVENT
 //----------------------------------------------
 MapManager.prototype._setMapMouseListener = function() 
@@ -1045,7 +1122,7 @@ MapManager.prototype._setAllowedZoom = function()
 		}
 
 		// 只有在最大地图的状态下，显示设备ID
-		console.log(self.map.getZoom() + ", " + self._allowZoomMax);
+		//console.log(self.map.getZoom() + ", " + self._allowZoomMax);
 		if(self.map.getZoom() == self._allowZoomMax) {
 			self._vgid.selectAll("text").style("visibility", "visible");
 		} else {
