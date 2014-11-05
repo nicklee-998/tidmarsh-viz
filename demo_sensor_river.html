@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+        <meta charset="UTF-8">
+        <title>Demo Sensor River</title>
+        <link rel="stylesheet" type="text/css" href="css/sensor_river.css" />
+</head>
+
+<body>
+        <script src="libs/jquery-1.11.1.min.js"></script>
+        <script src="libs/tiny-pubsub.js"></script>
+        <script src="libs/d3.js"></script>
+        <script src="scripts/global_vars.js"></script>
+        <script src="scripts/server_manager.js"></script>
+        <script src="scripts/data_factory.js"></script>
+        <script src="scripts/river_of_sensors.js"></script>
+        <script>
+
+                var sManager;
+                var sensorRiver;
+
+                function initialize()
+                {
+                        jQuery.subscribe(SERVER_INIT, onServerInit);
+                        sManager = new ServerManager("http://chain-api.media.mit.edu/devices/?site_id=7");
+                        sManager.init();
+                }
+                window.onload = initialize;
+
+                function onServerInit()
+                {
+                        jQuery.unsubscribe(SERVER_INIT, onServerInit);
+
+                        console.log("Server Init");
+
+                        sensorRiver = new SensorRiver("#river-canvas");
+                        sensorRiver.initGraph(sManager.devices);
+
+                        // 载入传感器数据
+                        var arr = ["0x812E", "0x8115", "0x8110", "0x8116", "0x810D", "0x812E", "0x812A", "0x8117"];
+
+                        jQuery.subscribe(SERVER_DEVICE_LIST_START, onDeviceData);
+                        jQuery.subscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
+                        sManager.fetchMultiDevicesByDate(arr, ["illuminance", "sht_temperature", "bmp_pressure", "sht_humidity", "battery_voltage"],
+                                {year:2014, month:8, day:15, hour:0, minu:0, sec:0},
+                                {year:2014, month:8, day:15, hour:23, minu:59, sec:59});
+                }
+
+                function onDeviceData(e)
+                {
+                        if(e.type == SERVER_DEVICE_LIST_START) {
+                                // 开始载入数据集
+                                jQuery.unsubscribe(SERVER_DEVICE_LIST_START, onDeviceData);
+                                console.log("开始载入数据集!");
+
+                        } else if(e.type == SERVER_DEVICE_LIST_COMPLETE) {
+                                jQuery.unsubscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
+                                console.log("数据集载入完毕!");
+
+                                var arr = ["0x812E", "0x8115", "0x8110", "0x8116", "0x810D", "0x812E", "0x812A", "0x8117"];
+                                sensorRiver.drawGraph(arr, ["illuminance", "sht_temperature", "bmp_pressure", "sht_humidity", "battery_voltage"],
+                                        {year:2014, month:8, day:15, hour:0, minu:0, sec:0},
+                                        {year:2014, month:8, day:15, hour:23, minu:59, sec:59});
+                        }
+                }
+
+        </script>
+
+        <svg id="river-canvas"></svg>
+</body>
+</html>

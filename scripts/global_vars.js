@@ -24,6 +24,8 @@ var SERVER_DEVICE_DATA_COMPLETE = "server_device_data_complete";// 某个device�
 var SERVER_DEVICE_DATA_ERROR = "server_device_data_error";	// 获取server上某个device数据错误，原因不明...
 
 var GHOST_ANIM_COMPLETE = "ghost_anim_complete";
+
+var RIVER_DRAW_COMPLETE = "river_draw_complete";
  
 //var DEVICE_LIST_DONE = "device_list_loaded";
 //var DEVICE_INFO_DONE = "device_info_loaded";

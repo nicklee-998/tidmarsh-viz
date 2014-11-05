@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+        <meta charset="UTF-8">
+        <title>Sensor Data River</title>
+</head>
+<body>
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <script src="libs/jquery-1.11.1.min.js"></script>
+        <script src="libs/tiny-pubsub.js"></script>
+        <script>
+
+                var layers = [
+                        {
+                                "name": "apples",
+                                "values": [
+                                        { "x": 0, "y": 390},
+                                        { "x": 0.5, "y": 300}
+                                ]
+                        },
+                        {
+                                "name": "oranges",
+                                "values": [
+                                        { "x": 0, "y":  10},
+                                        { "x": 0.5, "y": 120}
+                                ]
+                        },
+                        {
+                                "name": "pear",
+                                "values": [
+                                        { "x": 0, "y":  100},
+                                        { "x": 0.5, "y": 80}
+                                ]
+                        }
+                ];
+
+                //x and y axis maps.
+                var x = d3.scale.linear().domain([0, 1]).range([0, 300]);
+                var y = d3.scale.linear().domain([0, 500]).range([0, 300]);
+
+                var area = d3.svg.area()
+                        .x(function(d) { return x(d.x); })
+                        .y0(function(d) { return y(d.y0); })
+                        .y1(function(d) { return y(d.y0 + d.y); })
+                        .interpolate("basis");
+
+                var stack = d3.layout.stack()
+                        .offset("zero")
+                        .values(function(d) { return d.values; });
+
+                var svg = d3.select("body")
+                        .append("svg")
+                        .attr("id", "river_cont")
+                        .attr("width", 1500)
+                        .attr("height", 800);
+
+                var g = svg.append("g")
+                        .attr("id", "0x0811")
+                        .attr("transform", "rotate(90, 300, 300)");
+
+                g.selectAll("path")
+                        .data(stack(layers))
+                        .enter()
+                        .append("path")
+                        .attr("d", function(d) { return area(d.values); })
+                        .append("title")
+                        .text(function(d) { return d.name; });
+
+        </script>
+</body>
+</html>
