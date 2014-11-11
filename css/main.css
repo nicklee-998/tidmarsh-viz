@@ -4,7 +4,7 @@ html, body, #map-canvas {
 	height: 100%;
 	margin: 0px;
 	padding: 0px;
-	overflow:hidden;
+	overflow: hidden;
 }
 
 #map-canvas-cover {
@@ -35,8 +35,18 @@ html, body, #map-canvas {
 	border-radius:127px;
 			
 	cursor:move;
-/*	visibility:hidden;
-*/}
+	/*visibility:hidden;*/
+}
+
+/***********************************************
+ * Date Picker
+ ***********************************************/
+#datepicker {
+	position: absolute;
+	left: 15px;
+	top: 170px;
+	visibility: hidden;
+}
 
 /***********************************************
  * Tooltip on voronoi graph - device name

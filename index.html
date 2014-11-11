@@ -6,9 +6,11 @@
         <link rel="stylesheet" type="text/css" href="css/main.css" />
         <link rel="stylesheet" type="text/css" href="css/gbtags.css" />
         <link rel="stylesheet" type="text/css" href="css/slider_bar_date.css" />
-        <link rel="stylesheet" type="text/css" href="css/loading.css" />
         <link rel="stylesheet" type="text/css" href="css/sensor_checkbox.css" />
         <link rel="stylesheet" type="text/css" href="css/gmap_style.css" />
+	<link rel="stylesheet" type="text/css" href="css/loading.css" />
+	<link rel="stylesheet" type="text/css" href="css/datepicker.css"/>
+	<link href="css/normalize.css" rel="stylesheet" type="text/css"/>
         <style type="text/css">
 		.stations, .stations svg {
   			position: absolute;
@@ -31,7 +33,6 @@
 	<script src="libs/jquery-ui.js"></script>
 	<script src="libs/tiny-pubsub.js"></script>
 	<script src="libs/d3.js"></script>
-        <script src="libs/datetimepicker.js"></script>
         <script src="libs/blur.js"></script>
         <script src="libs/jquery.flip.min.js"></script>
         <script src="libs/spin.min.js"></script>
@@ -44,6 +45,7 @@
         <script src="scripts/data_factory.js"></script>
         <script src="scripts/windhistory_graph.js"></script>
         <script src="scripts/gmap_ghost.js"></script>
+	<script src="scripts/opening_loader.js"></script>
         <script>
 		var sManager;
 		var gMap;
@@ -60,28 +62,63 @@
 
                 // loading animation
                 var _spinner;
+		var _counter;
+		var _counterIdx = 0;
+		var _counterTotal = 0;
+		var _counterInterval;
 
 		var _sensorIdx = 0;
-						
+
 		function initialize() 
 		{
 			// ui
 			$("#wgraphcontainer").on('click', onWGraphContainerClick);
+			// date picker
+			$("#datepicker").datepicker({
+				inline: true,
+				showOtherMonths: true,
+				dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+				onSelect: function(date) {
+					onSelectDate(date);
+				}
+			});
+
 			
 			initSliderBar();
 			updateWindow();
-			
+
+			jQuery.subscribe(SERVER_SUMMARY, onServerSummary);
 			jQuery.subscribe(SERVER_INIT, onServerInit);
+			jQuery.subscribe(SERVER_DEVICE_INIT, onServerDeviceInit);
 			sManager = new ServerManager("http://chain-api.media.mit.edu/devices/?site_id=7");
 			sManager.init();
-
-
 		}
 		window.onload = initialize;
+
+		function onServerSummary(e, i)
+		{
+			_counterTotal = i.totalCount;
+
+			_counterInterval = setInterval(function() {
+				var number = (_counterIdx / _counterTotal) * 100;
+				_counter.countUpTo(Math.round(number));
+			}, 800);
+		}
+
+		function onServerDeviceInit()
+		{
+			_counterIdx++;
+		}
 		
 		function onServerInit()
 		{
+			jQuery.unsubscribe(SERVER_SUMMARY, onServerSummary);
 			jQuery.unsubscribe(SERVER_INIT, onServerInit);
+			jQuery.unsubscribe(SERVER_DEVICE_INIT, onServerDeviceInit);
+
+			// stop update opening loader
+			clearInterval(_counterInterval);
+			_counter.countUpTo(99);
 			
 			$('#map-canvas').css('visibility', 'hidden');
 			jQuery.subscribe(GMAP_INIT, onGmapInit);
@@ -122,11 +159,16 @@
                                         {sid:'bmp_pressure', flg:false},
                                         {sid:'sht_humidity', flg:false},
                                         {sid:'battery_voltage', flg:false}];
-			
+
+			// remove loading animation
+			$("#opening_loader").animate({opacity:0}, 'fast', function() {
+				$("#opening_loader").css("visibility", "hidden");
+			});
+
 			// 打开incoming message center
-                        _flgProcessing = false;
-			startGhost();
-			handleIncomingMessage();
+                        //_flgProcessing = false;
+			//startGhost();
+			//handleIncomingMessage();
 		}
 		
 		/////////////////////////////////////////////
@@ -479,6 +521,13 @@
 						$('#bar').css('visibility', 'hidden');
 					});
 				}
+				// 隐藏日历
+				var dwid = $('#datepicker').css('width');
+				if($('#datepicker').css('visibility') != 'hidden') {
+					$('#datepicker').animate({left:'-'+dwid}, 'fast', 'swing', function() {
+						$('#datepicker').css('visibility', 'hidden');
+					});
+				}
 
 				showUIMenu(false);
                                 showLoading(true);
@@ -492,6 +541,11 @@
 				$('#bar').css('visibility', 'visible');
 				$('#bar').css('bottom', '-100px');
 				$('#bar').animate({bottom:'50px'}, 'slow', 'swing');
+				// 显示日历
+				var dwid = $('#datepicker').css('width');
+				$('#datepicker').css('visibility', 'visible');
+				$('#datepicker').css('left', '-'+dwid);
+				$('#datepicker').animate({left:'15px'}, 'slow', 'swing');
 				
 				showUIMenu(true);
                                 showLoading(false);
@@ -857,11 +911,12 @@
 
         <div id="loading-canvas"></div>
 
+
         <!-- Float on the Page -->
         <div id='bar'>
        	  	<div id="bar_line"></div>
 	  	<div id='slider'></div>
-         	<input id='info' readonly onclick="chooseSliderDate()"></input>
+         	<input id='info' readonly></input>
                 <div id='subday'></div>
   		<div class="bar_button">DECLINE</div>
   	  	<div class="bar_button2">ACCPET</div>
@@ -901,6 +956,7 @@
         	<h1>Living </h1>
         	<h1>Observatory</h1>
     	</div>
+	<div id="datepicker"></div>
 	<div id="weather">
 		<div id="forecast">getting weather...</div>
         	<div id="sunrise_sunset"></div>
@@ -927,5 +983,7 @@
                         <div id="menu_health" class="sensor_menu"><svg class="menu_block"></svg>health</div>
 		</dd>
 	</dl>
+
+	<div id="opening_loader" class='wrapper'><div id="a" /></div>
 </body>
 </html>

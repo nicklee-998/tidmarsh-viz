@@ -66,8 +66,14 @@ ServerManager.prototype.init = function()
 	var self = this;
 	
 	$.getJSON(this.websiteUrl, function(dat) {
+		// ------------------------------
+		// Send device summary event
+		// ------------------------------
+		jQuery.publish(SERVER_SUMMARY, {totalCount:dat.totalCount});
+
 		// TODO: That's use a little trick way to get all sensors from on request, maybe change the way in future...
 		var url = self.websiteUrl + '&limit=' + dat.totalCount + '&offset=0';
+
 		$.getJSON(url, function(dat2) {
 			self.devices = dat2._links.items;
 

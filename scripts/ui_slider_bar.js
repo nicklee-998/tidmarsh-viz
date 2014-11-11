@@ -31,59 +31,29 @@ function initSliderBar()
 	slider.addEventListener('mousedown', startSlide, false);
 }
 
-function chooseSliderDate()
+function onSelectDate(date)
 {
-	NewCal('info','mmddyyyy');
-}
-
-function onSelectDate()
-{
-	var exDateTime = document.getElementById('info').value;
+	console.log(date.toString());
+	var exDateTime = date.toString();
 	if (exDateTime != "")//Parse Date String
 	{
-		var Sp1;//Index of Date Separator 1
-		var Sp2;//Index of Date Separator 2 
-		var tSp1;//Index of Time Separator 1
-		var tSp1;//Index of Time Separator 2
 		var strMonth;
 		var strDate;
 		var strYear;
-		var intMonth;
-		var YearPattern;
-		var strHour;
-		var strMinute;
-		var strSecond;
-		//parse month
-		Sp1=exDateTime.indexOf(DateSeparator,0)
-		Sp2=exDateTime.indexOf(DateSeparator,(parseInt(Sp1)+1));
+
+		//parse date
+		strYear = exDateTime.substring(6, 10);
+		strMonth = exDateTime.substring(0, 2);
+		strDate = exDateTime.substring(3, 5);
 		
-		strMonth=exDateTime.substring(0,Sp1);
-		strDate=exDateTime.substring(Sp1+1,Sp2);
-		if (isNaN(strMonth))
-			intMonth=Cal.GetMonthIndex(strMonth);
-		else
-			intMonth=parseInt(strMonth,10)-1;	
-		if ((parseInt(intMonth,10)>=0) && (parseInt(intMonth,10)<12))
-			Cal.Month=intMonth;
-		//end parse month
-		//parse Date
-		if ((parseInt(strDate,10)<=Cal.GetMonDays()) && (parseInt(strDate,10)>=1))
-			Cal.Date=strDate;
-		//end parse Date
-		//parse year
-		strYear=exDateTime.substring(Sp2+1,Sp2+5);
-		YearPattern=/^\d{4}$/;
-		if (YearPattern.test(strYear))
-			Cal.Year=parseInt(strYear,10);
-		//end parse year
-		//parse time
-		
-		//console.log(strYear + ", " + strMonth + ", " + strDate);
+		console.log(strYear + ", " + strMonth + ", " + strDate);
 		
 		// UPDATE DATE RANGE
 		sliderYear = parseInt(strYear);
 		sliderMonth = parseInt(strMonth)-1;
 		sliderDay = parseInt(strDate);
+
+		console.log(sliderYear + ", " + sliderMonth + ", " + sliderDay);
 	
 		sliderStart = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);
 		sliderEnd = new Date(sliderYear, sliderMonth, sliderDay, 23, 59, 59);

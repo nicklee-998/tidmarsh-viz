@@ -10,6 +10,7 @@ var GMAP_CLICK = "gmap_mouse_click";
 var GMAP_CIRCLE_CLICK = "gmap_circle_click";
 var GMAP_ANIMATION_DONE = "gmap_animation_done";
 
+var SERVER_SUMMARY = "server_summary"                           // 获得了server的summary
 var SERVER_DEVICE_INIT = "server_device_init";			// 某个device初始化完毕
 var SERVER_INIT = "server_init";				// 初始所有device完毕
 
