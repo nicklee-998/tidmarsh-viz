@@ -166,9 +166,9 @@
 			});
 
 			// 打开incoming message center
-                        //_flgProcessing = false;
-			//startGhost();
-			//handleIncomingMessage();
+                        _flgProcessing = false;
+			startGhost();
+			handleIncomingMessage();
 		}
 		
 		/////////////////////////////////////////////
@@ -442,6 +442,8 @@
 					});
 					// 关闭tooltip
 					$('#map_tooltip').css('visibility', 'hidden');
+					// 隐藏日历
+					showCal(false);
                                         // 显示sensor table菜单
                                         showSensorTable(true);
                                         // resotre sensor idx
@@ -459,6 +461,8 @@
 					$('#map_tooltip').css('visibility', 'hidden');
 					// 停止ghost模式
 					stopGhost();
+					// 隐藏日历
+					showCal(false);
                                         // 隐藏sensor table菜单
                                         showSensorTable(false);
 
@@ -472,6 +476,8 @@
 					});
 					// 关闭tooltip
 					$('#map_tooltip').css('visibility', 'hidden');
+					// 隐藏日历
+					showCal(false);
                                         // 显示sensor table菜单
                                         showSensorTable(true);
 
@@ -522,13 +528,7 @@
 					});
 				}
 				// 隐藏日历
-				var dwid = $('#datepicker').css('width');
-				if($('#datepicker').css('visibility') != 'hidden') {
-					$('#datepicker').animate({left:'-'+dwid}, 'fast', 'swing', function() {
-						$('#datepicker').css('visibility', 'hidden');
-					});
-				}
-
+				showCal(false);
 				showUIMenu(false);
                                 showLoading(true);
 			} else if(e.type == SERVER_DEVICE_LIST_COMPLETE) {
@@ -542,11 +542,7 @@
 				$('#bar').css('bottom', '-100px');
 				$('#bar').animate({bottom:'50px'}, 'slow', 'swing');
 				// 显示日历
-				var dwid = $('#datepicker').css('width');
-				$('#datepicker').css('visibility', 'visible');
-				$('#datepicker').css('left', '-'+dwid);
-				$('#datepicker').animate({left:'15px'}, 'slow', 'swing');
-				
+				showCal(true);
 				showUIMenu(true);
                                 showLoading(false);
 			}
@@ -734,6 +730,23 @@
                                 $("#checkboxSensors").css("opacity", 0);
                         }
                 }
+
+		function showCal(flg)
+		{
+			if(flg) {
+				var dwid = $('#datepicker').css('width');
+				$('#datepicker').css('visibility', 'visible');
+				$('#datepicker').css('left', '-'+dwid);
+				$('#datepicker').animate({left:'15px'}, 'slow', 'swing');
+			} else {
+				var dwid = $('#datepicker').css('width');
+				if($('#datepicker').css('visibility') != 'hidden') {
+					$('#datepicker').animate({left:'-'+dwid}, 'fast', 'swing', function() {
+						$('#datepicker').css('visibility', 'hidden');
+					});
+				}
+			}
+		}
 		
 		/////////////////////////////////////////////
 		// Incoming Message - ANIMATION
