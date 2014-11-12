@@ -1,30 +1,58 @@
 // JavaScript Document
-var bar, bar_line, slider, info, subday;
+var bar, bar_line, slider, slider_curr_date, slider_left_frame, slider_right_frame, slider_left_date, slider_right_date;
 var sliderClick;
 var sliderYear, sliderMonth, sliderDay;
 var sliderStart, sliderEnd, sliderCurrent;	// Date
 var sliderScale;
-var _monthsTable = ["January", "February", "March", "April",
-		    "May", "June", "July", "August", 
-		    "September", "October", "November", "December"];
 
 function initSliderBar()
 {
 	bar = document.getElementById('bar');
 	bar_line = document.getElementById('bar_line');
 	slider = document.getElementById('slider');
-	info = document.getElementById('info');
-	subday = document.getElementById('subday');
-	
+	slider_curr_date = document.getElementById('slider_date');
+	slider_right_date = document.getElementById('slider_right_date');
+	slider_left_frame = document.getElementById('slider_left_frame');
+	slider_right_frame = document.getElementById('slider_right_frame');
+
 	var d = new Date();
 	sliderYear = d.getFullYear();
 	sliderMonth = d.getMonth();
 	sliderDay = d.getDate();
-	info.value = d.toDateString();
+	slider_curr_date.value = d.toDateString();
 	
 	sliderStart = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);
 	sliderEnd = new Date(sliderYear, sliderMonth, sliderDay, 23, 59, 59);
 	sliderScale = d3.scale.linear().domain([0, 1]).range([sliderStart.getTime(), sliderEnd.getTime()]);
+
+	// draw UI
+	var barHeight = 30;
+	var barLineWidth = 800;
+	var endsWidth = 70;
+	var barWidth = endsWidth + 10 + barLineWidth + 10 + endsWidth + 10;
+
+	var strLeft = sliderYear + "/" + (sliderMonth + 1) + "/" + sliderDay + "\n" + "12 AM";
+	$("#slider_left_frame").text(strLeft);
+	$("#slider_left_frame").css('width', endsWidth);
+	$("#slider_left_frame").css('height', barHeight);
+	$("#slider_left_frame").css('top', 0);
+	$("#slider_left_frame").css('left', 0);
+
+	$("#bar_line").css('width', barLineWidth);
+	$("#bar_line").css('height', barHeight);
+	$("#bar_line").css('top', -1);
+	$("#bar_line").css('left', endsWidth + 10);
+
+	var nextday = new Date();
+	nextday.setHours(nextday.getHours() + 24);
+	var strRight = nextday.getFullYear() + "/" + (nextday.getMonth() + 1) + "/" + nextday.getDate() + "\n" + "12 AM";
+	$("#slider_right_frame").text(strRight);
+	$("#slider_right_frame").css('width', endsWidth);
+	$("#slider_right_frame").css('height', barHeight);
+	$("#slider_right_frame").css('top', 0);
+	$("#slider_right_frame").css('left', endsWidth + 10 + barLineWidth + 10);
+
+	$("#bar").css('width', barWidth);
 
 	updateSliderInfo(bar.offsetLeft + bar_line.offsetLeft, 0);
 		
@@ -46,23 +74,29 @@ function onSelectDate(date)
 		strMonth = exDateTime.substring(0, 2);
 		strDate = exDateTime.substring(3, 5);
 		
-		console.log(strYear + ", " + strMonth + ", " + strDate);
+		//console.log(strYear + ", " + strMonth + ", " + strDate);
 		
 		// UPDATE DATE RANGE
 		sliderYear = parseInt(strYear);
 		sliderMonth = parseInt(strMonth)-1;
 		sliderDay = parseInt(strDate);
 
-		console.log(sliderYear + ", " + sliderMonth + ", " + sliderDay);
+		//console.log(sliderYear + ", " + sliderMonth + ", " + sliderDay);
 	
 		sliderStart = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);
 		sliderEnd = new Date(sliderYear, sliderMonth, sliderDay, 23, 59, 59);
 		sliderScale = d3.scale.linear().domain([0, 1]).range([sliderStart.getTime(), sliderEnd.getTime()]);
-		info.value = sliderStart.toDateString();
+
+		var strLeft = sliderYear + "/" + (sliderMonth + 1) + "/" + sliderDay + "\n" + "12 AM";
+		$("#slider_left_frame").text(strLeft);
+		var nextday = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);
+		nextday.setHours(nextday.getHours() + 24);
+		var strRight = nextday.getFullYear() + "/" + (nextday.getMonth() + 1) + "/" + nextday.getDate() + "\n" + "12 AM";
+		$("#slider_right_frame").text(strRight);
 		
 		getDevicesDataBySensorMenu();
 
-		updateSliderInfo(bar.offsetLeft + bar_line.offsetLeft, 0);
+		//updateSliderInfo(bar.offsetLeft + bar_line.offsetLeft, 0);
 	}
 }
 
@@ -115,8 +149,9 @@ function updateSliderInfo(mousex, perc)
 {
 	sliderCurrent = new Date(sliderScale(perc));
 	slider.style.left = (mousex - bar.offsetLeft - 9) + 'px';
-	subday.innerHTML = sliderCurrent.toLocaleTimeString();
-	subday.style.left = (mousex - bar.offsetLeft - 65) + 'px';
+	var cstr = sliderCurrent.getHours() + ":" + sliderCurrent.getMinutes() + ":" + sliderCurrent.getSeconds();
+	slider_curr_date.value = cstr;
+	slider_curr_date.style.left = (mousex - bar.offsetLeft - 65) + 'px';
 }
 
 function updateVGraphBySlider()
@@ -131,13 +166,4 @@ function updateVGraphBySlider()
 		}
 	}
 	gMap.updateVGraph(arr);
-}
-
-function percToDay(perc)
-{
-	var dayScale = d3.scale.linear().domain([0, 1]).range([1, 31]);
-	var day = dayScale(perc).toFixed(0);
-	var str = sliderYear + "." + sliderMonth + "." + day
-	
-	return str;
 }

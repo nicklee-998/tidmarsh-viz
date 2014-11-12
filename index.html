@@ -540,7 +540,7 @@
 				updateVGraphBySlider();
 				$('#bar').css('visibility', 'visible');
 				$('#bar').css('bottom', '-100px');
-				$('#bar').animate({bottom:'50px'}, 'slow', 'swing');
+				$('#bar').animate({bottom:'75px'}, 'slow', 'swing');
 				// 显示日历
 				showCal(true);
 				showUIMenu(true);
@@ -706,8 +706,10 @@
 		function showUIMenu(flg)
 		{
 			if(flg) {
-				$('#title').css('top', '-160px');
-				$('#title').animate({top:'8px'}, 'slow');
+				if($('#title').css('top') != '8px') {
+					$('#title').css('top', '-160px');
+					$('#title').animate({top:'8px'}, 'slow');
+				}
 				$('#main_menu').css('right', '-160px');
 				$('#main_menu').delay(300).animate({right:'0px'}, 'slow');
 				if($('#weather').css('bottom') == '-27px') {
@@ -929,10 +931,9 @@
         <div id='bar'>
        	  	<div id="bar_line"></div>
 	  	<div id='slider'></div>
-         	<input id='info' readonly></input>
-                <div id='subday'></div>
-  		<div class="bar_button">DECLINE</div>
-  	  	<div class="bar_button2">ACCPET</div>
+         	<input id='slider_date' readonly></input>
+  		<div id="slider_left_frame"></div>
+		<div id="slider_right_frame"></div>
 	</div>
         <div id="checkboxSensors">
                 <form id="cbSensors">

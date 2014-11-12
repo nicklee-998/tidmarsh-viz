@@ -81,7 +81,7 @@ html, body, #map-canvas {
  * Title
  ***********************************************/
 #title {
-	top:-160px;
+	top: 8px;
 	left:8px;
 	position:fixed;
 	font-size: 18px;
