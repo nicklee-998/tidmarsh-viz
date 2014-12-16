@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Physics based character controller</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {
+			color: #000;
+			font-family:Monospace;
+			font-size:13px;
+			text-align:center;
+
+			background-color: #fff;
+			margin: 0px;
+			overflow: hidden;
+		}
+	</style>
+
+</head>
+<body>
+
+<div id="container"></div>
+
+<script src="../libs/three.min.js"></script>
+<script src="../js/controls/OrbitControls.js"></script>
+<script src="../js/libs/stats.min.js"></script>
+<script src="js/ThreeUtils.js"></script>
+<script src="js/perlin.js"></script>
+
+<script type="application/x-javascript">
+
+	var scene = new THREE.Scene();
+	var container, renderer;
+	var orbitCamera = null, fpsCamera = null;
+
+	var characterControls = null;
+	var orbitControls = null;
+
+	var clock = new THREE.Clock();
+	var character = null;
+
+	var stats = null;
+
+	var directionMesh = null;
+	var groundMesh = null;
+
+	var radius = 1;
+	var height = 3;
+	var eyeHeight = 2;
+
+	var sphereAmmoMeshList = [];
+
+	// -----------------------------------------------------------------------------
+	function init() {
+
+		container = document.getElementById( 'container' );
+
+		renderer = new THREE.WebGLRenderer();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		renderer.shadowMapEnabled = true;
+		renderer.shadowMapType = THREE.PCFSoftShadowMap;
+		renderer.autoClear = false;
+		container.appendChild( renderer.domElement );
+
+		var light = new THREE.DirectionalLight( 0xffffff );
+		light.castShadow = true;
+		light.shadowMapWidth = 2048;
+		light.shadowMapHeight = 2048;
+		light.shadowDarkness = 0.5;
+		light.shadowCameraNear = 5;
+		light.shadowCameraFar = 100;
+		light.shadowBias = 0.00001;
+		light.shadowCameraRight =  50;
+		light.shadowCameraLeft = -50;
+		light.shadowCameraTop =  50;
+		light.shadowCameraBottom = -50;
+		//light.shadowCameraVisible = true;
+		light.position.set( -30, 30, 0 );
+		scene.add( light );
+
+		light = new THREE.AmbientLight( 0x333333 );
+		scene.add( light );
+
+		createCameras();
+		createScene();
+
+		orbitControls = new THREE.OrbitControls( orbitCamera );
+		orbitControls.target = scene.position;
+		orbitControls.noKeys = true;
+
+		stats = new Stats();
+		stats.domElement.style.position = 'absolute';
+		stats.domElement.style.top = '0px';
+		document.body.appendChild( stats.domElement );
+
+		render();
+	}
+
+	// -----------------------------------------------------------------------------
+	function createCameras() {
+
+		var aspect = window.innerWidth / window.innerHeight;
+
+		orbitCamera = new THREE.PerspectiveCamera( 45, aspect, 0.1, 10000 );
+		orbitCamera.position.set( 0, 100, 100 );
+		scene.add( orbitCamera );
+
+		fpsCamera = new THREE.PerspectiveCamera( 60, aspect, 0.1, 2000 );
+	}
+
+	// -----------------------------------------------------------------------------
+	function createScene() {
+
+		var heightData = THREEx.Utils.createNoisePlaneData( 234, 512, 512, 1 / 200 );
+		var heightTexture = THREEx.Utils.createHeatMapTexture( heightData, 512, 512 );
+
+		var widthSegs = 20;
+		var lengthSegs = 20;
+
+		var ground = THREEx.Utils.createHeightPlane( heightData, 75, 75, widthSegs, lengthSegs );
+		ground.computeBoundingBox();
+
+		var groundMaterial = new THREE.MeshLambertMaterial( { map: heightTexture });
+		groundMesh = new THREE.Mesh( ground, groundMaterial );
+
+		groundMesh.receiveShadow = ground.castShadow = true;
+		scene.add( groundMesh );
+	}
+
+	// -----------------------------------------------------------------------------
+	function render() {
+
+		requestAnimationFrame( render, renderer.domElement );
+		renderer.render( scene, orbitCamera );
+		stats.update();
+	}
+
+	// -----------------------------------------------------------------------------
+	function onWindowResize() {
+
+		orbitCamera.aspect = window.innerWidth * 0.5 / window.innerHeight;
+		fpsCamera.aspect = orbitCamera.aspect;
+
+		orbitCamera.updateProjectionMatrix();
+		fpsCamera.updateProjectionMatrix();
+	}
+
+	window.onload = init;
+	window.onresize = onWindowResize;
+
+</script>
+
+</body>
+</html>

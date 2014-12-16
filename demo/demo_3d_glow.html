@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>GLOW - Complicated - Please Check Source</title>
+	<meta charset="utf-8">
+	<style type="text/css">
+		body {
+			background:#ffffff;
+			color:#000;
+			padding:0;
+			margin:0;
+			overflow:hidden;
+		}
+
+		#glow { position: absolute; top: 10px; left: 20px; z-index:1000; line-height:70%; }
+		#glow a {text-decoration:underline;color:#000;font:bold 6pt/6pt Arial, Helvetica, Sans-serif;text-transform:uppercase;}
+		#glow span.title {margin:0 0 0 1px;border-bottom:8px solid #000;font:bold 12pt/16pt Arial, Helvetica;letter-spacing:1px;line-height:1.50}
+		#glow span.title a {text-decoration:none;color:#000;font:bold 12pt/16pt Arial, Helvetica, Sans-serif;text-transform:uppercase;}
+		#glow span.title a:visited {text-decoration:none;color:#000;}
+		#glow span.sub {margin:0 0 0 -6px;font:bold 6pt/6pt Arial, Helvetica, Sans-serif;text-transform:uppercase;padding-top:8px;display:inline-block;}
+		#glow span.tut {margin:0 0 0 -4px;font:bold 6pt/6pt Arial, Helvetica, Sans-serif;text-transform:uppercase;}
+		#glow span.roA {margin:0 0 0 -13px;font:bold 6pt/6pt Arial, Helvetica, Sans-serif;text-transform:uppercase;}
+		#glow span.roB {margin:0 0 0 2px;font:bold 6pt/6pt Arial, Helvetica, Sans-serif;text-transform:uppercase;}
+
+		#loading {position:absolute;left:46%;top:45%;z-index:1000;margin:0 0 0 1px;border-bottom:8px solid #000;font:bold 12pt/16pt Arial, Helvetica;letter-spacing:1px;line-height:1.50; }
+	</style>
+
+	<script src="../js/libs/stats.min.js"></script>
+	<script src="../libs/GLOW.js"></script>
+	<!--<script type="text/javascript" src="../../src/extras/io/Load.js"></script>-->
+	<script src="../libs/Complicated.js"></script>
+
+	<script>window.onload=Complicated.load</script>
+</head>
+<body>
+<div id="glow"><span class="title"><a href="http://i-am-glow.com/">GLOW</a></span><br/><span class="sub">FBO SIMULATION</span><br/><span class="tut"><a href="http://i-am-glow.com/?page_id=183">READ TUTORIAL</a></span><br/><span class="roA">MODELS BY <a href="http://mirada.com/">MIRADA</a></span></br><span class="roB">FROM <a href="http://ro.me">ROME</a></span></div>
+<div id="container"></div>
+<div id="loading">LOADING</div>
+
+<script>
+	var stats = new Stats();
+	stats.domElement.style.position = 'absolute';
+	stats.domElement.style.left = '0px';
+	stats.domElement.style.top = '150px';
+	//document.body.appendChild( stats.domElement );
+</script>
+
+</body>
+</html>

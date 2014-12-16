@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title></title>
+	<style>
+		body {
+			color: #ffffff;
+			font-family:Monospace;
+			font-size:13px;
+			text-align:center;
+			font-weight: bold;
+
+			background-color: #000000;
+			margin: 0px;
+			overflow: hidden;
+		}
+		#info {
+			color: #fff;
+			position: absolute;
+			top: 0px; width: 100%;
+			padding: 5px;
+			z-index:100;
+		}
+
+		a { color: red }
+
+		#stats { position: absolute; top:0; left: 0 }
+		#stats #fps { background: transparent !important }
+		#stats #fps #fpsText { color: #777 !important }
+		#stats #fps #fpsGraph { display: none }
+	</style>
+
+</head>
+<body>
+	<div id="container"></div>
+
+	<script src="../libs/three.min.js"></script>
+	<script src="../js/controls/TrackballControls.js"></script>
+	<script src="../js/modifiers/ExplodeModifier.js"></script>
+	<script src="../js/modifiers/TessellateModifier.js"></script>
+	<script src="../js/Detector.js"></script>
+	<script src="../js/libs/stats.min.js"></script>
+	<script src="../js/loaders/ColladaLoader.js"></script>
+	<script src="../fonts/helvetiker_bold.typeface.js"></script>
+
+	<script type="x-shader/x-vertex" id="vertexshader">
+
+		uniform float amplitude;
+
+		attribute vec3 customColor;
+		attribute vec3 displacement;
+
+		varying vec3 vNormal;
+		varying vec3 vColor;
+
+		void main() {
+
+			vNormal = normal;
+			vColor = customColor;
+
+			vec3 newPosition = position + amplitude * displacement;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+		}
+
+	</script>
+
+	<script type="x-shader/x-fragment" id="fragmentshader">
+
+		varying vec3 vNormal;
+		varying vec3 vColor;
+
+		void main() {
+
+			const float ambient = 0.505;
+
+			vec3 light = vec3( 1.0 );
+			light = normalize( light );
+
+			float directional = max( dot( vNormal, light ), 0.0 );
+
+			gl_FragColor = vec4( ( directional + ambient ) * vColor, 1.0 );
+			gl_FragColor.xyz = sqrt( gl_FragColor.xyz );
+		}
+
+	</script>
+
+	<script>
+
+		if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+		var renderer, scene, camera, stats;
+		var mesh, uniforms, attributes;
+
+		var WIDTH = window.innerWidth;
+		var HEIGHT = window.innerHeight;
+
+		init();
+
+		function init() {
+
+			camera = new THREE.PerspectiveCamera( 25, WIDTH / HEIGHT, 1, 10000 );
+			camera.position.z = 350;
+
+			controls = new THREE.TrackballControls( camera );
+
+			scene = new THREE.Scene();
+
+			// load model
+			var loader = new THREE.ColladaLoader();
+			loader.options.convertUpAxis = true;
+			loader.load('../res/models/100.dae', function(collada) {
+				//console.log(collada);
+
+				var mesh = collada.scene.children[0].children[0].children[0];
+				mesh.scale.set(0.1, 0.1, 0.1);
+				mesh.material = new THREE.MeshLambertMaterial({ color: 0xffffff});
+
+//				console.log(mesh);
+//				var geometry = mesh.geometry;
+//				console.log("tidmarsh faces: " + geometry.faces.length + " vertices: " + geometry.vertices.length);
+//
+//				var tessellateModifier = new THREE.TessellateModifier( 4 );
+//				// 更多的循环次数会导致更多的分裂
+//				for ( var i = 0; i < 1; i ++ ) {
+//					tessellateModifier.modify( geometry );
+//				}
+//
+//				var explodeModifier = new THREE.ExplodeModifier();
+//				explodeModifier.modify( geometry );
+//
+//				//console.log("tidmarsh faces: " + geometry.faces.length + " vertices: " + geometry.vertices.length);
+//
+//				//
+//				this.attributes = {
+//					displacement: {	type: 'v3', value: [] },
+//					customColor:  {	type: 'c', value: [] }
+//				};
+//
+//				this.uniforms = {
+//					amplitude: { type: "f", value: 0.0 }
+//				};
+//
+//				var colors = attributes.customColor.value;
+//				var displacement = attributes.displacement.value;
+//
+//				var nv, v = 0;
+//
+//				for ( var f = 0; f < geometry.faces.length; f ++ ) {
+//
+//					var face = geometry.faces[ f ];
+//
+//					if ( face instanceof THREE.Face3 ) {
+//						nv = 3;
+//					} else {
+//						nv = 4;
+//					}
+//
+//					var h = 0.15 * Math.random();
+//					var s = 0.5 + 0.5 * Math.random();
+//					var l = 0.5 + 0.5 * Math.random();
+//
+//					var d = 10 * ( 0.5 - Math.random() );
+//
+//					var x = 52 * ( 0.5 - Math.random() );
+//					var y = 52 * ( 0.5 - Math.random() );
+//					var z = 52 * ( 0.5 - Math.random() );
+//
+//					for ( var i = 0; i < nv; i ++ ) {
+//
+//						colors[ v ] = new THREE.Color();
+//						displacement[ v ] = new THREE.Vector3();
+//
+//						colors[ v ].setHSL( h, s, l );
+//						colors[ v ].convertGammaToLinear();
+//
+//						displacement[ v ].set( x, y, z );
+//
+//						v += 1;
+//					}
+//				}
+//
+//				var material = new THREE.ShaderMaterial({
+//					uniforms: 	uniforms,
+//					attributes:     attributes,
+//					vertexShader: 	document.getElementById( 'vertexshader' ).textContent,
+//					fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+//					shading: 	THREE.FlatShading,
+//					side: 		THREE.DoubleSide
+//				});
+//				mesh.material = material;
+
+				scene.add(mesh);
+
+//				var spotLight = new THREE.SpotLight( 0xffffff, .75 );
+//				spotLight.castShadow = true;
+//				spotLight.shadowMapWidth = 1024;
+//				spotLight.shadowMapHeight = 1024;
+//				spotLight.position.set( 0, 0, 0 );
+//				scene.add( spotLight );
+
+				var spotLight = new THREE.SpotLight( 0xffffff );
+				spotLight.position.set( 500, 3000, 500 );
+				spotLight.castShadow = true;
+				spotLight.shadowMapWidth = 1024;
+				spotLight.shadowMapHeight = 1024;
+				spotLight.shadowCameraNear = 500;
+				spotLight.shadowCameraFar = 4000;
+				spotLight.shadowCameraFov = 30;
+				scene.add( spotLight );
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setClearColor( 0x050505, 1 );
+				renderer.setSize( WIDTH, HEIGHT );
+
+				var container = document.getElementById( 'container' );
+				container.appendChild( renderer.domElement );
+
+				stats = new Stats();
+				container.appendChild( stats.domElement );
+
+				//
+				window.addEventListener( 'resize', onWindowResize, false );
+
+				animate();
+			});
+
+
+
+//			geometry.dynamic = true;
+//			geometry.center();
+
+//			mesh = new THREE.Mesh( geometry, shaderMaterial );
+//			mesh.rotation.set( 0.5, 0.5, 0 );
+
+
+
+		}
+
+		function onWindowResize() {
+
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+
+		function animate() {
+
+			requestAnimationFrame( animate );
+
+			render();
+			stats.update();
+		}
+
+		function render() {
+
+			var time = Date.now() * 0.001;
+
+			//uniforms.amplitude.value = 0.125 * Math.sin( time * 0.5 );
+
+			controls.update();
+			renderer.render( scene, camera );
+		}
+
+	</script>
+</body>
+</html>

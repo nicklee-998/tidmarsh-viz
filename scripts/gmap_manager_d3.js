@@ -209,7 +209,8 @@ MapManager.prototype.initVGraph = function(devlist)
 		// 如果没有经纬度的设备，不处理
 		if(sManager.devices[i].lat == 0 && sManager.devices[i].lng == 0)
 			continue;
-					
+
+		console.log("[" + devlist[i].lat + ", " + devlist[i].lng + "]");
 		var pnt = this.LatlngToScreen(devlist[i].lat, devlist[i].lng);
 		this._vertices.push([pnt.x, pnt.y]);
 		// poisson dict -
