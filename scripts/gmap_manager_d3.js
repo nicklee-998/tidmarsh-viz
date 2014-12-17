@@ -210,7 +210,7 @@ MapManager.prototype.initVGraph = function(devlist)
 		if(sManager.devices[i].lat == 0 && sManager.devices[i].lng == 0)
 			continue;
 
-		console.log("[" + devlist[i].lat + ", " + devlist[i].lng + "]");
+		//console.log("[" + devlist[i].lat + ", " + devlist[i].lng + "]");
 		var pnt = this.LatlngToScreen(devlist[i].lat, devlist[i].lng);
 		this._vertices.push([pnt.x, pnt.y]);
 		// poisson dict -
@@ -978,6 +978,7 @@ MapManager.prototype.LatlngToScreen = function(lat, lng)
 //----------------------------------------------
 MapManager.prototype._poissonDiscSampler = function()
 {
+	console.log(this._queueSize);
 	while(this._queueSize) {
 		var i = Math.random() * this._queueSize | 0;
 		var s = this._queue[i];

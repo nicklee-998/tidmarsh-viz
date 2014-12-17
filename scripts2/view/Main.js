@@ -6,8 +6,11 @@ var container, scene, renderer, camera, controls, sw, sh;
 var ground, groundWid, groundHei, groundZero;
 var stats;
 
-var weather = null, wManager;
+var weather = null, weatherManager;
 var network, chainManager;
+
+// FOR TEST
+var _sensorIdx = 0;
 
 $(document).ready(function() {
 
@@ -25,7 +28,42 @@ function onGmapInit()
 {
 	jQuery.unsubscribe(GMAP_INIT, onGmapInit);
 
-	network.createDevices();
+	jQuery.subscribe(SERVER_SUMMARY_COMPLETE, onServerSummary);
+	jQuery.subscribe(SERVER_DEVICE_INFO_COMPLETE, onDeviceInfoComplete);
+	jQuery.subscribe(SERVER_INIT_COMPLETE, onServerInitCompelte);
+	chainManager = new ChainManager("http://chain-api.media.mit.edu/devices/?site_id=7");
+	chainManager.init();
+}
+
+function onServerSummary(e, i)
+{
+	//_counterTotal = i.totalCount;
+	//
+	//_counterInterval = setInterval(function() {
+	//	var number = (_counterIdx / _counterTotal) * 100;
+	//	_counter.countUpTo(Math.round(number));
+	//}, 800);
+}
+
+function onDeviceInfoComplete(e, i)
+{
+	network.createDevice(i);
+
+	//_counterIdx++;
+}
+
+function onServerInitCompelte()
+{
+	jQuery.unsubscribe(SERVER_SUMMARY_COMPLETE, onServerSummary);
+	jQuery.unsubscribe(SERVER_DEVICE_INFO_COMPLETE, onDeviceInfoComplete);
+	jQuery.unsubscribe(SERVER_INIT_COMPLETE, onServerInitCompelte);
+
+	network.createFakeDevices();
+	network.createVoronoi();
+
+	// stop update opening loader
+	//clearInterval(_counterInterval);
+	//_counter.countUpTo(99);
 }
 
 function init3d()
@@ -137,4 +175,57 @@ function render()
 {
 	renderer.render(scene, camera);
 	controls.update();
+}
+
+function processMessage(did, sid, value)
+{
+	network.updateVoronoi(did, sid, value);
+}
+
+/////////////////////////////////////////////
+// JUST FOR TEST
+/////////////////////////////////////////////
+function onKeyboardDown()
+{
+	// 返回键退出
+	if(d3.event.keyCode == 66) 	// B:
+	{
+		simulateIncomingData();
+	}
+	else if(d3.event.keyCode == 67) 	// C:
+	{
+
+	}
+	else if(d3.event.keyCode == 68) 	// D:
+	{
+
+	}
+	else if(d3.event.keyCode == 69)         // E:
+	{
+
+	}
+	else if(d3.event.keyCode == 73)	// I:
+	{
+
+	}
+}
+d3.select("body").on("keydown", onKeyboardDown);
+
+function simulateIncomingData()
+{
+	// 模拟incoming message
+	var sarr = ["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage"];
+	var sid = sarr[_sensorIdx];
+	var conf = getConfigBySensor(sid);
+	var v = getRandomArbitrary(conf.min, conf.max);
+
+	var iiidx = getRandomInt(0, chainManager.devices.length);
+	var devtitle = chainManager.devices[iiidx].title;
+
+	processMessage(devtitle, sid, v);
+
+	_sensorIdx++;
+	if(_sensorIdx == sarr.length) {
+		_sensorIdx = 0;
+	}
 }
