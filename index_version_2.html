@@ -4,11 +4,22 @@
 	<meta charset="UTF-8">
 	<title>Tidmarsh Living Observatory - Viz(3d)</title>
 	<link rel="stylesheet" type="text/css" href="scripts2/css/main.css" />
+	<link rel="stylesheet" type="text/css" href="scripts2/css/slider_bar_date.css" />
+	<link rel="stylesheet" type="text/css" href="css/datepicker.css"/>
 </head>
 
 <body>
 <div id="playground"></div>
 <div id="map-canvas"></div>
+<!-- Float on the Page -->
+<div id='bar'>
+	<div id="bar_line"></div>
+	<div id='slider'></div>
+	<input id='slider_date' readonly></input>
+	<div id="slider_left_frame"></div>
+	<div id="slider_right_frame"></div>
+</div>
+<div id="datepicker"></div>
 
 <script src="./libs/three.min.js"></script>
 <script src="./libs/d3.js"></script>
@@ -28,6 +39,8 @@
 <script src="./scripts2/global/GraphConfig.js"></script>
 <script src="./scripts2/data/ChainManager.js"></script>
 <script src="./scripts2/data/DataFactory.js"></script>
+<script src="./scripts2/controllers/UiSliderBar.js"></script>
+<script src="./scripts2/global/SiteConfig.js"></script>
 
 <script>
 	// From d3-threeD.js

@@ -47,6 +47,10 @@ var GHOST_STATE_WANDER = 'WANDER';
 var GHOST_STATE_DISABLE = 'DISABLE';
 
 
+
+var global_data_window = 300;
+
+
 /***********************************
  * Rollup unit
  ***********************************/

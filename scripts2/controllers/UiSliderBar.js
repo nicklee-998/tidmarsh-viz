@@ -59,6 +59,7 @@ function initSliderBar()
 	slider.addEventListener('mousedown', startSlide, false);
 }
 
+// 为了从日历选择
 function onSelectDate(date)
 {
 	console.log(date.toString());
@@ -73,7 +74,7 @@ function onSelectDate(date)
 		strYear = exDateTime.substring(6, 10);
 		strMonth = exDateTime.substring(0, 2);
 		strDate = exDateTime.substring(3, 5);
-
+		
 		//console.log(strYear + ", " + strMonth + ", " + strDate);
 		
 		// UPDATE DATE RANGE
@@ -123,7 +124,8 @@ function moveSlide(event)
 
 	if(set_perc >= 0 && set_perc <= 1) {
 		updateSliderInfo(event.clientX, set_perc);
-		updateVGraphBySlider();
+		updateNetworkNode();
+		//updateVGraphBySlider();
 	} else if(set_perc < 0) {
 		updateSliderInfo(bar.offsetLeft + bar_line.offsetLeft, 0);
 	} else {
@@ -154,16 +156,16 @@ function updateSliderInfo(mousex, perc)
 	slider_curr_date.style.left = (mousex - bar.offsetLeft - 65) + 'px';
 }
 
-function updateVGraphBySlider()
-{
-	var arr = new Array();
-	for(var i = 0; i < sManager.devices.length; i++)
-	{
-		var dat = sManager.fetchData(sManager.devices[i].title, selectSensor, sliderCurrent);
-		if(dat != null) {
-			var obj = {did:dat.did, sid:dat.sid, property:"color", value:dat.value};
-			arr.push(obj);
-		}
-	}
-	gMap.updateVGraph(arr);
-}
+//function updateVGraphBySlider()
+//{
+//	var arr = new Array();
+//	for(var i = 0; i < sManager.devices.length; i++)
+//	{
+//		var dat = sManager.fetchData(sManager.devices[i].title, selectSensor, sliderCurrent);
+//		if(dat != null) {
+//			var obj = {did:dat.did, sid:dat.sid, property:"color", value:dat.value};
+//			arr.push(obj);
+//		}
+//	}
+//	gMap.updateVGraph(arr);
+//}

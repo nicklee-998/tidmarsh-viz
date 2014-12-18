@@ -315,17 +315,58 @@ ChainManager.prototype._startSensorDataChain = function()
 	//console.log("4. startSensorDataChain2: " + this._loadIdx);
 	var self = this;
 
-	// a hacker way, not offical method to get date...
+	// TODO: a hacker way, not offical method to get date...
 	var ststr = (this._start.getTime() - this._start.getTimezoneOffset() * 60000).toString();
 	var edstr = (this._end.getTime() - this._end.getTimezoneOffset() * 60000).toString();
-	ststr = ststr.substr(0, 10);
-	edstr = edstr.substr(0, 10);
-	var url = this._sensor.dataHistory + '&timestamp__gte=' + ststr + '&timestamp__lt=' + edstr;
+	var short_ststr = ststr.substr(0, 10);
+	var short_edstr = edstr.substr(0, 10);
+	var url = this._sensor.dataHistory + '&timestamp__gte=' + short_ststr + '&timestamp__lt=' + short_edstr;
 
 	$.getJSON(url, function(dat) {
-		for(var i = dat["data"].length-1; i >= 0; i--) {
-			self._dFactory.addData(self._device.title, self._sensor.title, dat["data"][i]);
+		// --------------------------------------------
+		//  将接收到的server数据转化为固定的时间间隔
+		//  每个时间间隔采用平均值计算
+		//  没有数据的统一采用-999来表示
+		// --------------------------------------------
+		var amount, count, avg;
+		var idx = 0;
+		var exflg = false;
+		var stpnter = new Date(self._start.getTime());
+		var edpnter = new Date(self._start.getTime());
+
+		while(!exflg) {
+			stpnter.setTime(edpnter.getTime());
+			edpnter.setSeconds(edpnter.getSeconds() + global_data_window);
+			//console.log(stpnter.toTimeString() + ", " + edpnter.toTimeString());
+			if(edpnter > self._end) {
+				exflg = true;
+			} else {
+				amount = 0;
+				count = 0;
+				avg = -999;
+				// 判断这个数据是不是在目前的窗口内
+				for(var i = idx; i < dat["data"].length; i++) {
+					var tmpd = new Date(dat["data"][i].timestamp);
+					if(tmpd > stpnter && tmpd <= edpnter) {
+						amount += dat["data"][i].value;
+						count++;
+					} else {
+						if(count != 0) {
+							avg = amount / count;
+						}
+						break;
+					}
+					idx++;
+				}
+
+				self._dFactory.addData(self._device.title, self._sensor.title, {timestamp: stpnter.toUTCString(), value: avg});
+			}
 		}
+
+		//for(var i = dat["data"].length-1; i >= 0; i--) {
+		//	console.log(self._start + ", " + self._end);
+		//	self._dFactory.addData(self._device.title, self._sensor.title, dat["data"][i]);
+		//}
 
 		self._sensor.dataPrev = dat["_links"]["previous"]["href"];
 		self._loadIdx++;

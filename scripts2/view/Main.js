@@ -9,10 +9,25 @@ var stats;
 var weather = null, weatherManager;
 var network, chainManager;
 
+// data history
+var selectSensor;
+
 // FOR TEST
 var _sensorIdx = 0;
 
 $(document).ready(function() {
+
+	// INIT UI
+	initSliderBar();
+	// date picker
+	//$("#datepicker").datepicker({
+	//	inline: true,
+	//	showOtherMonths: true,
+	//	dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+	//	onSelect: function(date) {
+	//		onSelectDate(date);
+	//	}
+	//});
 
 	// INIT 3D
 	init3d();
@@ -183,6 +198,69 @@ function processMessage(did, sid, value)
 }
 
 /////////////////////////////////////////////
+// GET SENSOR HISTORY DATA
+/////////////////////////////////////////////
+function getDevicesDataBySensorMenu()
+{
+	var arr = new Array();
+	for(var i = 0; i < chainManager.devices.length; i++) {
+		arr.push(chainManager.devices[i].title);
+	}
+
+	jQuery.subscribe(SERVER_DEVICE_LIST_START, onDeviceData);
+	jQuery.subscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
+	chainManager.fetchMultiDevicesByDate(arr, [selectSensor],
+		{year:sliderYear, month:sliderMonth, day:sliderDay, hour:0, minu:0, sec:0},
+		{year:sliderYear, month:sliderMonth, day:sliderDay, hour:23, minu:59, sec:59});
+}
+
+function onDeviceData(e, i)
+{
+	if(e.type == SERVER_DEVICE_LIST_START) {
+		// 开始载入数据集
+		jQuery.unsubscribe(SERVER_DEVICE_LIST_START, onDeviceData);
+		console.log("开始载入数据集!");
+
+		// 隐藏菜单
+		//if($('#bar').css('visibility') != 'hidden') {
+		//	$('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
+		//		$('#bar').css('visibility', 'hidden');
+		//	});
+		//}
+		// 隐藏日历
+		//showCal(false);
+		//showUIMenu(false);
+		//showLoading(true);
+	} else if(e.type == SERVER_DEVICE_LIST_COMPLETE) {
+		jQuery.unsubscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
+		console.log("数据集载入完毕!");
+
+		// 显示菜单, 默认载入中午
+		updateSliderInfo(bar.offsetLeft + bar_line.offsetLeft + bar_line.offsetWidth/2, 0.5);
+		updateNetworkNode();
+
+		//$('#bar').css('visibility', 'visible');
+		//$('#bar').css('bottom', '-100px');
+		//$('#bar').animate({bottom:'75px'}, 'slow', 'swing');
+		// 显示日历
+		//showCal(true);
+		//showUIMenu(true);
+		//showLoading(false);
+	}
+}
+
+function updateNetworkNode()
+{
+	for(var i = 0; i < chainManager.devices.length; i++)
+	{
+		var dat = chainManager.fetchData(chainManager.devices[i].title, selectSensor, sliderCurrent);
+		if(dat != null) {
+			network.updateVoronoi(dat.did, dat.sid, dat.value);
+		}
+	}
+}
+
+/////////////////////////////////////////////
 // JUST FOR TEST
 /////////////////////////////////////////////
 function onKeyboardDown()
@@ -192,15 +270,36 @@ function onKeyboardDown()
 	{
 		simulateIncomingData();
 	}
+	else if(d3.event.keyCode == 81) 	// Q:
+	{
+		selectSensor = 'sht_temperature';
+		onSelectDate("10/22/2014");
+	}
+	else if(d3.event.keyCode == 87) 	// W:
+	{
+		selectSensor = 'illuminance';
+		onSelectDate("10/22/2014");
+	}
+	else if(d3.event.keyCode == 69) 	// E:
+	{
+		selectSensor = 'bmp_pressure';
+		onSelectDate("10/22/2014");
+	}
+	else if(d3.event.keyCode == 82) 	// R:
+	{
+		selectSensor = 'sht_humidity';
+		onSelectDate("10/22/2014");
+	}
+	else if(d3.event.keyCode == 84) 	// T:
+	{
+		selectSensor = 'battery_voltage';
+		onSelectDate("10/22/2014");
+	}
 	else if(d3.event.keyCode == 67) 	// C:
 	{
 
 	}
 	else if(d3.event.keyCode == 68) 	// D:
-	{
-
-	}
-	else if(d3.event.keyCode == 69)         // E:
 	{
 
 	}

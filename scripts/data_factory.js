@@ -45,15 +45,17 @@ DataFactory.prototype.findData = function(did, sid, date)
 	
 	if(valist == null)
 		return null;
-	
+
+	//console.log(valist.length);
 	var vobj = null;
 	for(var i = valist.length-1; i >= 0; i--) {
 		var dat = valist[i];
 		var st = new Date(dat.timestamp);
 		var ed = new Date(dat.timestamp);
 		// TODO: Should put the time range into config file.
-		st.setSeconds(st.getSeconds() - 150);
-		ed.setSeconds(ed.getSeconds() + 150);
+		//st.setSeconds(st.getSeconds() - 150);
+		//ed.setSeconds(ed.getSeconds() + 150);
+		ed.setSeconds(ed.getSeconds() + global_data_window);
 		
 		if(date > st && date < ed) {
 			vobj = {did:did, sid:sid, value:dat.value};

@@ -16,7 +16,8 @@ DataFactory.prototype.addData = function(did, sid, dobj)
 		set = {did:did, sid:sid, datas:new Array()};
 		this.dataset.push(set);
 	}
-	set.datas.unshift(dobj);
+	//set.datas.unshift(dobj);
+	set.datas.push(dobj);
 }
 
 DataFactory.prototype.getDatas = function(did, sid)
@@ -45,15 +46,15 @@ DataFactory.prototype.findData = function(did, sid, date)
 	
 	if(valist == null)
 		return null;
-	
+
 	var vobj = null;
 	for(var i = valist.length-1; i >= 0; i--) {
 		var dat = valist[i];
 		var st = new Date(dat.timestamp);
 		var ed = new Date(dat.timestamp);
 		// TODO: Should put the time range into config file.
-		st.setSeconds(st.getSeconds() - 150);
-		ed.setSeconds(ed.getSeconds() + 150);
+		//st.setSeconds(st.getSeconds() - 150);
+		ed.setSeconds(ed.getSeconds() + global_data_window);
 		
 		if(date > st && date < ed) {
 			vobj = {did:did, sid:sid, value:dat.value};

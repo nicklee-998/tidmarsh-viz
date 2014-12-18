@@ -676,14 +676,20 @@ MapManager.prototype.updateVGraph = function(objs)
 
 	this._vgpath
 		.style("fill", function(d, i) {
+			var pid = d3.select(this).attr("id");
+			if(pid.indexOf("fake") != -1 || pid.indexOf("ghost") != -1) {
+				return d3.select(this).style("fill");
+			}
+
 			for(var j = 0; j < objs.length; j++) {
 				var obj = objs[j];
 				if(d3.select(this).attr("id") == obj.did) {
 					//console.log('###: ' + obj.did + " - " + obj.value);
 					var fobj = self._genColorByValue(obj.did, obj.sid, obj.value);
 					self._verticeInfos[i].style.color = fobj.value;
+					//objs.splice(j, 1);
 					return fobj.value;
-				} 
+				}
 			}
 			//console.log('============');
 			return d3.select(this).style("fill");
@@ -691,14 +697,23 @@ MapManager.prototype.updateVGraph = function(objs)
 
 	this._vginfo.selectAll("text")
 		.text(function(d, i) {
+			var pid = d3.select(this).attr("name");
+			if(pid.indexOf("fake") != -1 || pid.indexOf("ghost") != -1) {
+				return d3.select(this).text();
+			}
+
 			for(var i = 0; i < objs.length; i++) {
 				var obj = objs[i];
 				if(d3.select(this).attr("name") == obj.did) {
-					return obj.value;
+					if(obj.value == -999) {
+						return "";
+					} else {
+						return obj.value.toFixed(2);
+					}
 				}
 			}
 			return d3.select(this).text();
-		});	
+		});
 }
 
 // -----------------------------------------------------------------------------------------
@@ -978,7 +993,6 @@ MapManager.prototype.LatlngToScreen = function(lat, lng)
 //----------------------------------------------
 MapManager.prototype._poissonDiscSampler = function()
 {
-	console.log(this._queueSize);
 	while(this._queueSize) {
 		var i = Math.random() * this._queueSize | 0;
 		var s = this._queue[i];

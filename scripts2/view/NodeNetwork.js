@@ -211,9 +211,7 @@ NodeNetwork.prototype.createVoronoi = function()
 			mesh.translateZ( groundZero);
 			mesh.translateX( - theCenter.x);
 			mesh.translateY( - theCenter.y);
-			if(device.type == "blank") {
-				mesh.visible = false;
-			}
+			mesh.visible = false;
 			scene.add(mesh);
 
 			// 将cell加入到device的信息中
@@ -226,21 +224,27 @@ NodeNetwork.prototype.createVoronoi = function()
 
 NodeNetwork.prototype.updateVoronoi = function(did, sid, value)
 {
-	var mobj = this.getMeshConf(sid, value);
 	var device = this.getDeviceById(did);
-
 	if(device != null && device.id != "blank" && device.cell) {
+		if(value != -999) {
+			var mobj = this.getMeshConf(sid, value);
 
-		// change color
-		var clr = "0x" + String(mobj.color).substr(1);
-		device.cell.material.color.setHex(clr);
-		device.cell.material.ambient.setHex(clr);
-		device.cell.material.emissive.setHex(clr);
+			// change color
+			var clr = "0x" + String(mobj.color).substr(1);
+			device.cell.material.color.setHex(clr);
+			device.cell.material.ambient.setHex(clr);
+			device.cell.material.emissive.setHex(clr);
 
-		// change height
-		//device.cell.scale.z = mobj.height;
-		TweenMax.to(device.cell.scale, 0.5, {z:mobj.height, ease:Elastic.easeOut});
+			// change height
+			//device.cell.scale.z = mobj.height;
+			device.cell.visible = true;
+			TweenMax.to(device.cell.scale, 0.5, {z:mobj.height, ease:Elastic.easeOut});
+
+		} else {
+			device.cell.visible = false;
+		}
 	}
+
 }
 
 NodeNetwork.prototype.getDeviceByPoint = function(point)
