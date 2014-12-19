@@ -368,7 +368,6 @@ TODO: If you're reading this, you may wish to improve this example by
 
 	/* TEXTURE WIDTH FOR SIMULATION */
 	var WIDTH = hash || 32;
-
 	var BIRDS = WIDTH * WIDTH;
 
 	// Custom Geometry - using 3 triangles each. No UVs, no normals currently.
@@ -391,9 +390,7 @@ TODO: If you're reading this, you may wish to improve this example by
 
 		// this.addAttribute( 'normal', new Float32Array( points * 3 ), 3 );
 
-
 		var v = 0;
-
 		function verts_push() {
 			for (var i=0; i < arguments.length; i++) {
 				vertices.array[v++] = arguments[i];
@@ -407,8 +404,8 @@ TODO: If you're reading this, you may wish to improve this example by
 
 			// Body
 			verts_push(
-				0, -0, -200,
-				0, 4, -100,
+				0, -0, -20,
+				0, 4, -20,
 				0, 0, 30
 			);
 
@@ -475,12 +472,12 @@ TODO: If you're reading this, you may wish to improve this example by
 	}
 
 
-	var options = '';
-	for (i=1; i<7; i++) {
-		var j = Math.pow(2, i);
-		options += '<a href="#" onclick="return change(' + j + ')">' + (j * j) + '</a> ';
-	}
-	document.getElementById('options').innerHTML = options;
+//	var options = '';
+//	for (i=1; i<7; i++) {
+//		var j = Math.pow(2, i);
+//		options += '<a href="#" onclick="return change(' + j + ')">' + (j * j) + '</a> ';
+//	}
+//	document.getElementById('options').innerHTML = options;
 
 	var last = performance.now();
 
@@ -503,7 +500,7 @@ TODO: If you're reading this, you may wish to improve this example by
 		renderer = new THREE.WebGLRenderer();
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		//renderer.setClearColor( scene.fog.color, 1 );
-		renderer.setClearColor(0x00ff00, 1);
+		renderer.setClearColor(0xffffff, 1);
 		container.appendChild( renderer.domElement );
 
 		simulator = new SimulationRenderer(WIDTH, renderer);

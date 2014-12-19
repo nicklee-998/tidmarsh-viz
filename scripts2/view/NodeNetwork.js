@@ -71,7 +71,7 @@ function NodeNetwork()
 NodeNetwork.prototype.createDevice = function(dInfo)
 {
 	var box = new THREE.Mesh(
-		new THREE.CylinderGeometry(10, 10, 6, 10),
+		new THREE.CylinderGeometry(10, 10, 12, 10),
 		new THREE.MeshPhongMaterial({color: 0x666666, shading: THREE.FlatShading})
 		//new THREE.MeshPhongMaterial({ambient: 0x555555, color: 0x555555, specular: 0xffffff, shininess: 50, shading: THREE.SmoothShading})
 	);

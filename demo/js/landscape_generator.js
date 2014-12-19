@@ -74,7 +74,7 @@ function createMap(){
 
 	createGlobalLight();
 	createBaseGround();
-	//createSnow();
+	createSnow();
 	createFloor( 1000, 1000, 50, 5, 5, 0xffffff );
 	createObjects();
 }
@@ -84,7 +84,7 @@ function createObjects() {
 	animatedObjects = 0;
 	//Define if a tile is a mountain tile or not
 	mountainMaps = [];
-	var maxMountainTiles = 0;
+	var maxMountainTiles = 05
 	for( var i = 0; i < tilePerSide; i++ ){
 		var row = [];
 		for( var j = 0; j < tilePerSide; j++ ){
@@ -102,7 +102,7 @@ function createObjects() {
 		mountainMaps.push( row );
 	}
 
-	var maxTreePerTile = 10;
+	var maxTreePerTile = 5;
 	mountains = [];
 	trees = [];
 
@@ -110,7 +110,8 @@ function createObjects() {
 	for( var i = 0; i < tilePerSide; i++ ){
 		for( var j = 0; j < tilePerSide; j++ ){
 			if( mountainMaps[i][j] ){
-				createMountainTile( i, j, 250 * Math.random() + 100, 4, 4, 0xb6f6f7 );
+				console.log("createMountainTile");
+				createMountainTile( i, j, 250 * Math.random() + 100, 4, 4, 0xff0000 );
 			} else {
 				var maxTreeOnThisTile = Math.round( maxTreePerTile * Math.random() );
 				for( var k = 0; k < maxTreeOnThisTile; k++ ){
@@ -175,11 +176,14 @@ function createBaseGround(){
 }
 
 function createFloor( width, depth, height, xSeg, ySeg, color ){
-	//var mountain = new THREE.Mesh( new THREE.PlaneGeometry( width, depth, xSeg, ySeg ), new THREE.MeshLambertMaterial( { color: color, shading: THREE.FlatShading } ) );
 	var mountain = new THREE.Mesh(
-		new THREE.PlaneGeometry(width, depth, xSeg, ySeg),
-		new THREE.MeshBasicMaterial({color: 0x00ff00})
+		new THREE.PlaneGeometry( width, depth, xSeg, ySeg ),
+		new THREE.MeshLambertMaterial( { color: color, shading: THREE.FlatShading } )
 	);
+	//var mountain = new THREE.Mesh(
+	//	new THREE.PlaneGeometry(width, depth, xSeg, ySeg),
+	//	new THREE.MeshBasicMaterial({color: 0x00ff00})
+	//);
 	mountain.castShadow = true;
 	mountain.receiveShadow = true;
 

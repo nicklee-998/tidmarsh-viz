@@ -15,6 +15,7 @@ function WeatherEffect()
 	this._snowParticuleParticules;
 	this._snowParticuleEmitter;
 	this._snowLights = null;
+	this._mountain = null;
 	// Rain
 	this._rainParticuleParticules;
 	this._rainParticuleEmitter;
@@ -289,13 +290,17 @@ WeatherEffect.prototype._snow = function()
 		this._snowParticuleEmitter.sortParticles = true;
 		this._snowParticuleEmitter.position.z = 0;
 		scene.add(this._snowParticuleEmitter);
+
+		// floor
+		this._createSnowFloor( groundWid, groundHei, 15, 5, 5, 0xffffff );
+
 	} else {
 		for(var i = 0; i < this._snowLights.length; i++) {
 			scene.add(this._snowLights[i]);
 		}
 		scene.add(this._snowParticuleEmitter);
+		scene.add(this._mountain);
 	}
-
 }
 
 WeatherEffect.prototype._clearSnow = function()
@@ -304,6 +309,54 @@ WeatherEffect.prototype._clearSnow = function()
 		scene.remove(this._snowLights[i]);
 	}
 	scene.remove(this._snowParticuleEmitter);
+	scene.remove(this._mountain);
+}
+
+WeatherEffect.prototype._createSnowFloor = function( width, depth, height, xSeg, ySeg, color )
+{
+	this._mountain = new THREE.Mesh(
+		new THREE.PlaneGeometry( width, depth, xSeg, ySeg ),
+		new THREE.MeshLambertMaterial( {
+			color: color,
+			transparent: true,
+			opacity: 1,
+			shading: THREE.FlatShading } )
+	);
+
+	this._mountain.castShadow = true;
+	this._mountain.receiveShadow = true;
+
+	for( var i = 0; i < this._mountain.geometry.vertices.length; i++ ){
+		this._mountain.geometry.vertices[ i ].z = Math.floor( ( Math.random() * height ) );
+	}
+
+	var currentRow = 0;
+	for( var i = 0; i < this._mountain.geometry.vertices.length; i++ ) {
+		if( i != 0 && i % ( xSeg + 1 ) == 0 ) {
+			currentRow++;
+		}
+		//First row
+		if( i <= xSeg ){
+			this._mountain.geometry.vertices[i].z = 0;
+		}
+		//left row
+		if( i % xSeg == currentRow ){
+			this._mountain.geometry.vertices[i].z = 0;
+		}
+		//right row
+		if( i % ( xSeg + 1 ) == 0 ){
+			this._mountain.geometry.vertices[i].z = 0;
+		}
+		//Last row
+		if( i >= this._mountain.geometry.vertices.length-1 - ySeg) {
+			this._mountain.geometry.vertices[i].z = 0;
+		}
+	}
+
+	this._mountain.rotation.x = degToRad( -90 );
+	this._mountain.position.y = groundZero + 4;
+
+	scene.add( this._mountain );
 }
 
 WeatherEffect.prototype._animateSnow = function()

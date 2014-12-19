@@ -13,11 +13,13 @@
 function SimulationRenderer(WIDTH, renderer) {
 
 	WIDTH = WIDTH || 4;
+
 	var camera = new THREE.Camera();
 	camera.position.z = 1;
 
 	// Init RTT stuff
 	gl = renderer.getContext();
+	console.log(gl);
 
 	if( !gl.getExtension( "OES_texture_float" )) {
 		alert( "No OES_texture_float support for float textures!" );
@@ -168,7 +170,6 @@ function SimulationRenderer(WIDTH, renderer) {
 		}
 
 		flipflop = !flipflop;
-
 	}
 
 	function generatePositionTexture() {

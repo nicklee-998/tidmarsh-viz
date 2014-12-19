@@ -6,11 +6,16 @@ var container, scene, renderer, camera, controls, sw, sh;
 var ground, groundWid, groundHei, groundZero;
 var stats;
 
-var weather = null, weatherManager;
-var network, chainManager;
+var weather = null;
+var network, chainManager, apManager;
 
 // data history
 var selectSensor;
+
+// --------------------------
+//  Birds
+// --------------------------
+var clock = new THREE.Clock();
 
 // FOR TEST
 var _sensorIdx = 0;
@@ -138,7 +143,7 @@ function init3d()
 			forecast = forecast.toLowerCase();
 			if(forecast.indexOf("clear") != -1 || forecast.indexOf("sunny") != -1) {
 				weather.create("SUNNY");
-			} else if(forecast.indexOf("cloudy") != -1) {
+			} else if(forecast.indexOf("cloud") != -1) {
 				weather.create("CLOUDY");
 			} else if(forecast.indexOf("rain") != -1) {
 				weather.create("RAIN");
@@ -147,6 +152,10 @@ function init3d()
 			} else if(forecast.indexOf("fog") != -1) {
 				weather.create("FOG");
 			}
+
+			// Animal & Planet effect
+			apManager = new APManager();
+			apManager.init();
 
 			animate();
 		},
@@ -170,33 +179,33 @@ function createWorld()
 	createBaseGround();
 }
 
-function createGloalLight()
-{
-	for( var i = 0; i < 4; i++ ) {
-
-		var spotLight = new THREE.SpotLight( 0xffffff, .75 );
-		spotLight.castShadow = true;
-		spotLight.shadowMapWidth = 1024;
-		spotLight.shadowMapHeight = 1024;
-
-		if( i == 0 ) {
-			spotLight.position.set( -750, 700, 750 );
-			scene.add( spotLight );
-		}
-		else if( i == 1 ) {
-			spotLight.position.set( -750, 700, -750 );
-			scene.add( spotLight );
-		}
-		else if( i == 2 ) {
-			spotLight.position.set( 750, 700, -750 );
-			scene.add( spotLight );
-		}
-		else if( i == 3 ) {
-			spotLight.position.set( 750, 700, 750 );
-			scene.add( spotLight );
-		}
-	}
-}
+//function createGloalLight()
+//{
+//	for( var i = 0; i < 4; i++ ) {
+//
+//		var spotLight = new THREE.SpotLight( 0xffffff, .75 );
+//		spotLight.castShadow = true;
+//		spotLight.shadowMapWidth = 1024;
+//		spotLight.shadowMapHeight = 1024;
+//
+//		if( i == 0 ) {
+//			spotLight.position.set( -750, 700, 750 );
+//			scene.add( spotLight );
+//		}
+//		else if( i == 1 ) {
+//			spotLight.position.set( -750, 700, -750 );
+//			scene.add( spotLight );
+//		}
+//		else if( i == 2 ) {
+//			spotLight.position.set( 750, 700, -750 );
+//			scene.add( spotLight );
+//		}
+//		else if( i == 3 ) {
+//			spotLight.position.set( 750, 700, 750 );
+//			scene.add( spotLight );
+//		}
+//	}
+//}
 
 function createBaseGround()
 {
@@ -226,6 +235,8 @@ function animate()
 
 	if(weather != null)
 		weather.update();
+	if(apManager != null)
+		apManager.update();
 }
 
 function render()
