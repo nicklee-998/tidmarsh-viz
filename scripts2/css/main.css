@@ -9,3 +9,38 @@ html, body {
 #stats #fps { background: transparent !important }
 #stats #fps #fpsText { color: #aaa !important }
 #stats #fps #fpsGraph { color: #0040ff }
+
+/***********************************************
+ * Weather
+ ***********************************************/
+#weather{
+	position:fixed;
+	padding: 6px;
+	bottom: 0px;
+	left:0px;
+	right:0px;
+	height:15px;
+	color: white;
+	font-size:14px;
+	font-family:Roboto;
+	background-color: rgba(0,0,0,1);
+	visibility:visible;
+}
+#heading{
+	position:absolute;
+	text-align:left;
+}
+#forecast{
+	position:absolute;
+	left:10px;
+	float:right;
+	text-align:left;
+	/*word-wrap:break-word;*/
+}
+#sunrise_sunset{
+	position:absolute;
+	right:10px;
+	float:right;
+	text-align:right;
+	word-wrap:break-word;
+}

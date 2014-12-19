@@ -31,12 +31,8 @@ $(document).ready(function() {
 
 	// INIT 3D
 	init3d();
-	// Init weather effect
-	weather = new WeatherEffect(scene, groundZero);
-	weather.create("SNOW");
 
 	jQuery.subscribe(GMAP_INIT, onGmapInit);
-	network = new NodeNetwork();
 });
 
 function onGmapInit()
@@ -90,6 +86,8 @@ function init3d()
 	// Setup the renderer
 	renderer = new THREE.WebGLRenderer({ antialias:true });
 	renderer.setSize(sw, sh);
+	renderer.setClearColor( 0x202428, 1 );
+	renderer.sortObjects = true;
 
 	// Setup the camera
 	camera = new THREE.PerspectiveCamera(45, sw / sh, 0.1, 10000);
@@ -98,7 +96,7 @@ function init3d()
 
 	// Setup the scene
 	scene = new THREE.Scene();
-	scene.fog = new THREE.Fog(0x111111, 4000, 4000);
+	scene.fog = new THREE.Fog(0xffffff, 4000, 4000);
 	scene.add(camera);
 	container.append(renderer.domElement);
 
@@ -119,13 +117,56 @@ function init3d()
 		camera.updateProjectionMatrix();
 	});
 
-	createWorld()
-	animate();
+	createWorld();
+	network = new NodeNetwork();
+
+	// Init weather effect
+	$.ajax({
+		url : "http://api.wunderground.com/api/21a533a6637f54ab/geolookup/forecast/astronomy/q/MA/manomet.json",
+		dataType : "jsonp",
+		success : function(parsed_json) {
+			var forecast = parsed_json['forecast']['txt_forecast']['forecastday'][0]['fcttext'];
+			var sunrise_hour = parsed_json['moon_phase']['sunrise']['hour'];
+			var sunrise_minute = parsed_json['moon_phase']['sunrise']['minute'];
+			var sunset_hour = parsed_json['moon_phase']['sunset']['hour'];
+			var sunset_minute = parsed_json['moon_phase']['sunset']['minute'];
+			var sunrise_sunset = "sunrise: " + sunrise_hour + ":" + sunrise_minute + " / sunset: " + sunset_hour + ":" + sunset_minute;
+			$("#forecast").text("Today in bog weather : " + forecast + " | " + sunrise_sunset);
+			//$("#sunrise_sunset").text(sunrise_sunset);
+
+			weather = new WeatherEffect();
+			forecast = forecast.toLowerCase();
+			if(forecast.indexOf("clear") != -1 || forecast.indexOf("sunny") != -1) {
+				weather.create("SUNNY");
+			} else if(forecast.indexOf("cloudy") != -1) {
+				weather.create("CLOUDY");
+			} else if(forecast.indexOf("rain") != -1) {
+				weather.create("RAIN");
+			} else if(forecast.indexOf("snow") != -1) {
+				weather.create("SNOW");
+			} else if(forecast.indexOf("fog") != -1) {
+				weather.create("FOG");
+			}
+
+			animate();
+		},
+		error : function(xhr, textStatus, error) {
+			console.log(xhr.statusText);
+			console.log(textStatus);
+			console.log(error);
+			$("#weather").remove();
+
+			// 默认天气
+			weather = new WeatherEffect();
+			weather.create("CLOUDY");
+			animate();
+		}
+	});
 }
 
 function createWorld()
 {
-	createGloalLight();
+	//createGloalLight();
 	createBaseGround();
 }
 
@@ -162,11 +203,12 @@ function createBaseGround()
 	groundWid = 1000;
 	groundHei = 1000;
 
-	var texture = THREE.ImageUtils.loadTexture("./res/textures/map_area.jpg", THREE.UVMapping);
+	var texture = THREE.ImageUtils.loadTexture("./res/textures/map_area.jpg");
 	ground = new THREE.Mesh(
-		new THREE.PlaneGeometry(groundWid, groundHei, 200, 200),
-		new THREE.MeshBasicMaterial({map: texture})
+		new THREE.PlaneBufferGeometry(groundWid, groundHei, 200, 200),
+		new THREE.MeshPhongMaterial({map: texture, shading: THREE.SmoothShading, side: THREE.DoubleSide})
 	);
+
 	ground.position.y = -200;
 	ground.rotation.x = -Math.PI / 2;
 	groundZero = ground.position.y - 3;
@@ -306,6 +348,26 @@ function onKeyboardDown()
 	else if(d3.event.keyCode == 73)	// I:
 	{
 
+	}
+	else if(d3.event.keyCode == 49)	// 1
+	{
+		weather.create("SUNNY");
+	}
+	else if(d3.event.keyCode == 50)	// 2
+	{
+		weather.create("CLOUDY");
+	}
+	else if(d3.event.keyCode == 51)	// 3
+	{
+		weather.create("RAIN");
+	}
+	else if(d3.event.keyCode == 52)	// 4
+	{
+		weather.create("SNOW");
+	}
+	else if(d3.event.keyCode == 53)	// 5
+	{
+		weather.create("FOG");
 	}
 }
 d3.select("body").on("keydown", onKeyboardDown);

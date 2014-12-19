@@ -72,7 +72,8 @@ NodeNetwork.prototype.createDevice = function(dInfo)
 {
 	var box = new THREE.Mesh(
 		new THREE.CylinderGeometry(10, 10, 6, 10),
-		new THREE.MeshLambertMaterial({color: 0x0d304d, shading: THREE.FlatShading})
+		new THREE.MeshPhongMaterial({color: 0x666666, shading: THREE.FlatShading})
+		//new THREE.MeshPhongMaterial({ambient: 0x555555, color: 0x555555, specular: 0xffffff, shininess: 50, shading: THREE.SmoothShading})
 	);
 	var pnt = this.latLngToCube(dInfo.lat, dInfo.lng);
 	box.position.x = pnt.x * groundWid - groundWid / 2;
@@ -92,27 +93,26 @@ NodeNetwork.prototype.createFakeDevices = function()
 	// ---------------------------------
 	//  补充一些blank node
 	// ---------------------------------
-	if(this.devices.length < 100) {
+	if(this.devices.length < 200) {
 		var len = this.devices.length;
 		var i = 0;
 		var over = false;
-		while(i < (100 - len) && !over) {
+		while(i < (200 - len) && !over) {
 			var s = this._poissonDiscSampler();
 			if(s) {
 				var px = s[0];
 				var py = s[1];
 
 				var box = new THREE.Mesh(
-					new THREE.CylinderGeometry(10, 10, 6, 10),
-					new THREE.MeshLambertMaterial({color: 0x666666, shading: THREE.FlatShading})
+					new THREE.CylinderGeometry(10, 10, 6, 5),
+					new THREE.MeshLambertMaterial({color: 0xeb9494, wireframe: true, shading: THREE.FlatShading})
 				);
 				box.position.x = px - groundWid / 2;
 				box.position.z = py - groundHei / 2;
 				box.position.y = groundZero + 8;
 				this.devices.push({type: "blank", mesh: box, id: "blank"+i, cell: null});
-				scene.add(box);
-
-				this.growAnimation(box);
+				//scene.add(box);
+				//this.growAnimation(box);
 
 				i++;
 			} else {
@@ -185,10 +185,10 @@ NodeNetwork.prototype.createVoronoi = function()
 		}
 		path = $d3g.transformSVGPath(thePaths[i]);
 		color = theColors[i];
-		material = new THREE.MeshLambertMaterial({
+		material = new THREE.MeshBasicMaterial({
 			color: color,
-			ambient: color,
-			emissive: color,
+			//ambient: color,
+			//emissive: color,
 			transparent: true,
 			side: THREE.DoubleSide,
 			opacity: op
@@ -232,8 +232,8 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value)
 			// change color
 			var clr = "0x" + String(mobj.color).substr(1);
 			device.cell.material.color.setHex(clr);
-			device.cell.material.ambient.setHex(clr);
-			device.cell.material.emissive.setHex(clr);
+			//device.cell.material.ambient.setHex(clr);
+			//device.cell.material.emissive.setHex(clr);
 
 			// change height
 			//device.cell.scale.z = mobj.height;
