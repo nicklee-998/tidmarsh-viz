@@ -75,7 +75,6 @@ ChainManager.prototype.init = function()
 
 		// TODO: That's use a little trick way to get all sensors from on request, maybe change the way in future...
 		var url = self.websiteUrl + '&limit=' + dat.totalCount + '&offset=0';
-
 		$.getJSON(url, function(dat2) {
 			self.devices = dat2._links.items;
 
@@ -104,6 +103,7 @@ ChainManager.prototype._getAllDeviceInfo = function()
 		device.room = dat.room;
 		device.floor = dat.floor;
 		device.description = dat.description;
+		device.websocket = dat["_links"]["ch:websocketStream"]["href"];
 		if(dat.geoLocation) {
 			device.lat = dat.geoLocation.latitude;
 			device.lng = dat.geoLocation.longitude;

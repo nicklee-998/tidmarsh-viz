@@ -13,34 +13,69 @@ html, body {
 /***********************************************
  * Weather
  ***********************************************/
-#weather{
-	position:fixed;
+#weather {
+	position: fixed;
 	padding: 6px;
 	bottom: 0px;
-	left:0px;
-	right:0px;
-	height:15px;
+	left: 0px;
+	right: 0px;
+	height: 15px;
 	color: white;
-	font-size:14px;
-	font-family:Roboto;
+	font-size: 14px;
+	font-family: Roboto;
 	background-color: rgba(0,0,0,1);
-	visibility:visible;
+	visibility: visible;
 }
-#heading{
+#heading {
 	position:absolute;
 	text-align:left;
 }
-#forecast{
+#forecast {
 	position:absolute;
 	left:10px;
 	float:right;
 	text-align:left;
 	/*word-wrap:break-word;*/
 }
-#sunrise_sunset{
+#sunrise_sunset {
 	position:absolute;
 	right:10px;
 	float:right;
 	text-align:right;
 	word-wrap:break-word;
+}
+
+/***********************************************
+ * Node info panel
+ ***********************************************/
+#info-panel {
+	position: absolute;
+	width: 800px;
+	height: 600px;
+	background-color: #FFFFFF;
+	border: solid 5px;
+	border-color: #FFFFFF;
+}
+
+.info-label {
+	position: absolute;
+	left: 20px;
+}
+
+.info-audio {
+	position: absolute;
+	width: 82%;
+	height: 150px;
+	left: 20px;
+	border: solid;
+	border-color: #000000;
+}
+
+.info-wind {
+	position: absolute;
+	width: 82%;
+	height: 150px;
+	left: 20px;
+	border: solid;
+	border-color: #000000;
 }

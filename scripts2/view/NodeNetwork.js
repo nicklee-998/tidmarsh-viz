@@ -79,6 +79,7 @@ NodeNetwork.prototype.createDevice = function(dInfo)
 	box.position.x = pnt.x * groundWid - groundWid / 2;
 	box.position.z = pnt.y * groundHei - groundHei / 2;
 	box.position.y = groundZero + 8;
+	box.name = dInfo.title;
 	this.devices.push({type: "cell", mesh: box, id: dInfo.title, cell: null});
 	scene.add(box);
 

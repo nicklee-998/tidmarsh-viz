@@ -6,8 +6,13 @@ var container, scene, renderer, camera, controls, sw, sh;
 var ground, groundWid, groundHei, groundZero;
 var stats;
 
+//
 var weather = null;
 var network, chainManager, apManager;
+
+// interactive
+var raycaster;
+var mouse = new THREE.Vector2(), INTERSECTED;
 
 // data history
 var selectSensor;
@@ -105,6 +110,11 @@ function init3d()
 	scene.add(camera);
 	container.append(renderer.domElement);
 
+	// Raycaster for MOUSEEVENT
+	raycaster = new THREE.Raycaster();
+	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+
 	// STATS
 	stats = new Stats();
 	container.append(stats.domElement);
@@ -125,7 +135,15 @@ function init3d()
 	createWorld();
 	network = new NodeNetwork();
 
-	// Init weather effect
+	// for test
+	//weather = new WeatherEffect();
+	//weather.create("CLOUDY");
+	//
+	//animate();
+
+	// -------------------------------------
+	//  Init weather effect
+	// -------------------------------------
 	$.ajax({
 		url : "http://api.wunderground.com/api/21a533a6637f54ab/geolookup/forecast/astronomy/q/MA/manomet.json",
 		dataType : "jsonp",
@@ -145,7 +163,7 @@ function init3d()
 				weather.create("SUNNY");
 			} else if(forecast.indexOf("cloud") != -1) {
 				weather.create("CLOUDY");
-			} else if(forecast.indexOf("rain") != -1) {
+			} else if(forecast.indexOf("rain") != -1 || forecast.indexOf("shower") != -1) {
 				weather.create("RAIN");
 			} else if(forecast.indexOf("snow") != -1) {
 				weather.create("SNOW");
@@ -177,6 +195,7 @@ function createWorld()
 {
 	//createGloalLight();
 	createBaseGround();
+	initInfoPanel();
 }
 
 //function createGloalLight()
@@ -239,8 +258,69 @@ function animate()
 		apManager.update();
 }
 
+function onDocumentMouseMove( event )
+{
+	event.preventDefault();
+
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+}
+
+function onDocumentMouseUp( event )
+{
+	event.preventDefault();
+
+	if(INTERSECTED) {
+		if(INTERSECTED.name == "info_sign_plane") {
+			onInfoSignPlaneClick(INTERSECTED);
+		} else {
+			onUiNodeInfoClick(INTERSECTED);
+		}
+	}
+}
+
 function render()
 {
+	// find intersections
+	var vector = new THREE.Vector3(mouse.x, mouse.y, 1).unproject(camera);
+	raycaster.set(camera.position, vector.sub(camera.position).normalize());
+	var intersects = raycaster.intersectObjects(scene.children);
+	if(intersects.length > 0) {
+		if(chainManager != null && chainManager.getDeviceByName(intersects[0].object.name) != null) {
+			if(INTERSECTED != intersects[0].object) {
+				if(INTERSECTED) {
+					INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+				}
+				INTERSECTED = intersects[0].object;
+				INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+				INTERSECTED.material.emissive.setHex(0xff0000);
+			}
+		} else if(chainManager != null && intersects[0].object.name == "info_sign_plane") {
+			if(INTERSECTED != intersects[0].object) {
+				if(INTERSECTED) {
+					INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+				}
+				INTERSECTED = intersects[0].object;
+				INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+				INTERSECTED.material.emissive.setHex(0xff0000);
+			}
+		} else {
+			if ( INTERSECTED ) {
+				INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+			}
+			INTERSECTED = null;
+		}
+	} else {
+		if ( INTERSECTED ) {
+			INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+		}
+		INTERSECTED = null;
+	}
+
+	//if(infoSignPlane != null) {
+	//	infoSignPlane.lookAt(camera.position);
+	//}
+
 	renderer.render(scene, camera);
 	controls.update();
 }

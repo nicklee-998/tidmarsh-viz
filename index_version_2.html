@@ -11,6 +11,8 @@
 <body>
 <div id="playground"></div>
 <div id="map-canvas"></div>
+<!-- Node information panel -->
+<div id="info-panel"></div>
 <!-- Float on the Page -->
 <div id='bar'>
 	<div id="bar_line"></div>
@@ -35,6 +37,8 @@
 <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/easing/EasePack.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+<script src="http://jqueryrotate.googlecode.com/svn/trunk/jQueryRotate.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
 
 <script src="./scripts2/view/Main.js"></script>
 <script src="./scripts2/view/WeatherEffect.js"></script>
@@ -42,11 +46,12 @@
 <script src="./scripts2/global/CustomEvent.js"></script>
 <script src="./scripts2/global/Utils.js"></script>
 <script src="./scripts2/global/GraphConfig.js"></script>
+<script src="./scripts2/global/SiteConfig.js"></script>
 <script src="./scripts2/data/ChainManager.js"></script>
 <script src="./scripts2/data/DataFactory.js"></script>
 <script src="./scripts2/data/APManager.js"></script>
 <script src="./scripts2/controllers/UiSliderBar.js"></script>
-<script src="./scripts2/global/SiteConfig.js"></script>
+<script src="./scripts2/controllers/UiNodeInfoPanel.js"></script>
 
 <script>
 	// From d3-threeD.js
