@@ -39,15 +39,16 @@ $(document).ready(function() {
 	//	}
 	//});
 
-	// INIT 3D
-	init3d();
-
 	jQuery.subscribe(GMAP_INIT, onGmapInit);
+	network = new NodeNetwork();
 });
 
 function onGmapInit()
 {
 	jQuery.unsubscribe(GMAP_INIT, onGmapInit);
+
+	// INIT 3D
+	init3d();
 
 	jQuery.subscribe(SERVER_SUMMARY_COMPLETE, onServerSummary);
 	jQuery.subscribe(SERVER_DEVICE_INFO_COMPLETE, onDeviceInfoComplete);
@@ -133,7 +134,6 @@ function init3d()
 	});
 
 	createWorld();
-	network = new NodeNetwork();
 
 	// for test
 	//weather = new WeatherEffect();
@@ -193,43 +193,14 @@ function init3d()
 
 function createWorld()
 {
-	//createGloalLight();
 	createBaseGround();
 	initInfoPanel();
 }
 
-//function createGloalLight()
-//{
-//	for( var i = 0; i < 4; i++ ) {
-//
-//		var spotLight = new THREE.SpotLight( 0xffffff, .75 );
-//		spotLight.castShadow = true;
-//		spotLight.shadowMapWidth = 1024;
-//		spotLight.shadowMapHeight = 1024;
-//
-//		if( i == 0 ) {
-//			spotLight.position.set( -750, 700, 750 );
-//			scene.add( spotLight );
-//		}
-//		else if( i == 1 ) {
-//			spotLight.position.set( -750, 700, -750 );
-//			scene.add( spotLight );
-//		}
-//		else if( i == 2 ) {
-//			spotLight.position.set( 750, 700, -750 );
-//			scene.add( spotLight );
-//		}
-//		else if( i == 3 ) {
-//			spotLight.position.set( 750, 700, 750 );
-//			scene.add( spotLight );
-//		}
-//	}
-//}
-
 function createBaseGround()
 {
-	groundWid = 1000;
-	groundHei = 1000;
+	groundWid = network.boundWid;
+	groundHei = network.boundHei;
 
 	var texture = THREE.ImageUtils.loadTexture("./res/textures/map_area.jpg");
 	ground = new THREE.Mesh(

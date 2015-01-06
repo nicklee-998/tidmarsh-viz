@@ -11,28 +11,28 @@ function NodeNetwork()
 	this.vertices;
 
 	// Poisson disc
-	// TODO: radius should put in config file
-	var radius = groundWid / 15;
 	this._k = 30;
-	this._radius2 = radius * radius;
-	this._R = 3 * this._radius2;
-	this._cellSize = radius * Math.SQRT1_2;
-	this._gridWidth = Math.ceil(groundWid / this._cellSize);
-	this._gridHeight = Math.ceil(groundHei / this._cellSize);
-	this._grid = new Array(this._gridWidth * this._gridHeight);
+	this._radius2;
+	this._R;
+	this._cellSize;
+	this._gridWidth;
+	this._gridHeight;
+	this._grid;
 	this._queue = [];
 	this._queueSize = 0;
 	this._sampleSize = 0;
 
 	// Google Map
-	var swBound = new google.maps.LatLng(41.903035641078105, -70.57352721691132);
-	var neBound = new google.maps.LatLng(41.90461270194438, -70.57067334651946);
-	var center = new google.maps.LatLng(41.9038421429, -70.5725723505);
-
+	// Todo: the area lat and lng info should be in Config file
+	var swBound = new google.maps.LatLng(41.90321131560879, -70.57343602180481);
+	var neBound = new google.maps.LatLng(41.904696544596135, -70.57117223739624);
 	this.bounds = new google.maps.LatLngBounds(swBound, neBound);
+
+	var center = this.bounds.getCenter();
 
 	var canvas = document.getElementById('map-canvas');
 	var mapOptions = {
+		// Todo: maybe we should put zoom in config file, cause it affects the wid and hei of the ground.
 		zoom: 19,
 		center: center,
 		disableDefaultUI: true,
@@ -55,6 +55,18 @@ function NodeNetwork()
 
 		self.boundWid = self.pntNE.x - self.pntSW.x;
 		self.boundHei = self.pntSW.y - self.pntNE.y;
+
+		console.log("Area width and height: " + self.boundWid + ", " + self.boundHei);
+
+		// Init Poisson disc Params
+		// TODO: radius should put in config file
+		var radius = self.boundWid / 15;
+		self._radius2 = radius * radius;
+		self._R = 3 * self._radius2;
+		self._cellSize = radius * Math.SQRT1_2;
+		self._gridWidth = Math.ceil(self.boundWid / self._cellSize);
+		self._gridHeight = Math.ceil(self.boundHei / self._cellSize);
+		self._grid = new Array(self._gridWidth * self._gridHeight);
 
 		// ---------------------------
 		//  SEND GMAP INIT EVENT
