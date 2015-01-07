@@ -8,7 +8,7 @@ var infoDeviceWebsocket;
 function initInfoPanel()
 {
 	// ui
-	$('#info-panel').css("width", 800);
+	$('#info-panel').css("width", 900);
 	$('#info-panel').css("height", 600);
 	$('#info-panel').css("left", (window.innerWidth / 2 - $('#info-panel').width() / 2));
 	$('#info-panel').css("top", (window.innerHeight / 2 - $('#info-panel').height() / 2));
@@ -16,7 +16,7 @@ function initInfoPanel()
 
 	// pic
 	$("#info-panel").html(
-		"<img id='imageholder' src=' + ../../images/sensors/0x816E.JPG'>" +
+		"<img id='imageholder' src=' + ../../images/sensors/0x816E.jpg'>" +
 		"<div id='lastest_data'>" +
 			"<label id='info_title' />" +
 			"<label id='info_pressure' /> " +
@@ -106,8 +106,8 @@ function initInfoPanel()
 	$("#info_btn_exit").css("position", "absolute");
 	$("#info_btn_exit").css("width", 45);
 	$("#info_btn_exit").css("height", 45);
-	$("#info_btn_exit").css("right", -$("#info_btn_exit").height() / 2 - 5);
-	$("#info_btn_exit").css("top", -$("#info_btn_exit").width() / 2 - 5);
+	$("#info_btn_exit").css("right", -$("#info_btn_exit").height() / 2 - 7);
+	$("#info_btn_exit").css("top", -$("#info_btn_exit").width() / 2 - 10);
 	$("#info_btn_exit").css("border", "none");
 	$("#info_btn_exit").css("checked", "false");
 	$("#info_btn_exit").css("background-color", "rgba(255, 255, 255, 0)");
@@ -132,29 +132,30 @@ function initInfoPanel()
 	scene.add(infoSignPlane);
 
 	// Device title
-	var x = document.createElement( "canvas" );
-	x.width = 150;
-	x.height = 60;
-	infoSignTitle = x.getContext( "2d" );
-	infoSignTitle.shadowColor = "#000";
-	infoSignTitle.shadowBlur = 7;
-	infoSignTitle.fillStyle = "white";
-	infoSignTitle.font = "18pt arial bold";
-	infoSignTitle.fillText( "0x816F", 25, 60 );
+	infoSignTitle = document.createElement( "canvas" );
+	infoSignTitle.width = 150;
+	infoSignTitle.height = 60;
+	var context = infoSignTitle.getContext( "2d" );
+	context.shadowColor = "#000";
+	context.shadowBlur = 7;
+	context.fillStyle = "white";
+	context.font = "18pt arial bold";
+	context.fillText( "0x0000", 25, 60 );
 
-	var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(x), transparent: true});
+	var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(infoSignTitle), transparent: true});
 	xm.map.needsUpdate = true;
 
 	var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
 	mesh.position.y = 30;
 	mesh.position.z = 5;
+	mesh.name = "signmesh";
 	infoSignPlane.add(mesh);
 }
 
 function loadNodeInfo(device)
 {
 	// Loading image...
-	var imgpath = " + ../../images/sensors/" + device.title + ".JPG";
+	var imgpath = " + ../../images/sensors/" + device.title + ".jpg";
 	$("#imageholder").attr("src", imgpath);
 
 	// Loading lastest info...
@@ -214,8 +215,13 @@ function onUiNodeInfoMouseOver(node)
 function onUiNodeInfoClick(node)
 {
 	// Show devict title on sign
-	infoSignTitle.clearRect(0, 0, 150, 60);
-	infoSignTitle.fillText( node.name, 25, 60 );
+	var context = infoSignTitle.getContext( "2d" );
+	context.clearRect(0, 0, 150, 60);
+	context.fillText( node.name, 25, 60 );
+
+	var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(infoSignTitle), transparent: true});
+	xm.map.needsUpdate = true;
+	infoSignPlane.getObjectByName("signmesh").material = xm;
 
 	// Show the device information
 	infoSignPlane.position.x = node.position.x - 3;
