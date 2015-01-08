@@ -144,3 +144,13 @@ html, body {
 	border: solid;
 	border-color: #000000;
 }
+
+/***********************************************
+ * Date Picker
+ ***********************************************/
+#datepicker {
+	position: absolute;
+	left: 35px;
+	top: 140px;
+	visibility: hidden;
+}

@@ -54,6 +54,40 @@ WeatherEffect.prototype.create = function(type)
 	}
 }
 
+WeatherEffect.prototype.showWeather = function()
+{
+	this._clearSunny();
+
+	if(this._mode == "SNOW") {
+		this._snow();
+	} else if(this._mode == "RAIN") {
+		this._rain();
+	} else if(this._mode == "SUNNY") {
+		this._sunny();
+	} else if(this._mode == "CLOUDY") {
+		this._cloudy();
+	} else if(this._mode == "FOG") {
+		this._fog();
+	}
+}
+
+WeatherEffect.prototype.hideWeather = function()
+{
+	if(this._mode == "SNOW") {
+		this._clearSnow();
+	} else if(this._mode == "RAIN") {
+		this._clearRain();
+	} else if(this._mode == "SUNNY") {
+		this._clearSunny();
+	} else if(this._mode == "CLOUDY") {
+		this._clearCloudy();
+	} else if(this._mode == "FOG") {
+		this._clearFog();
+	}
+
+	this._sunny();
+}
+
 // ------------------------------------------------
 //  WEATHER - SUNNY
 // ------------------------------------------------
@@ -327,7 +361,7 @@ WeatherEffect.prototype._createSnowFloor = function( width, depth, height, xSeg,
 	this._mountain.receiveShadow = true;
 
 	for( var i = 0; i < this._mountain.geometry.vertices.length; i++ ){
-		this._mountain.geometry.vertices[ i ].z = Math.floor( ( Math.random() * height ) );
+		this._mountain.geometry.vertices[i].z = Math.floor( ( Math.random() * height ) );
 	}
 
 	var currentRow = 0;

@@ -20,6 +20,7 @@ var mouse = new THREE.Vector2(), INTERSECTED;
 
 // data history
 var selectSensor;
+var sensorTable = ["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage"];
 
 // --------------------------
 //  Birds
@@ -50,14 +51,15 @@ $(document).ready(function() {
 	intro = new UiIntroPage();
 
 	// date picker
-	//$("#datepicker").datepicker({
-	//	inline: true,
-	//	showOtherMonths: true,
-	//	dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-	//	onSelect: function(date) {
-	//		onSelectDate(date);
-	//	}
-	//});
+	$("#datepicker").datepicker({
+		inline: true,
+		showOtherMonths: true,
+		dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+		onSelect: function(date) {
+			//console.log(date);
+			onSelectDate(date);
+		}
+	});
 
 	jQuery.subscribe(GMAP_INIT, onGmapInit);
 	network = new NodeNetwork();
@@ -158,6 +160,8 @@ function init3d()
 		intro.rearrange();
 		// info panel
 		rearrangeInfoPanel();
+		// drag bar
+		rearrangeDragbar();
 	});
 
 	createWorld();
@@ -186,7 +190,7 @@ function init3d()
 
 			weather = new WeatherEffect();
 			forecast = forecast.toLowerCase();
-			if(forecast.indexOf("clear") != -1 || forecast.indexOf("sunny") != -1) {
+			if(forecast.indexOf("clear") != -1 || forecast.indexOf("sunny") != -1 || forecast.indexOf("sunshine") != -1) {
 				weather.create("SUNNY");
 			} else if(forecast.indexOf("cloud") != -1) {
 				weather.create("CLOUDY");
@@ -196,6 +200,9 @@ function init3d()
 				weather.create("RAIN");
 			} else if(forecast.indexOf("fog") != -1) {
 				weather.create("FOG");
+			} else {
+				// Default weather is sunny
+				weather.create("SUNNY");
 			}
 
 			// Animal & Planet effect
@@ -333,7 +340,7 @@ function processMessage(did, sid, value)
 /////////////////////////////////////////////
 function onMainMenuClick(e)
 {
-	console.log(e.type);
+	//console.log(e.type);
 
 	if(e.type == MAINMENU_BEGIN) {
 		// 显示介绍文字
@@ -343,11 +350,27 @@ function onMainMenuClick(e)
 		hideInfoPanel();
 		// 显示动物和植物
 		apManager.showAP();
+		// 显示天气
+		weather.showWeather();
+		// CLEAR GRAPH
+		network.clearVoronoi(true);
+		// Hide cal and dragbar
+		showCal(false);
+		showDragBar(false);
+
 	} else if(e.type == MAINMENU_NETWORK) {
 		// 隐藏介绍文字
 		intro.hideIntroPage();
 		// 显示动物和植物
 		apManager.showAP();
+		// 显示天气
+		weather.showWeather();
+		// CLEAR GRAPH
+		network.clearVoronoi(true);
+		// Hide cal and dragbar
+		showCal(false);
+		showDragBar(false);
+
 	} else if(e.type == MAINMENU_DATA) {
 		// 隐藏介绍文字
 		intro.hideIntroPage();
@@ -356,12 +379,145 @@ function onMainMenuClick(e)
 		hideInfoPanel();
 		// 隐藏动物和植物
 		apManager.hideAP();
+		// 关闭天气
+		weather.hideWeather();
+		// CLEAR GRAPH
+		network.clearVoronoi(true);
+		// Choose Sensor
+		selectSensor = sensorTable[mainmenu.currSelectSensorIdx];
+
+	} else if(e.type == MAINMENU_DATA_TEMPRATURE) {
+		// CLEAR GRAPH
+		network.clearVoronoi(true);
+		// Choose Sensor
+		selectSensor = "sht_temperature";
+		// Recolor dragbar
+		recolorDragbar("#E77227");
+
+		if(mainmenu.currSelectRH == 0) {
+			// realtime
+		} else {
+			// history
+			getDevicesDataBySensorMenu();
+		}
+
+	} else if(e.type == MAINMENU_DATA_ILLUMINANCE) {
+		// CLEAR GRAPH
+		network.clearVoronoi(true);
+		// Choose Sensor
+		selectSensor = "illuminance";
+		// Recolor dragbar
+		recolorDragbar("#D81E00");
+
+		if(mainmenu.currSelectRH == 0) {
+			// realtime
+		} else {
+			// history
+			getDevicesDataBySensorMenu();
+		}
+
+	} else if(e.type == MAINMENU_DATA_PRESSURE) {
+		// CLEAR GRAPH
+		network.clearVoronoi(true);
+		// Choose Sensor
+		selectSensor = "bmp_pressure";
+		// Recolor dragbar
+		recolorDragbar("#E445BA");
+
+		if(mainmenu.currSelectRH == 0) {
+			// realtime
+		} else {
+			// history
+			getDevicesDataBySensorMenu();
+		}
+
+	} else if(e.type == MAINMENU_DATA_HUMIDITY) {
+		// CLEAR GRAPH
+		network.clearVoronoi(true);
+		// Choose Sensor
+		selectSensor = "sht_humidity";
+		// Recolor dragbar
+		recolorDragbar("#3242DF");
+
+		if(mainmenu.currSelectRH == 0) {
+			// realtime
+		} else {
+			// history
+			getDevicesDataBySensorMenu();
+		}
+
+	} else if(e.type == MAINMENU_DATA_VOLTAGE) {
+		// CLEAR GRAPH
+		network.clearVoronoi(true);
+		// Choose Sensor
+		selectSensor = "battery_voltage";
+		// Recolor dragbar
+		recolorDragbar("#57C66C");
+
+		if(mainmenu.currSelectRH == 0) {
+			// realtime
+		} else {
+			// history
+			getDevicesDataBySensorMenu();
+		}
+
 	} else if(e.type == MAINMENU_DEVICE) {
 		// 隐藏介绍文字
 		intro.hideIntroPage();
 		// 隐藏指示牌和信息板
 		hideNodeSign();
 		hideInfoPanel();
+		// CLEAR GRAPH
+		network.clearVoronoi(true);
+		// Hide cal and dragbar
+		showCal(false);
+		showDragBar(false);
+
+	} else if(e.type == MAINMENU_REALTIME) {
+		// Hide cal and dragbar
+		showCal(false);
+		showDragBar(false);
+		// CLEAR GRAPH
+		network.clearVoronoi(true);
+
+	} else if(e.type == MAINMENU_HISTORY) {
+		// CLEAR GRAPH
+		network.clearVoronoi(true);
+		// history
+		getDevicesDataBySensorMenu();
+	}
+}
+
+/////////////////////////////////////////////
+// USER INTERFACE
+/////////////////////////////////////////////
+function showCal(flg)
+{
+	if(flg) {
+		var dwid = parseInt($('#datepicker').css('width'));
+		$('#datepicker').css('visibility', 'visible');
+		$('#datepicker').css('left', '-'+dwid + 'px');
+		$('#datepicker').animate({left:'35px'}, 500, 'easeOutQuint');
+	} else {
+		var dwid = parseInt($('#datepicker').css('width')) + 35;
+		if($('#datepicker').css('visibility') != 'hidden') {
+			$('#datepicker').animate({left:'-' + dwid + 'px'}, 500, 'easeOutQuint', function() {
+				$('#datepicker').css('visibility', 'hidden');
+			});
+		}
+	}
+}
+
+function showDragBar(flg)
+{
+	if(flg) {
+		$('#bar').css('visibility', 'visible');
+		$('#bar').css('bottom', '-100px');
+		$('#bar').animate({bottom:'60px'}, 'slow', 'swing');
+	} else {
+		$('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
+			$('#bar').css('visibility', 'hidden');
+		});
 	}
 }
 
@@ -370,6 +526,10 @@ function onMainMenuClick(e)
 /////////////////////////////////////////////
 function getDevicesDataBySensorMenu()
 {
+	// Hide cal and dragbar
+	showCal(false);
+	showDragBar(false);
+
 	var arr = new Array();
 	for(var i = 0; i < chainManager.devices.length; i++) {
 		arr.push(chainManager.devices[i].title);
@@ -407,11 +567,9 @@ function onDeviceData(e, i)
 		updateSliderInfo(bar.offsetLeft + bar_line.offsetLeft + bar_line.offsetWidth/2, 0.5);
 		updateNetworkNode();
 
-		//$('#bar').css('visibility', 'visible');
-		//$('#bar').css('bottom', '-100px');
-		//$('#bar').animate({bottom:'75px'}, 'slow', 'swing');
-		// 显示日历
-		//showCal(true);
+		// 显示日历和拖动条
+		showCal(true);
+		showDragBar(true);
 		//showUIMenu(true);
 		//showLoading(false);
 	}
@@ -502,7 +660,7 @@ function simulateIncomingData()
 {
 	// 模拟incoming message
 	var sarr = ["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage"];
-	var sid = sarr[_sensorIdx];
+	var sid = sarr[mainmenu.currSelectSensorIdx];
 	var conf = getConfigBySensor(sid);
 	var v = getRandomArbitrary(conf.min, conf.max);
 

@@ -26,9 +26,9 @@ function initSliderBar()
 	sliderScale = d3.scale.linear().domain([0, 1]).range([sliderStart.getTime(), sliderEnd.getTime()]);
 
 	// draw UI
-	var barHeight = 30;
+	var barHeight = 20;
 	var barLineWidth = 800;
-	var endsWidth = 70;
+	var endsWidth = 110;
 	var barWidth = endsWidth + 10 + barLineWidth + 10 + endsWidth + 10;
 
 	var strLeft = sliderYear + "/" + (sliderMonth + 1) + "/" + sliderDay + "\n" + "12 AM";
@@ -53,6 +53,7 @@ function initSliderBar()
 	$("#slider_right_frame").css('left', endsWidth + 10 + barLineWidth + 10);
 
 	$("#bar").css('width', barWidth);
+	$("#bar").css("left", window.innerWidth / 2 - barWidth / 2);
 
 	updateSliderInfo(bar.offsetLeft + bar_line.offsetLeft, 0);
 		
@@ -156,16 +157,16 @@ function updateSliderInfo(mousex, perc)
 	slider_curr_date.style.left = (mousex - bar.offsetLeft - 65) + 'px';
 }
 
-//function updateVGraphBySlider()
-//{
-//	var arr = new Array();
-//	for(var i = 0; i < sManager.devices.length; i++)
-//	{
-//		var dat = sManager.fetchData(sManager.devices[i].title, selectSensor, sliderCurrent);
-//		if(dat != null) {
-//			var obj = {did:dat.did, sid:dat.sid, property:"color", value:dat.value};
-//			arr.push(obj);
-//		}
-//	}
-//	gMap.updateVGraph(arr);
-//}
+function recolorDragbar(clr)
+{
+	//$("#slider_left_frame").css("color", clr);
+	//$("#slider_right_frame").css("color", clr);
+	$("#slider").css("background-color", clr);
+	//$("#slider_date").css("color", clr);
+}
+
+function rearrangeDragbar()
+{
+	var wid = $('#bar').width();
+	$("#bar").css("left", window.innerWidth / 2 - wid / 2);
+}

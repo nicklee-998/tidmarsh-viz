@@ -3,6 +3,11 @@
  */
 function APManager()
 {
+	// 状态
+	this._planeState = 0;       // 0 - hide, 1 - animating, 2 - grew
+	this._animalState = 0;      // 0 - hide, 1 - animating, 2 - grew
+
+
 	this._tilePerSide = 4;
 	this._tileSizeX = groundWid / this._tilePerSide;
 	this._tileSizeY = groundHei / this._tilePerSide;
@@ -64,12 +69,18 @@ APManager.prototype.init = function()
 
 APManager.prototype.showAP = function()
 {
+	this._planeState = 1;
 	this._growAnimation();
+	this._animalState = 1;
+	this._showBirds();
 }
 
 APManager.prototype.hideAP = function()
 {
+	this._planeState = 1;
 	this._hideAnimation();
+	this._animalState = 1;
+	this._hideBirds();
 }
 
 // -------------------------------------------------
@@ -125,40 +136,44 @@ APManager.prototype._createTree = function( tileX, tileZ, color )
 
 APManager.prototype._growAnimation = function()
 {
-	//for( var i = 0; i < mountains.length; i++ ) {
-	//	var m = mountains[ i ];
-	//	m.scale.z = 0;
-	//	TweenMax.to( m.scale, 2, { z: 1, delay: i * 0.25, ease:Elastic.easeOut} );
-	//}
-
+	var self = this;
 	for( var i = 0; i < this._trees.length; i++ ) {
 		var t = this._trees[ i ];
 		var goalY = groundZero;
 		t.position.y = groundZero-150;
-		t.scale.x = 0;
-		t.scale.z = 0;
+		t.scale.x = 0.0001;
+		t.scale.z = 0.0001;
 		t.visible = true;
-		TweenMax.to( t.position, 2, { y: goalY, delay: i * 0.25, ease:Elastic.easeOut} );
-		TweenMax.to( t.scale, 2, { x: 1, z: 1, delay: i * 0.25, ease:Elastic.easeOut} );
-		TweenMax.to( t.rotation, 2, { y: t.rotation.y + degToRad( 360 * Math.random() ), delay: i * 0.25} );
+		TweenMax.to( t.position, 1.7, { y: goalY, delay: i * 0.15, ease:Elastic.easeOut, onComplete: function() {
+			self._animatedObjects--;
+			if(self._animatedObjects == 0) {
+				self._planeState = 2;
+				self._animatedObjects = self._trees.length;
+			}
+		}});
+		TweenMax.to( t.scale, 1.7, { x: 1, z: 1, delay: i * 0.15, ease:Elastic.easeOut} );
+		TweenMax.to( t.rotation, 1.7, { y: t.rotation.y + degToRad( 360 * Math.random() ), delay: i * 0.15} );
 	}
 }
 
 APManager.prototype._hideAnimation = function()
 {
+	var self = this;
+
+	// Kill all the animation first
+	TweenMax.killAll();
+
 	for( var i = 0; i < this._trees.length; i++ ){
 		var t = this._trees[ i ];
-		TweenMax.to( t.position, 1.5, { y: groundZero-250, delay: i * 0.15, ease:Cubic.easeOut, onComplete: function() {
-			//console.log(t);
-			//t.visible = false;
+		TweenMax.to( t.position, 0.7, { y: groundZero-250, delay: i * 0.05, ease:Cubic.easeOut, onComplete: function() {
+			self._animatedObjects--;
+			if(self._animatedObjects == 0) {
+				self._planeState = 0;
+				self._animatedObjects = self._trees.length;
+			}
 		}});
-		TweenMax.to( t.scale, .25, { x: 0, z: 0, delay: i * 0.15, ease:Cubic.easeOut } );
+		TweenMax.to( t.scale, 0.5, { x: 0.0001, z: 0.0001, delay: i * 0.05, ease:Cubic.easeOut } );
 	}
-
-	//for( var i = 0; i < mountains.length; i++ ){
-	//	var m = mountains[ i ];
-	//	TweenMax.to( m.scale, 2, { z: 0, delay: i * 0.25 + trees.length * 0.15, onComplete: objDestroyed } );
-	//}
 }
 
 //APManager.prototype._objDestroyed = function()
@@ -200,15 +215,31 @@ APManager.prototype._initBirds = function()
 
 }
 
+APManager.prototype._showBirds = function()
+{
+	for ( var i = 0; i < this._morphs.length; i ++ ) {
+		var morph = this._morphs[ i ];
+		morph.material.opacity = 1;
+	}
+}
+
+APManager.prototype._hideBirds = function()
+{
+	for ( var i = 0; i < this._morphs.length; i ++ ) {
+		var morph = this._morphs[ i ];
+		morph.material.opacity = 0;
+		//TweenMax.to( morph.material, 700, { opacity: 0, ease:Cubic.easeOut } );
+	}
+}
+
 APManager.prototype._addMorph = function(geometry, speed, duration, x, y, z, fudgeColor)
 {
-	var material = new THREE.MeshLambertMaterial( { color: 0xffffff, morphTargets: true, vertexColors: THREE.FaceColors } );
+	var material = new THREE.MeshLambertMaterial( { color: 0xffffff, morphTargets: true, vertexColors: THREE.FaceColors} );
+	material.transparent = true;
 
 	if ( fudgeColor ) {
-
 		material.color.offsetHSL( 0, Math.random() * 0.5 - 0.25, Math.random() * 0.5 - 0.25 );
 		material.ambient = material.color;
-
 	}
 
 	var meshAnim = new THREE.MorphAnimMesh( geometry, material );

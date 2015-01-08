@@ -260,6 +260,23 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value)
 
 }
 
+NodeNetwork.prototype.clearVoronoi = function(isAnim)
+{
+	for(var i = 0; i < this.devices.length; i++) {
+		var device = this.devices[i];
+		if(device.cell == null || device.id.indexOf("blank") != -1)
+			continue;
+
+		if(isAnim) {
+			TweenMax.to(device.cell.scale, 0.2, {z:0.001, ease:Expo.easeOut, onComplete: function() {
+				device.cell.visible = false;
+			}});
+		} else {
+			device.cell.visible = false;
+		}
+	}
+}
+
 NodeNetwork.prototype.getDeviceByPoint = function(point)
 {
 	for(var i = 0; i < this.devices.length; i++) {
