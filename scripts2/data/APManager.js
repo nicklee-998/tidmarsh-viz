@@ -59,10 +59,22 @@ APManager.prototype.init = function()
 	}
 
 	this._growAnimation();
-
 	this._initBirds();
 }
 
+APManager.prototype.showAP = function()
+{
+	this._growAnimation();
+}
+
+APManager.prototype.hideAP = function()
+{
+	this._hideAnimation();
+}
+
+// -------------------------------------------------
+//  Tree Animation
+// -------------------------------------------------
 APManager.prototype._createTree = function( tileX, tileZ, color )
 {
 	var trunkHeight = Math.random() * 50 + 15;
@@ -121,15 +133,45 @@ APManager.prototype._growAnimation = function()
 
 	for( var i = 0; i < this._trees.length; i++ ) {
 		var t = this._trees[ i ];
-		var goalY = t.position.y;
+		var goalY = groundZero;
 		t.position.y = groundZero-150;
 		t.scale.x = 0;
 		t.scale.z = 0;
+		t.visible = true;
 		TweenMax.to( t.position, 2, { y: goalY, delay: i * 0.25, ease:Elastic.easeOut} );
 		TweenMax.to( t.scale, 2, { x: 1, z: 1, delay: i * 0.25, ease:Elastic.easeOut} );
 		TweenMax.to( t.rotation, 2, { y: t.rotation.y + degToRad( 360 * Math.random() ), delay: i * 0.25} );
 	}
 }
+
+APManager.prototype._hideAnimation = function()
+{
+	for( var i = 0; i < this._trees.length; i++ ){
+		var t = this._trees[ i ];
+		TweenMax.to( t.position, 1.5, { y: groundZero-250, delay: i * 0.15, ease:Cubic.easeOut, onComplete: function() {
+			//console.log(t);
+			//t.visible = false;
+		}});
+		TweenMax.to( t.scale, .25, { x: 0, z: 0, delay: i * 0.15, ease:Cubic.easeOut } );
+	}
+
+	//for( var i = 0; i < mountains.length; i++ ){
+	//	var m = mountains[ i ];
+	//	TweenMax.to( m.scale, 2, { z: 0, delay: i * 0.25 + trees.length * 0.15, onComplete: objDestroyed } );
+	//}
+}
+
+//APManager.prototype._objDestroyed = function()
+//{
+//
+//	animatedObjects--;
+//	if( animatedObjects == 0 ){
+//		for( var i = 0; i < this._trees.length; i++ ){
+//			var t = scene.getObjectById( this._trees[ i ].id );
+//			scene.remove( t );
+//		}
+//	}
+//}
 
 // -------------------------------------------------
 //  Bird Animation

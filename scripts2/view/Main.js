@@ -6,6 +6,10 @@ var container, scene, renderer, camera, controls, sw, sh;
 var ground, groundWid, groundHei, groundZero;
 var stats;
 
+// ui
+var mainmenu = null;
+var intro = null;
+
 //
 var weather = null;
 var network, chainManager, apManager;
@@ -29,6 +33,22 @@ $(document).ready(function() {
 
 	// INIT UI
 	initSliderBar();
+	// MAIN MENU
+	jQuery.subscribe(MAINMENU_BEGIN, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_NETWORK, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_DATA, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_DEVICE, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_DATA_TEMPRATURE, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_DATA_ILLUMINANCE, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_DATA_PRESSURE, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_DATA_HUMIDITY, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_DATA_VOLTAGE, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_REALTIME, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_HISTORY, onMainMenuClick);
+	mainmenu = new UiMainMenu();
+	// INTRO PAGE
+	intro = new UiIntroPage();
+
 	// date picker
 	//$("#datepicker").datepicker({
 	//	inline: true,
@@ -131,6 +151,13 @@ function init3d()
 		renderer.setSize(sw, sh);
 		camera.aspect = sw / sh;
 		camera.updateProjectionMatrix();
+
+		// ui
+		mainmenu.rearrange();
+		// intro_page
+		intro.rearrange();
+		// info panel
+		rearrangeInfoPanel();
 	});
 
 	createWorld();
@@ -163,10 +190,10 @@ function init3d()
 				weather.create("SUNNY");
 			} else if(forecast.indexOf("cloud") != -1) {
 				weather.create("CLOUDY");
-			} else if(forecast.indexOf("rain") != -1 || forecast.indexOf("shower") != -1) {
-				weather.create("RAIN");
 			} else if(forecast.indexOf("snow") != -1) {
 				weather.create("SNOW");
+			} else if(forecast.indexOf("rain") != -1 || forecast.indexOf("shower") != -1) {
+				weather.create("RAIN");
 			} else if(forecast.indexOf("fog") != -1) {
 				weather.create("FOG");
 			}
@@ -241,11 +268,11 @@ function onDocumentMouseUp( event )
 {
 	event.preventDefault();
 
-	if(INTERSECTED) {
+	if(INTERSECTED && mainmenu.currSelectIdx == 2) {
 		if(INTERSECTED.name == "info_sign_plane") {
-			onInfoSignPlaneClick(INTERSECTED);
+			showInfoPanel(INTERSECTED);
 		} else {
-			onUiNodeInfoClick(INTERSECTED);
+			showNodeSign(INTERSECTED);
 		}
 	}
 }
@@ -256,7 +283,7 @@ function render()
 	var vector = new THREE.Vector3(mouse.x, mouse.y, 1).unproject(camera);
 	raycaster.set(camera.position, vector.sub(camera.position).normalize());
 	var intersects = raycaster.intersectObjects(scene.children);
-	if(intersects.length > 0) {
+	if(intersects.length > 0 && mainmenu.currSelectIdx == 2) {
 		if(chainManager != null && chainManager.getDeviceByName(intersects[0].object.name) != null) {
 			if(INTERSECTED != intersects[0].object) {
 				if(INTERSECTED) {
@@ -299,6 +326,43 @@ function render()
 function processMessage(did, sid, value)
 {
 	network.updateVoronoi(did, sid, value);
+}
+
+/////////////////////////////////////////////
+// MAIN MENU
+/////////////////////////////////////////////
+function onMainMenuClick(e)
+{
+	console.log(e.type);
+
+	if(e.type == MAINMENU_BEGIN) {
+		// 显示介绍文字
+		intro.showIntroPage();
+		// 隐藏指示牌和信息板
+		hideNodeSign();
+		hideInfoPanel();
+		// 显示动物和植物
+		apManager.showAP();
+	} else if(e.type == MAINMENU_NETWORK) {
+		// 隐藏介绍文字
+		intro.hideIntroPage();
+		// 显示动物和植物
+		apManager.showAP();
+	} else if(e.type == MAINMENU_DATA) {
+		// 隐藏介绍文字
+		intro.hideIntroPage();
+		// 隐藏指示牌和信息板
+		hideNodeSign();
+		hideInfoPanel();
+		// 隐藏动物和植物
+		apManager.hideAP();
+	} else if(e.type == MAINMENU_DEVICE) {
+		// 隐藏介绍文字
+		intro.hideIntroPage();
+		// 隐藏指示牌和信息板
+		hideNodeSign();
+		hideInfoPanel();
+	}
 }
 
 /////////////////////////////////////////////

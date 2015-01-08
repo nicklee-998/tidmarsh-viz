@@ -8,10 +8,9 @@ var infoDeviceWebsocket;
 function initInfoPanel()
 {
 	// ui
-	$('#info-panel').css("width", 900);
-	$('#info-panel').css("height", 600);
-	$('#info-panel').css("left", (window.innerWidth / 2 - $('#info-panel').width() / 2));
-	$('#info-panel').css("top", (window.innerHeight / 2 - $('#info-panel').height() / 2));
+	//$('#info-panel').css("width", 900);
+	//$('#info-panel').css("height", 600);
+	rearrangeInfoPanel();
 	$('#info-panel').css("visibility", "hidden");
 
 	// pic
@@ -114,10 +113,7 @@ function initInfoPanel()
 	$("#info_btn_exit").css("background-size", "100% 100%");
 	$("#info_btn_exit").css("background-image", "url('+ ../../images/btn_exit.png')");
 	$("#info_btn_exit").on('click', function() {
-		$("#info-panel").css('visibility', "hidden");
-
-		// close device websocket stream
-		closeDeviceWebsocket();
+		hideInfoPanel();
 	});
 
 	// INFO SIGN PLANE
@@ -150,6 +146,96 @@ function initInfoPanel()
 	mesh.position.z = 5;
 	mesh.name = "signmesh";
 	infoSignPlane.add(mesh);
+}
+
+// -------------------------------------------------------
+//  Small Sign
+// -------------------------------------------------------
+function showNodeSign(node)
+{
+	// Show devict title on sign
+	var context = infoSignTitle.getContext( "2d" );
+	context.clearRect(0, 0, 150, 60);
+	context.fillText( node.name, 25, 60 );
+
+	var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(infoSignTitle), transparent: true});
+	xm.map.needsUpdate = true;
+	infoSignPlane.getObjectByName("signmesh").material = xm;
+
+	// Show the device information
+	infoSignPlane.position.x = node.position.x - 3;
+	infoSignPlane.position.z = node.position.z;
+	infoSignPlane.position.y = groundZero + 43 - 200;
+	infoSignPlane.visible = true;
+	infoSignPlane.userData = {title:node.name};
+
+	TweenMax.to(infoSignPlane.position, 0.7, {y:infoSignPlane.position.y + 200, ease:Elastic.easeOut});
+}
+
+function hideNodeSign()
+{
+	TweenMax.to(infoSignPlane.position, 0.4, {y:groundZero - 80, ease:Cubic.easeOut, onComplete: function() {
+		infoSignPlane.visible = false;
+	}});
+}
+
+// -------------------------------------------------------
+//  Info Panel
+// -------------------------------------------------------
+function showInfoPanel()
+{
+	var device = chainManager.getDeviceByName(infoSignPlane.userData.title);
+	if(device) {
+		clearNodeInfo();
+		loadNodeInfo(device);         // just image and title now
+		openDeviceWebsocket(device.websocket);
+		//loadNodeInfo(device);
+
+		var value = 0;
+		$("#wind_arrow").rotate({
+			bind:
+			{
+				click: function(){
+					value += 90;
+					$(this).rotate({ animateTo:value})
+				}
+			}
+		});
+
+		$('#info-panel').css("visibility", "visible");
+		$('#info-panel').css("opacity", "0");
+		$("#info-panel").animate({
+			opacity: 1
+		}, 800, "easeOutQuart", function() {
+			//console.log("Show info panel!");
+		});
+	}
+}
+
+function hideInfoPanel()
+{
+	if($("#info-panel").css("visibility") == "visible") {
+		//$("#info-panel").css('visibility', "hidden");
+		$("#info-panel").animate({
+			opacity: 0
+		}, 700, "easeOutQuart", function() {
+			$(this).css('visibility', "hidden");
+			$(this).css('opacity', 1);
+		});
+
+		// close device websocket stream
+		closeDeviceWebsocket();
+	}
+}
+
+function rearrangeInfoPanel()
+{
+	var wid = $('#info-panel').width();
+	var hei = wid * 2 / 3;
+	var whei = window.innerHeight - 115 - 20;
+	$("#info-panel").css("height", hei);
+	$("#info-panel").css("top", whei / 2 - hei / 2 + 115);
+	$("#info-panel").css("left", window.innerWidth / 2 - wid / 2);
 }
 
 function loadNodeInfo(device)
@@ -210,57 +296,6 @@ function onDeviceLastestData(e, i)
 function onUiNodeInfoMouseOver(node)
 {
 
-}
-
-function onUiNodeInfoClick(node)
-{
-	// Show devict title on sign
-	var context = infoSignTitle.getContext( "2d" );
-	context.clearRect(0, 0, 150, 60);
-	context.fillText( node.name, 25, 60 );
-
-	var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(infoSignTitle), transparent: true});
-	xm.map.needsUpdate = true;
-	infoSignPlane.getObjectByName("signmesh").material = xm;
-
-	// Show the device information
-	infoSignPlane.position.x = node.position.x - 3;
-	infoSignPlane.position.z = node.position.z;
-	infoSignPlane.position.y = infoSignPlane.position.y - 200;
-	infoSignPlane.visible = true;
-	infoSignPlane.userData = {title:node.name};
-
-	TweenMax.to(infoSignPlane.position, 0.7, {y:infoSignPlane.position.y + 200, ease:Elastic.easeOut});
-}
-
-function onInfoSignPlaneClick()
-{
-	var device = chainManager.getDeviceByName(infoSignPlane.userData.title);
-	if(device) {
-		clearNodeInfo();
-		loadNodeInfo(device);         // just image and title now
-		openDeviceWebsocket(device.websocket);
-		//loadNodeInfo(device);
-
-		var value = 0;
-		$("#wind_arrow").rotate({
-			bind:
-			{
-				click: function(){
-					value += 90;
-					$(this).rotate({ animateTo:value})
-				}
-			}
-		});
-
-		$('#info-panel').css("visibility", "visible");
-		$('#info-panel').css("opacity", "0");
-		$("#info-panel").animate({
-			opacity: 1
-		}, 800, function() {
-			//console.log("Show info panel!");
-		});
-	}
 }
 
 /////////////////////////////////////////////

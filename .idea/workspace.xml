@@ -2,42 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7d4f2cda-708d-45cd-96e4-586ac0f7b141" name="Default" comment="1. Adjust again the color of different sensors&#10;2. Fix the mouse drag &amp; click bugs&#10;3. Fix the problem of bad incoming data&#10;4. Add radio bar for select incoming sensor type&#10;5. Add loading animation&#10;6. Remove the color of package in sensor mode&#10;7. Add clock ticks to wind history graph&#10;">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/sensors/0x810A.JPG" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/sensors/0x8115.JPG" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/sensors/0x8117.JPG" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/sensors/0x812B.JPG" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/sensors/0x8168.JPG" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/sensors/0x816A.JPG" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/images/sensors/0x810A.JPG" afterPath="$PROJECT_DIR$/images/sensors/0x810A.jpg" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/images/sensors/0x8115.JPG" afterPath="$PROJECT_DIR$/images/sensors/0x8115.jpg" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/images/sensors/0x8117.JPG" afterPath="$PROJECT_DIR$/images/sensors/0x8117.jpg" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/images/sensors/0x812B.JPG" afterPath="$PROJECT_DIR$/images/sensors/0x812B.jpg" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/images/sensors/0x8168.JPG" afterPath="$PROJECT_DIR$/images/sensors/0x8168.jpg" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/images/sensors/0x816A.JPG" afterPath="$PROJECT_DIR$/images/sensors/0x816A.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8116.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8116.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8124.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8124.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8133.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8133.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8135.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8135.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x813B.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x813B.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8140.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8140.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8141.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8141.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8144.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8144.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8148.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8148.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x814B.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x814B.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x814C.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x814C.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x814F.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x814F.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8151.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8151.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8158.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8158.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x815C.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x815C.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8160.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8160.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8161.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8161.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8163.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8163.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8164.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8164.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x8167.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x8167.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x816B.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x816B.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/0x816E.jpg" afterPath="$PROJECT_DIR$/images/sensors/0x816E.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/btn_exit.png" afterPath="$PROJECT_DIR$/images/btn_exit.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts2/controllers/UiIntroPage.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts2/controllers/UiMainMenu.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/data/APManager.js" afterPath="$PROJECT_DIR$/scripts2/data/APManager.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/global/CustomEvent.js" afterPath="$PROJECT_DIR$/scripts2/global/CustomEvent.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/Main.js" afterPath="$PROJECT_DIR$/scripts2/view/Main.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/controllers/UiNodeInfoPanel.js" afterPath="$PROJECT_DIR$/scripts2/controllers/UiNodeInfoPanel.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index_version_2.html" afterPath="$PROJECT_DIR$/index_version_2.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/css/main.css" afterPath="$PROJECT_DIR$/scripts2/css/main.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="tidmarsh-viz.iws" />
@@ -64,7 +36,7 @@
             <file leaf-file-name="demo_3d_scene_02.html" pinned="false" current-in-tab="false">
               <entry file="file://$PROJECT_DIR$/demo/demo_3d_scene_02.html">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state vertical-scroll-proportion="0.0" vertical-offset="3055" max-vertical-offset="10740">
+                  <state vertical-scroll-proportion="-3.9583333" vertical-offset="3055" max-vertical-offset="10740">
                     <caret line="210" column="0" selection-start-line="209" selection-start-column="45" selection-end-line="210" selection-end-column="0" />
                     <folding />
                   </state>
@@ -81,11 +53,11 @@
                 </provider>
               </entry>
             </file>
-            <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+            <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
               <entry file="file://$PROJECT_DIR$/index.html">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state vertical-scroll-proportion="0.1945245" vertical-offset="2250" max-vertical-offset="15120">
-                    <caret line="159" column="76" selection-start-line="159" selection-start-column="76" selection-end-line="159" selection-end-column="76" />
+                  <state vertical-scroll-proportion="-13.125" vertical-offset="1995" max-vertical-offset="15120">
+                    <caret line="154" column="8" selection-start-line="154" selection-start-column="8" selection-end-line="154" selection-end-column="8" />
                     <folding />
                   </state>
                 </provider>
@@ -94,8 +66,28 @@
             <file leaf-file-name="demo_3d_birds.html" pinned="false" current-in-tab="false">
               <entry file="file://$PROJECT_DIR$/demo/demo_3d_birds.html">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state vertical-scroll-proportion="0.0" vertical-offset="6849" max-vertical-offset="10230">
+                  <state vertical-scroll-proportion="-24.625" vertical-offset="6849" max-vertical-offset="10230">
                     <caret line="496" column="8" selection-start-line="496" selection-start-column="8" selection-end-line="496" selection-end-column="8" />
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+            <file leaf-file-name="DataFactory.js" pinned="false" current-in-tab="false">
+              <entry file="file://$PROJECT_DIR$/scripts2/data/DataFactory.js">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1260">
+                    <caret line="14" column="24" selection-start-line="14" selection-start-column="24" selection-end-line="14" selection-end-column="25" />
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+            <file leaf-file-name="CustomEvent.js" pinned="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state vertical-scroll-proportion="0.73170733" vertical-offset="0" max-vertical-offset="820">
+                    <caret line="42" column="20" selection-start-line="42" selection-start-column="4" selection-end-line="42" selection-end-column="20" />
                     <folding />
                   </state>
                 </provider>
@@ -115,34 +107,64 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="index_version_2.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="index_version_2.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index_version_2.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.072378136" vertical-offset="3461" max-vertical-offset="4545">
-              <caret line="234" column="72" selection-start-line="234" selection-start-column="72" selection-end-line="234" selection-end-column="72" />
+            <state vertical-scroll-proportion="-13.125" vertical-offset="300" max-vertical-offset="4605">
+              <caret line="41" column="44" selection-start-line="41" selection-start-column="44" selection-end-line="41" selection-end-column="44" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.css" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/css/main.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="563" max-vertical-offset="1290">
-              <caret line="73" column="10" selection-start-line="73" selection-start-column="10" selection-end-line="73" selection-end-column="10" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Main.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Main.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2162" max-vertical-offset="6885">
-              <caret line="247" column="41" selection-start-line="247" selection-start-column="24" selection-end-line="247" selection-end-column="41" />
+            <state vertical-scroll-proportion="0.8927039" vertical-offset="4761" max-vertical-offset="7845">
+              <caret line="359" column="25" selection-start-line="359" selection-start-column="25" selection-end-line="359" selection-end-column="25" />
               <folding>
-                <marker date="1420506718000" expanded="true" signature="7583:7632" placeholder="{...}" />
+                <marker date="1420690108000" expanded="true" signature="8500:8549" placeholder="{...}" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ChainManager.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts2/data/ChainManager.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="975" max-vertical-offset="6735">
+              <caret line="70" column="16" selection-start-line="70" selection-start-column="16" selection-end-line="73" selection-end-column="85" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="APManager.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts2/data/APManager.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="2194" max-vertical-offset="3900">
+              <caret line="183" column="69" selection-start-line="183" selection-start-column="69" selection-end-line="183" selection-end-column="69" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="landscape_generator.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/demo/js/landscape_generator.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-10.192307" vertical-offset="1670" max-vertical-offset="5925">
+              <caret line="129" column="31" selection-start-line="129" selection-start-column="31" selection-end-line="129" selection-end-column="31" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NodeNetwork.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="5016" max-vertical-offset="5715">
+              <caret line="89" column="58" selection-start-line="89" selection-start-column="58" selection-end-line="89" selection-end-column="58" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -150,9 +172,31 @@
       <file leaf-file-name="UiNodeInfoPanel.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiNodeInfoPanel.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.6153846" vertical-offset="15" max-vertical-offset="4620">
-              <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+            <state vertical-scroll-proportion="-16.115385" vertical-offset="2221" max-vertical-offset="5145">
+              <caret line="176" column="87" selection-start-line="176" selection-start-column="74" selection-end-line="176" selection-end-column="87" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="UiSliderBar.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiSliderBar.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2640">
+              <caret line="10" column="55" selection-start-line="10" selection-start-column="55" selection-end-line="10" selection-end-column="55" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="UiIntroPage.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiIntroPage.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="15" max-vertical-offset="720">
+              <caret line="29" column="34" selection-start-line="29" selection-start-column="34" selection-end-line="29" selection-end-column="34" />
+              <folding>
+                <element signature="n#!!doc;n#UiIntroPage#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -170,8 +214,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/scripts/river_of_sensors.js" />
-        <option value="$PROJECT_DIR$/demo_sensor_river.html" />
         <option value="$PROJECT_DIR$/css/sensor_river.css" />
         <option value="$PROJECT_DIR$/css/opening_loader.coffee" />
         <option value="$PROJECT_DIR$/demo_loader.html" />
@@ -197,7 +239,6 @@
         <option value="$PROJECT_DIR$/scripts2/utils/Utils.js" />
         <option value="$PROJECT_DIR$/scripts2/global/GraphConfig.js" />
         <option value="$PROJECT_DIR$/index.html" />
-        <option value="$PROJECT_DIR$/scripts2/global/CustomEvent.js" />
         <option value="$PROJECT_DIR$/scripts/ui_slider_bar.js" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiSliderBar.js" />
         <option value="$PROJECT_DIR$/scripts2/global/SiteConfig.js" />
@@ -214,13 +255,16 @@
         <option value="$PROJECT_DIR$/scripts2/view/WeatherEffect.js" />
         <option value="$PROJECT_DIR$/demo/demo_3d_birds.html" />
         <option value="$PROJECT_DIR$/js/SimulationRenderer.js" />
-        <option value="$PROJECT_DIR$/scripts2/data/APManager.js" />
-        <option value="$PROJECT_DIR$/scripts2/css/main.css" />
         <option value="$PROJECT_DIR$/scripts2/data/ChainManager.js" />
-        <option value="$PROJECT_DIR$/index_version_2.html" />
-        <option value="$PROJECT_DIR$/scripts2/view/Main.js" />
         <option value="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" />
+        <option value="$PROJECT_DIR$/scripts2/global/CustomEvent.js" />
+        <option value="$PROJECT_DIR$/scripts2/controllers/UiMainMenu.js" />
+        <option value="$PROJECT_DIR$/index_version_2.html" />
+        <option value="$PROJECT_DIR$/scripts2/css/main.css" />
+        <option value="$PROJECT_DIR$/scripts2/controllers/UiIntroPage.js" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiNodeInfoPanel.js" />
+        <option value="$PROJECT_DIR$/scripts2/data/APManager.js" />
+        <option value="$PROJECT_DIR$/scripts2/view/Main.js" />
       </list>
     </option>
   </component>
@@ -234,7 +278,7 @@
   <component name="ProjectFrameBounds">
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="821" />
+    <option name="height" value="817" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -278,6 +322,20 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="tidmarsh-viz">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -386,18 +444,50 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scope">
-        <subPane subId="Project Files">
           <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="tidmarsh-viz">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="images" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="demo" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="demo" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -569,7 +659,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="821" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="817" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3264177" sideWeight="0.49964765" order="12" side_tool="false" content_ui="tabs" />
@@ -585,12 +675,12 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32831737" sideWeight="0.49964765" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27310345" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -618,25 +708,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/images/cal/arrow.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/demo/demo_3d_scene.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.4359351" vertical-offset="0" max-vertical-offset="4095">
-          <caret line="65" column="17" selection-start-line="65" selection-start-column="17" selection-end-line="65" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/opening_loader.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="285" max-vertical-offset="990">
-          <caret line="56" column="27" selection-start-line="56" selection-start-column="27" selection-end-line="56" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/css/gmap_style.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.44807965" vertical-offset="0" max-vertical-offset="703">
@@ -821,13 +892,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/demo/demo_3d_landscape_gen.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334" vertical-offset="0" max-vertical-offset="675">
-          <caret line="15" column="7" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/css/slider_bar_date.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.66523606" vertical-offset="0" max-vertical-offset="1905">
@@ -839,14 +903,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="345">
           <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/demo/js/landscape_generator.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.21603563" vertical-offset="601" max-vertical-offset="5925">
-          <caret line="53" column="34" selection-start-line="53" selection-start-column="34" selection-end-line="53" selection-end-column="34" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -874,29 +930,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/data/APManager.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2550" max-vertical-offset="3270">
-          <caret line="175" column="44" selection-start-line="175" selection-start-column="44" selection-end-line="175" selection-end-column="44" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiSliderBar.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2640">
-          <caret line="97" column="45" selection-start-line="97" selection-start-column="45" selection-end-line="97" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/data/DataFactory.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1260">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sensor_data_river.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1140">
@@ -904,23 +937,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.30129126" vertical-offset="0" max-vertical-offset="697">
-          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/data/ChainManager.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="840" max-vertical-offset="6735">
-          <caret line="84" column="26" selection-start-line="84" selection-start-column="26" selection-end-line="84" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/demo/demo_3d_scene_02.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3055" max-vertical-offset="10740">
+        <state vertical-scroll-proportion="-3.9583333" vertical-offset="3055" max-vertical-offset="10740">
           <caret line="210" column="0" selection-start-line="209" selection-start-column="45" selection-end-line="210" selection-end-column="0" />
           <folding />
         </state>
@@ -934,61 +953,145 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.125" vertical-offset="1995" max-vertical-offset="15120">
+          <caret line="154" column="8" selection-start-line="154" selection-start-column="8" selection-end-line="154" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/demo/demo_3d_birds.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="6849" max-vertical-offset="10230">
+        <state vertical-scroll-proportion="-24.625" vertical-offset="6849" max-vertical-offset="10230">
           <caret line="496" column="8" selection-start-line="496" selection-start-column="8" selection-end-line="496" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/data/DataFactory.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1260">
+          <caret line="14" column="24" selection-start-line="14" selection-start-column="24" selection-end-line="14" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/css/main.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1380" max-vertical-offset="2265">
+          <caret line="135" column="26" selection-start-line="135" selection-start-column="26" selection-end-line="135" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/data/WeatherManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.49356222" vertical-offset="0" max-vertical-offset="699">
+          <caret line="23" column="47" selection-start-line="23" selection-start-column="47" selection-end-line="23" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiMainMenu.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4635">
+          <caret line="12" column="134" selection-start-line="12" selection-start-column="31" selection-end-line="12" selection-end-column="134" />
+          <folding>
+            <element signature="n#!!doc;n#UiMainMenu#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index_version_2.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.125" vertical-offset="300" max-vertical-offset="4605">
+          <caret line="41" column="44" selection-start-line="41" selection-start-column="44" selection-end-line="41" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiIntroPage.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="15" max-vertical-offset="720">
+          <caret line="29" column="34" selection-start-line="29" selection-start-column="34" selection-end-line="29" selection-end-column="34" />
+          <folding>
+            <element signature="n#!!doc;n#UiIntroPage#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiSliderBar.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2640">
+          <caret line="10" column="55" selection-start-line="10" selection-start-column="55" selection-end-line="10" selection-end-column="55" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.19203414" vertical-offset="270" max-vertical-offset="5715">
-          <caret line="27" column="85" selection-start-line="27" selection-start-column="85" selection-end-line="27" selection-end-column="85" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="5016" max-vertical-offset="5715">
+          <caret line="89" column="58" selection-start-line="89" selection-start-column="58" selection-end-line="89" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo/demo_3d_landscape_gen.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.22222222" vertical-offset="0" max-vertical-offset="675">
+          <caret line="10" column="57" selection-start-line="10" selection-start-column="57" selection-end-line="10" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/data/ChainManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="975" max-vertical-offset="6735">
+          <caret line="70" column="16" selection-start-line="70" selection-start-column="16" selection-end-line="73" selection-end-column="85" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo/js/landscape_generator.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.192307" vertical-offset="1670" max-vertical-offset="5925">
+          <caret line="129" column="31" selection-start-line="129" selection-start-column="31" selection-end-line="129" selection-end-column="31" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiNodeInfoPanel.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.6153846" vertical-offset="15" max-vertical-offset="4620">
-          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+        <state vertical-scroll-proportion="-16.115385" vertical-offset="2221" max-vertical-offset="5145">
+          <caret line="176" column="87" selection-start-line="176" selection-start-column="74" selection-end-line="176" selection-end-column="87" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/data/APManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2194" max-vertical-offset="3900">
+          <caret line="183" column="69" selection-start-line="183" selection-start-column="69" selection-end-line="183" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.73170733" vertical-offset="0" max-vertical-offset="820">
+          <caret line="42" column="20" selection-start-line="42" selection-start-column="4" selection-end-line="42" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2162" max-vertical-offset="6885">
-          <caret line="247" column="41" selection-start-line="247" selection-start-column="24" selection-end-line="247" selection-end-column="41" />
+        <state vertical-scroll-proportion="0.8927039" vertical-offset="4761" max-vertical-offset="7845">
+          <caret line="359" column="25" selection-start-line="359" selection-start-column="25" selection-end-line="359" selection-end-column="25" />
           <folding>
-            <marker date="1420506718000" expanded="true" signature="7583:7632" placeholder="{...}" />
+            <marker date="1420690108000" expanded="true" signature="8500:8549" placeholder="{...}" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="563" max-vertical-offset="1290">
-          <caret line="73" column="10" selection-start-line="73" selection-start-column="10" selection-end-line="73" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1945245" vertical-offset="2250" max-vertical-offset="15120">
-          <caret line="159" column="76" selection-start-line="159" selection-start-column="76" selection-end-line="159" selection-end-column="76" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index_version_2.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.072378136" vertical-offset="3461" max-vertical-offset="4545">
-          <caret line="234" column="72" selection-start-line="234" selection-start-column="72" selection-end-line="234" selection-end-column="72" />
-          <folding />
         </state>
       </provider>
     </entry>

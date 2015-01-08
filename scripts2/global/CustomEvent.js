@@ -24,3 +24,20 @@ var SERVER_DEVICE_DATA_START = "server_device_data_start";	// 开始获取某个
 var SERVER_DEVICE_DATA_LOADED = "server_device_data_loaded";	// 一个sensor block数据获取完毕(暂时无用)
 var SERVER_DEVICE_DATA_COMPLETE = "server_device_data_complete";// 某个device的sensor数据获取完毕
 var SERVER_DEVICE_DATA_ERROR = "server_device_data_error";	// 获取server上某个device数据错误，原因不明...
+
+/***********************************
+ * MAIN MENU EVENT
+ ***********************************/
+var MAINMENU_BEGIN = "main_menu_begin";
+var MAINMENU_NETWORK = "main_menu_network";
+var MAINMENU_DATA = "main_menu_data";
+var MAINMENU_DEVICE = "main_menu_device";
+
+var MAINMENU_DATA_TEMPRATURE = "main_menu_data_temprature";
+var MAINMENU_DATA_ILLUMINANCE = "main_menu_data_illminance";
+var MAINMENU_DATA_PRESSURE = "main_menu_data_pressure";
+var MAINMENU_DATA_HUMIDITY = "main_menu_data_humidity";
+var MAINMENU_DATA_VOLTAGE = "main_menu_data_voltage";
+
+var MAINMENU_REALTIME = "main_menu_realtime";
+var MAINMENU_HISTORY = "main_menu_history";
