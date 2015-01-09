@@ -391,8 +391,9 @@ function onMainMenuClick(e)
 		network.clearVoronoi(true);
 		// Choose Sensor
 		selectSensor = "sht_temperature";
-		// Recolor dragbar
+		// Recolor dragbar and cal
 		recolorDragbar("#E77227");
+		$(".ui-state-active").css("background", "#E77227");
 
 		if(mainmenu.currSelectRH == 0) {
 			// realtime
@@ -408,6 +409,7 @@ function onMainMenuClick(e)
 		selectSensor = "illuminance";
 		// Recolor dragbar
 		recolorDragbar("#D81E00");
+		$(".ui-state-active").css("background", "#D81E00");
 
 		if(mainmenu.currSelectRH == 0) {
 			// realtime
@@ -423,6 +425,7 @@ function onMainMenuClick(e)
 		selectSensor = "bmp_pressure";
 		// Recolor dragbar
 		recolorDragbar("#E445BA");
+		$(".ui-state-active").css("background", "#E445BA");
 
 		if(mainmenu.currSelectRH == 0) {
 			// realtime
@@ -438,6 +441,7 @@ function onMainMenuClick(e)
 		selectSensor = "sht_humidity";
 		// Recolor dragbar
 		recolorDragbar("#3242DF");
+		$(".ui-state-active").css("background", "#3242DF");
 
 		if(mainmenu.currSelectRH == 0) {
 			// realtime
@@ -453,6 +457,7 @@ function onMainMenuClick(e)
 		selectSensor = "battery_voltage";
 		// Recolor dragbar
 		recolorDragbar("#57C66C");
+		$(".ui-state-active").css("background", "#57C66C");
 
 		if(mainmenu.currSelectRH == 0) {
 			// realtime
@@ -497,7 +502,7 @@ function showCal(flg)
 		var dwid = parseInt($('#datepicker').css('width'));
 		$('#datepicker').css('visibility', 'visible');
 		$('#datepicker').css('left', '-'+dwid + 'px');
-		$('#datepicker').animate({left:'35px'}, 500, 'easeOutQuint');
+		$('#datepicker').animate({left:'0px'}, 500, 'easeOutQuint');
 	} else {
 		var dwid = parseInt($('#datepicker').css('width')) + 35;
 		if($('#datepicker').css('visibility') != 'hidden') {

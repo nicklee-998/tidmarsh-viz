@@ -150,7 +150,7 @@ html, body {
  ***********************************************/
 #datepicker {
 	position: absolute;
-	left: 35px;
-	top: 140px;
+	left: 0px;
+	top: 110px;
 	visibility: hidden;
 }
