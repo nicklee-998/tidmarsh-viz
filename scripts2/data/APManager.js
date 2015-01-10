@@ -4,8 +4,8 @@
 function APManager()
 {
 	// 状态
-	this._planeState = 0;       // 0 - hide, 1 - animating, 2 - grew
-	this._animalState = 0;      // 0 - hide, 1 - animating, 2 - grew
+	this._planeState = 0;       // 0 - hide, 1 - grew
+	this._animalState = 0;      // 0 - hide,  - grew
 
 
 	this._tilePerSide = 4;
@@ -69,17 +69,17 @@ APManager.prototype.init = function()
 
 APManager.prototype.showAP = function()
 {
-	this._planeState = 1;
-	this._growAnimation();
-	this._animalState = 1;
-	this._showBirds();
+	if(this._planeState == 0) {
+		this._growAnimation();
+	}
+	if(this._animalState == 0) {
+		this._showBirds();
+	}
 }
 
 APManager.prototype.hideAP = function()
 {
-	this._planeState = 1;
 	this._hideAnimation();
-	this._animalState = 1;
 	this._hideBirds();
 }
 
@@ -112,8 +112,6 @@ APManager.prototype._createTree = function( tileX, tileZ, color )
 
 	tree.position.x = ( -this._tileSizeX * this._tilePerSide ) / 2 + ( this._tileSizeX * tileX ) + ( this._tileSizeX / 2 ) + ( Math.random() * this._tileSizeX ) - this._tileSizeX / 2;
 	tree.position.y = ( -this._tileSizeY * this._tilePerSide ) / 2 + ( this._tileSizeY * tileZ ) + ( this._tileSizeY / 2 ) + ( Math.random() * this._tileSizeY ) - this._tileSizeY / 2;
-	//tree.position.x = Math.random() * groundWid - groundWid / 2;
-	//tree.position.y = -(Math.random() * groundHei - groundHei / 2);
 	tree.position.z = 0;
 	tree.rotation.x = Math.PI / 2;
 
@@ -153,7 +151,7 @@ APManager.prototype._growAnimation = function()
 		TweenMax.to( t.position, 1.7, { z: goalZ, delay: i * delay + delay2, ease:Elastic.easeOut, onComplete: function() {
 			self._animatedObjects--;
 			if(self._animatedObjects == 0) {
-				self._planeState = 2;
+				self._planeState = 1;
 				self._animatedObjects = self._trees.length;
 			}
 		}});
@@ -167,11 +165,11 @@ APManager.prototype._hideAnimation = function()
 	var self = this;
 
 	// Kill all the animation first
-	TweenMax.killAll();
+	//TweenMax.killAll();
 
 	for( var i = 0; i < this._trees.length; i++ ){
 		var t = this._trees[ i ];
-		TweenMax.to( t.position, 0.7, { y: groundZero-250, delay: i * 0.05, ease:Cubic.easeOut, onComplete: function() {
+		TweenMax.to( t.position, 0.7, { z: groundZero-100, delay: i * 0.05, ease:Cubic.easeOut, onComplete: function() {
 			self._animatedObjects--;
 			if(self._animatedObjects == 0) {
 				self._planeState = 0;
@@ -204,19 +202,19 @@ APManager.prototype._initBirds = function()
 
 	loader.load( "res/models/flamingo.js", function( geometry ) {
 		self._morphColorsToFaceColors( geometry );
-		self._addMorph( geometry, 500, 1000, 500 - Math.random() * 500, groundZero + 350, 40 );
+		self._addMorph( geometry, 500, 1000, 40, getRandomArbitrary(-groundWid/2, groundWid/2), 350 );
 	} );
 
 	loader.load( "res/models/stork.js", function( geometry ) {
 
 		self._morphColorsToFaceColors( geometry );
-		self._addMorph( geometry, 350, 1000, 500 - Math.random() * 500, groundZero + 350, 340 );
+		self._addMorph( geometry, 350, 1000, 340, getRandomArbitrary(-groundWid/2, groundWid/2), 350 );
 	} );
 
 	loader.load( "res/models/parrot.js", function( geometry ) {
 
 		self._morphColorsToFaceColors( geometry );
-		self._addMorph( geometry, 450, 500, 500 - Math.random() * 500, groundZero + 300, 700 );
+		self._addMorph( geometry, 450, 500, 700, getRandomArbitrary(-groundWid/2, groundWid/2), 300 );
 	} );
 
 }
@@ -255,12 +253,13 @@ APManager.prototype._addMorph = function(geometry, speed, duration, x, y, z, fud
 	meshAnim.time = 600 * Math.random();
 
 	meshAnim.position.set( x, y, z );
+	meshAnim.rotation.x = Math.PI/2;
 	meshAnim.rotation.y = Math.PI/2;
 
 	meshAnim.castShadow = true;
 	meshAnim.receiveShadow = true;
 
-	scene.add( meshAnim );
+	ground.add( meshAnim );
 
 	this._morphs.push( meshAnim );
 }

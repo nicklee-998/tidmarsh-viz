@@ -279,7 +279,9 @@ UiMainMenu.prototype.hideSensorButtons = function()
 		//this.sButtons[i].css("visibility", "hidden");
 		this.sButtons[i].delay(300).animate({
 			opacity: 0
-		}, 200);
+		}, 200, function() {
+			$(this).css("visibility", "hidden");
+		});
 	}
 }
 
@@ -312,6 +314,8 @@ UiMainMenu.prototype.hideRHButtons = function()
 		//this.rButtons[i].css("visibility", "hidden");
 		this.rButtons[i].delay(100).animate({
 			opacity: 0
-		}, 200);
+		}, 200, function() {
+			$(this).css("visibility", "hidden");
+		});
 	}
 }

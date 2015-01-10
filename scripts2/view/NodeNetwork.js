@@ -6,6 +6,7 @@ function NodeNetwork()
 	// Network
 	this.animatedObjects;
 	this.devices = new Array();
+	this.deviceBoxes = new Array();         // 不包括fake点的box
 
 	// Voronoi
 	this.vertices;
@@ -94,6 +95,7 @@ NodeNetwork.prototype.createDevice = function(dInfo)
 	box.rotation.x = -Math.PI / 2;
 	box.name = dInfo.title;
 	this.devices.push({type: "cell", mesh: box, id: dInfo.title, cell: null});
+	this.deviceBoxes.push(box);
 	ground.add(box);
 
 	// poisson dict -
@@ -107,11 +109,11 @@ NodeNetwork.prototype.createFakeDevices = function()
 	// ---------------------------------
 	//  补充一些blank node
 	// ---------------------------------
-	if(this.devices.length < 200) {
+	if(this.devices.length < 150) {
 		var len = this.devices.length;
 		var i = 0;
 		var over = false;
-		while(i < (200 - len) && !over) {
+		while(i < (150 - len) && !over) {
 			var s = this._poissonDiscSampler();
 			if(s) {
 				var px = s[0];
@@ -122,10 +124,11 @@ NodeNetwork.prototype.createFakeDevices = function()
 					new THREE.MeshLambertMaterial({color: 0xeb9494, wireframe: true, shading: THREE.FlatShading})
 				);
 				box.position.x = px - groundWid / 2;
-				box.position.z = py - groundHei / 2;
-				box.position.y = groundZero + 8;
+				box.position.y = -(py - groundHei / 2);
+				box.position.z = 8;
+				box.rotation.x = -Math.PI / 2;
 				this.devices.push({type: "blank", mesh: box, id: "blank"+i, cell: null});
-				//scene.add(box);
+				//ground.add(box);
 				//this.growAnimation(box);
 
 				i++;
@@ -139,11 +142,13 @@ NodeNetwork.prototype.createFakeDevices = function()
 NodeNetwork.prototype.growAnimation = function(d)
 {
 	var goalZ = d.position.z;
-	d.position.z = -80;
-	d.scale.x = 0;
-	d.scale.z = 0;
-	TweenMax.to(d.position, 3, {z:goalZ, ease:Elastic.easeOut});
-	TweenMax.to(d.scale, 3, {x:1, z:1, ease:Elastic.easeOut});
+	d.position.z = -110;
+	//d.scale.x = 0;
+	//d.scale.z = 0;
+	TweenMax.to(d.position, 1.1, {z:goalZ + 150, onComplete:function() {
+		TweenMax.to(d.position, 1.2, {z:goalZ, ease:Expo.easeOut});
+	}});
+	//TweenMax.to(d.scale, 3, {x:1, z:1, ease:Elastic.easeOut});
 }
 
 // -------------------------------------------------------
@@ -157,7 +162,7 @@ NodeNetwork.prototype.createVoronoi = function()
 	this.vertices = new Array();
 	for(var i = 0; i < this.devices.length; i++) {
 		var d = this.devices[i];
-		this.vertices.push([d.mesh.position.x + groundWid / 2, groundHei - (d.mesh.position.z + groundHei / 2)]);
+		this.vertices.push([d.mesh.position.x + groundWid / 2, (d.mesh.position.y + groundHei / 2)]);
 	}
 
 	// 1 pixel for protecting wrong caculate
@@ -226,7 +231,7 @@ NodeNetwork.prototype.createVoronoi = function()
 			mesh.translateX( - theCenter.x);
 			mesh.translateY( - theCenter.y);
 			mesh.visible = false;
-			scene.add(mesh);
+			//scene.add(mesh);
 
 			// 将cell加入到device的信息中
 			if(j == 0) {

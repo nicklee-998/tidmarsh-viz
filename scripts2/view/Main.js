@@ -6,6 +6,15 @@ var container, scene, renderer, camera, controls, sw, sh;
 var ground, groundWid, groundHei, groundZero;
 var stats;
 
+// camera controllor params
+var MIN_POLAR_ANGLE = 0.88;
+var MAX_POLAR_ANGLE = 1.85;
+var MIN_AZIMUTHAL_ANGLE = -0.008388765430145858;
+var MAX_AZIMUTHAL_ANGLE = 0.02936067900551244;
+
+// 3d scene state
+var scnenState = 0;             // 0 - loading; 1 - Intro; 2 - Network&Data; 3 - Device
+
 // loading animation
 var _spinner;
 var _counter;
@@ -156,6 +165,9 @@ function init3d()
 	// CONTROLS
 	controls = new THREE.OrbitControls(camera, renderer.domElement);
 	controls.autoRotate = false;
+	controls.noZoom = true;
+	controls.noRotate = true;
+	controls.noPan = true;
 
 	// Handling window resize
 	window.addEventListener("resize", function() {
@@ -288,6 +300,7 @@ function onDocumentMouseUp( event )
 	event.preventDefault();
 
 	if(INTERSECTED && mainmenu.currSelectIdx == 2) {
+
 		if(INTERSECTED.name == "info_sign_plane") {
 			showInfoPanel(INTERSECTED);
 		} else {
@@ -301,8 +314,10 @@ function render()
 	// find intersections
 	var vector = new THREE.Vector3(mouse.x, mouse.y, 1).unproject(camera);
 	raycaster.set(camera.position, vector.sub(camera.position).normalize());
-	var intersects = raycaster.intersectObjects(scene.children);
+	var intersects = raycaster.intersectObjects(ground.children, true);
+
 	if(intersects.length > 0 && mainmenu.currSelectIdx == 2) {
+
 		if(chainManager != null && chainManager.getDeviceByName(intersects[0].object.name) != null) {
 			if(INTERSECTED != intersects[0].object) {
 				if(INTERSECTED) {
@@ -312,14 +327,24 @@ function render()
 				INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
 				INTERSECTED.material.emissive.setHex(0xff0000);
 			}
-		} else if(chainManager != null && intersects[0].object.name == "info_sign_plane") {
-			if(INTERSECTED != intersects[0].object) {
-				if(INTERSECTED) {
-					INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+		} else if(intersects[0].object.name == "info_sign_plane" || intersects[0].object.name == "signmesh") {
+			var sign = null;
+			for(var i = 0; i < intersects.length; i++) {
+				if(intersects[i].object.name == "info_sign_plane") {
+					sign = intersects[i].object;
+					break;
 				}
-				INTERSECTED = intersects[0].object;
-				INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-				INTERSECTED.material.emissive.setHex(0xff0000);
+			}
+
+			if(sign != null) {
+				if(INTERSECTED != sign) {
+					if(INTERSECTED) {
+						INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+					}
+					INTERSECTED = sign;
+					INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+					INTERSECTED.material.emissive.setHex(0xff0000);
+				}
 			}
 		} else {
 			if ( INTERSECTED ) {
@@ -334,9 +359,9 @@ function render()
 		INTERSECTED = null;
 	}
 
-	//if(infoSignPlane != null) {
-	//	infoSignPlane.lookAt(camera.position);
-	//}
+	if(infoSignPlane != null) {
+		infoSignPlane.rotation.y = controls.getAzimuthalAngle();
+	}
 
 	renderer.render(scene, camera);
 	controls.update();
@@ -369,6 +394,8 @@ function onMainMenuClick(e)
 		// Hide cal and dragbar
 		showCal(false);
 		showDragBar(false);
+		// Set 3d scene
+		setScenePerspective(1);
 
 	} else if(e.type == MAINMENU_NETWORK) {
 		// 隐藏介绍文字
@@ -382,6 +409,11 @@ function onMainMenuClick(e)
 		// Hide cal and dragbar
 		showCal(false);
 		showDragBar(false);
+		// Set 3d scene
+		setScenePerspective(2);
+		// Set default sign
+		var len = network.deviceBoxes.length - 1;
+		showNodeSign(network.deviceBoxes[getRandomInt(0, len)], 0.8);
 
 	} else if(e.type == MAINMENU_DATA) {
 		// 隐藏介绍文字
@@ -397,6 +429,8 @@ function onMainMenuClick(e)
 		network.clearVoronoi(true);
 		// Choose Sensor
 		selectSensor = sensorTable[mainmenu.currSelectSensorIdx];
+		// Set 3d scene
+		setScenePerspective(2);
 
 	} else if(e.type == MAINMENU_DATA_TEMPRATURE) {
 		// CLEAR GRAPH
@@ -406,6 +440,7 @@ function onMainMenuClick(e)
 		// Recolor dragbar and cal
 		recolorDragbar("#E77227");
 		$(".ui-state-active").css("background", "#E77227");
+		$("#mainmenu_selector").css("background", "#E77227");
 
 		if(mainmenu.currSelectRH == 0) {
 			// realtime
@@ -422,6 +457,7 @@ function onMainMenuClick(e)
 		// Recolor dragbar
 		recolorDragbar("#D81E00");
 		$(".ui-state-active").css("background", "#D81E00");
+		$("#mainmenu_selector").css("background", "#D81E00");
 
 		if(mainmenu.currSelectRH == 0) {
 			// realtime
@@ -438,6 +474,7 @@ function onMainMenuClick(e)
 		// Recolor dragbar
 		recolorDragbar("#E445BA");
 		$(".ui-state-active").css("background", "#E445BA");
+		$("#mainmenu_selector").css("background", "#E445BA");
 
 		if(mainmenu.currSelectRH == 0) {
 			// realtime
@@ -454,6 +491,7 @@ function onMainMenuClick(e)
 		// Recolor dragbar
 		recolorDragbar("#3242DF");
 		$(".ui-state-active").css("background", "#3242DF");
+		$("#mainmenu_selector").css("background", "#3242DF");
 
 		if(mainmenu.currSelectRH == 0) {
 			// realtime
@@ -470,6 +508,7 @@ function onMainMenuClick(e)
 		// Recolor dragbar
 		recolorDragbar("#57C66C");
 		$(".ui-state-active").css("background", "#57C66C");
+		$("#mainmenu_selector").css("background", "#57C66C");
 
 		if(mainmenu.currSelectRH == 0) {
 			// realtime
@@ -506,16 +545,48 @@ function onMainMenuClick(e)
 }
 
 /////////////////////////////////////////////
+// 3d Scene's Perspective
+/////////////////////////////////////////////
+function setScenePerspective(idx)
+{
+	if(scnenState == idx)
+		return;
+
+	if(idx == 1) {
+		TweenMax.to(ground.position, 0.9, {y: -430, delay:0, ease:Quint.easeOut});
+		TweenMax.to(camera.position, 1.1, {x:0, y:-320, z:1532, delay:0.1, ease:Quart.easeInOut, onComplete:function() {
+
+		}});
+
+		// set control
+		controls.minPolarAngle = MIN_POLAR_ANGLE;
+		controls.maxPolarAngle = MAX_POLAR_ANGLE;
+
+		scnenState = 1;
+
+	} else if(idx == 2) {
+		TweenMax.to(ground.position, 1, {y: -220, delay:0.1, ease:Quint.easeOut});
+		TweenMax.to(camera.position, 1.2, {x:0, y:550, z:1466, delay:0, ease:Quart.easeOut, onComplete:function() {
+			// set control
+			controls.minPolarAngle = controls.getPolarAngle();
+			controls.maxPolarAngle = controls.getPolarAngle();
+		}});
+
+		scnenState = 2;
+	}
+}
+
+/////////////////////////////////////////////
 // MAIN LOADING ANIMATION
 /////////////////////////////////////////////
 function initLoadingScreen()
 {
 	// 3d scene
-	camera.position.x = 910;
-	camera.position.y = 1500;
-	camera.position.z = 2891;
+	camera.position.x = 3107;
+	camera.position.y = 2085;
+	camera.position.z = 4262;
 
-	ground.position.y = 570;
+	ground.position.y = 860;
 
 	// title
 	$("body").append("<div id='mainloading_title' class='main_loading_title'>Tidmarsh Living Observatory</div>");
@@ -530,15 +601,25 @@ function initLoadingScreen()
 function clearLoadingScreen()
 {
 	//
-	TweenMax.to(ground.position, 2, {y: -200, delay:0.7, ease:Quint.easeOut});
-	TweenMax.to(camera.position, 2.5, {x:4, y:440, z:1503, delay:1.1, ease:Quart.easeInOut, onComplete:function() {
+	TweenMax.to(ground.position, 2, {y: -430, delay:0.7, ease:Quint.easeOut});
+	TweenMax.to(camera.position, 2.5, {x:0, y:-320, z:1532, delay:1.1, ease:Quart.easeInOut, onComplete:function() {
 		// ui
 		mainmenu.show();
 		$("#weather").animate({
 			"bottom": 0
 		}, 500);
-		// shwo ap
+		// show ap
 		apManager.showAP();
+		// show intro
+		intro.showIntroPage(1600);
+		// set control
+		controls.minPolarAngle = MIN_POLAR_ANGLE;
+		controls.maxPolarAngle = MAX_POLAR_ANGLE;
+		controls.minDistance = 500;
+		controls.maxDistance = 3500;
+		controls.noZoom = false;
+		controls.noRotate = false;
+		controls.noPan = false;
 	}});
 
 	// loading
@@ -695,11 +776,48 @@ function onKeyboardDown()
 	}
 	else if(d3.event.keyCode == 68) 	// D:
 	{
-		console.log(camera);
+		console.log("= Camera Info =================================");
+		console.log(camera.position);
+		console.log("Polar Angle = " + controls.getPolarAngle());
+		console.log("Azimuthal Angle = " + controls.getAzimuthalAngle());
+		console.log("Plane y = " + ground.position.y);
+		console.log("===============================================");
 	}
 	else if(d3.event.keyCode == 73)	// I:
 	{
 
+	}
+	else if(d3.event.keyCode == 79)	// O:
+	{
+		controls.noZoom = !controls.noZoom;
+	}
+	else if(d3.event.keyCode == 80)	// P:
+	{
+		if(controls.minPolarAngle != controls.maxPolarAngle) {
+			controls.minPolarAngle = controls.getPolarAngle();
+			controls.maxPolarAngle = controls.getPolarAngle();
+		} else {
+			controls.minPolarAngle = 0;
+			controls.maxPolarAngle = Math.PI;
+		}
+	}
+	else if(d3.event.keyCode == 76)	// L:
+	{
+		if(controls.minAzimuthAngle == -Infinity) {
+			controls.minAzimuthAngle = 0;
+			controls.maxAzimuthAngle = 0;
+		} else {
+			controls.minAzimuthAngle = -Infinity;
+			controls.maxAzimuthAngle = Infinity;
+		}
+	}
+	else if(d3.event.keyCode == 56)	// 8
+	{
+		ground.position.y -= 10;
+	}
+	else if(d3.event.keyCode == 57)	// 9
+	{
+		ground.position.y += 10;
 	}
 	else if(d3.event.keyCode == 49)	// 1
 	{

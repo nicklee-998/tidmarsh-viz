@@ -14,20 +14,22 @@ UiIntroPage.prototype.rearrange = function()
 	var wid = $("#intro_page").width();
 	var hei = wid * 577 / 1386;
 	var whei = window.innerHeight - 115 - 20;
-	$("#intro_page").css("top", whei / 2 - hei / 2 + 115);
+	$("#intro_page").css("top", whei / 2 - hei / 2 + 70);
 	$("#intro_page").css("left", window.innerWidth / 2 - wid / 2);
 }
 
-UiIntroPage.prototype.showIntroPage = function()
+UiIntroPage.prototype.showIntroPage = function(delay)
 {
+	delay = typeof delay !== 'undefined' ? delay : 0;
+
 	this.rearrange();
 	$("#intro").css("visibility", "visible");
 
 	var top = $("#intro_page").css("top");
-	$("#intro_page").css("top", -300);
-	$("#intro_page").animate({
+	$("#intro_page").css("top", -500);
+	$("#intro_page").delay(delay).animate({
 		top: top
-	}, 300);
+	}, 500, "easeOutExpo");
 }
 
 UiIntroPage.prototype.hideIntroPage = function()
@@ -37,7 +39,7 @@ UiIntroPage.prototype.hideIntroPage = function()
 
 	$("#intro_page").animate({
 		top: -1000
-	},700, function() {
+	}, 700, function() {
 		$("#intro").css("visibility", "hidden");
 	});
 }

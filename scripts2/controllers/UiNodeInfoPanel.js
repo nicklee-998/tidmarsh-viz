@@ -122,10 +122,11 @@ function initInfoPanel()
 		new THREE.PlaneBufferGeometry(127, 57, 40, 40),
 		new THREE.MeshPhongMaterial({map: texture, shading: THREE.SmoothShading, transparent: true, side: THREE.DoubleSide})
 	);
-	infoSignPlane.position.y = groundZero + 43;
+	infoSignPlane.position.z = groundZero + 43;
 	infoSignPlane.name = "info_sign_plane";
 	infoSignPlane.visible = false;
-	scene.add(infoSignPlane);
+	infoSignPlane.rotation.x = Math.PI / 2;
+	ground.add(infoSignPlane);
 
 	// Device title
 	infoSignTitle = document.createElement( "canvas" );
@@ -151,8 +152,10 @@ function initInfoPanel()
 // -------------------------------------------------------
 //  Small Sign
 // -------------------------------------------------------
-function showNodeSign(node)
+function showNodeSign(node, delay)
 {
+	delay = typeof delay !== 'undefined' ? delay : 0;
+
 	// Show devict title on sign
 	var context = infoSignTitle.getContext( "2d" );
 	context.clearRect(0, 0, 150, 60);
@@ -163,18 +166,20 @@ function showNodeSign(node)
 	infoSignPlane.getObjectByName("signmesh").material = xm;
 
 	// Show the device information
-	infoSignPlane.position.x = node.position.x - 3;
-	infoSignPlane.position.z = node.position.z;
-	infoSignPlane.position.y = groundZero + 43 - 200;
-	infoSignPlane.visible = true;
+	infoSignPlane.position.x = node.position.x - 2;
+	infoSignPlane.position.y = node.position.y;
+	infoSignPlane.position.z = - 100;
 	infoSignPlane.userData = {title:node.name};
 
-	TweenMax.to(infoSignPlane.position, 0.7, {y:infoSignPlane.position.y + 200, ease:Elastic.easeOut});
+	TweenMax.to(infoSignPlane.position, 0.7, {z:43, delay:delay, ease:Elastic.easeOut, onStart: function() {
+		infoSignPlane.visible = true;
+	}});
 }
 
 function hideNodeSign()
 {
-	TweenMax.to(infoSignPlane.position, 0.4, {y:groundZero - 80, ease:Cubic.easeOut, onComplete: function() {
+	console.log("swwww");
+	TweenMax.to(infoSignPlane.position, 0.4, {z: -80, ease:Cubic.easeOut, onComplete: function() {
 		infoSignPlane.visible = false;
 	}});
 }
