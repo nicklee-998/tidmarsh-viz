@@ -4,10 +4,7 @@
 function UiIntroPage()
 {
 	$("#intro").append("<img id='intro_page' class='intro_page' src='./images/begin_intro.png'/>");
-	$("#intro_page").onload = function() {
-		console.log("feeweewe");
-	};
-
+	$("#intro").css("visibility", "hidden");
 	this.rearrange();
 }
 
@@ -24,8 +21,9 @@ UiIntroPage.prototype.rearrange = function()
 UiIntroPage.prototype.showIntroPage = function()
 {
 	this.rearrange();
+	$("#intro").css("visibility", "visible");
+
 	var top = $("#intro_page").css("top");
-	$("#intro_page").css("visibility", "visible");
 	$("#intro_page").css("top", -300);
 	$("#intro_page").animate({
 		top: top
@@ -34,12 +32,12 @@ UiIntroPage.prototype.showIntroPage = function()
 
 UiIntroPage.prototype.hideIntroPage = function()
 {
-	if($("#intro_page").css("visibility") == "hidden")
+	if($("#intro").css("visibility") == "hidden")
 		return;
 
 	$("#intro_page").animate({
 		top: -1000
 	},700, function() {
-		$(this).css("visibility", "hidden");
+		$("#intro").css("visibility", "hidden");
 	});
 }

@@ -186,6 +186,18 @@ function UiMainMenu()
 	}
 }
 
+UiMainMenu.prototype.show = function()
+{
+	$("#mainmenu").animate({
+		"top": 0
+	}, 500);
+}
+
+UiMainMenu.prototype.hide = function()
+{
+	$("#mainmenu").css("top", -110);
+}
+
 UiMainMenu.prototype.rearrange = function()
 {
 	// arrange buttons

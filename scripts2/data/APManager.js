@@ -63,7 +63,7 @@ APManager.prototype.init = function()
 		}
 	}
 
-	this._growAnimation();
+	//this._growAnimation();
 	this._initBirds();
 }
 
@@ -111,8 +111,11 @@ APManager.prototype._createTree = function( tileX, tileZ, color )
 	tree.add( leaf );
 
 	tree.position.x = ( -this._tileSizeX * this._tilePerSide ) / 2 + ( this._tileSizeX * tileX ) + ( this._tileSizeX / 2 ) + ( Math.random() * this._tileSizeX ) - this._tileSizeX / 2;
-	tree.position.y = groundZero;
-	tree.position.z = ( -this._tileSizeY * this._tilePerSide ) / 2 + ( this._tileSizeY * tileZ ) + ( this._tileSizeY / 2 ) + ( Math.random() * this._tileSizeY ) - this._tileSizeY / 2;
+	tree.position.y = ( -this._tileSizeY * this._tilePerSide ) / 2 + ( this._tileSizeY * tileZ ) + ( this._tileSizeY / 2 ) + ( Math.random() * this._tileSizeY ) - this._tileSizeY / 2;
+	//tree.position.x = Math.random() * groundWid - groundWid / 2;
+	//tree.position.y = -(Math.random() * groundHei - groundHei / 2);
+	tree.position.z = 0;
+	tree.rotation.x = Math.PI / 2;
 
 	if( tree.position.x - leafRadius < -500 ){
 		tree.position.x = -500 + leafRadius * 2;
@@ -128,10 +131,11 @@ APManager.prototype._createTree = function( tileX, tileZ, color )
 		tree.position.z = 500 - leafRadius * 2;
 	}
 	tree.rotation.y = degToRad( 360 * Math.random() );
+	tree.visible = false;
 
 	this._trees.push( tree );
 	this._animatedObjects++;
-	scene.add( tree );
+	ground.add( tree );
 }
 
 APManager.prototype._growAnimation = function()
@@ -139,20 +143,22 @@ APManager.prototype._growAnimation = function()
 	var self = this;
 	for( var i = 0; i < this._trees.length; i++ ) {
 		var t = this._trees[ i ];
-		var goalY = groundZero;
-		t.position.y = groundZero-150;
+		var goalZ = 0;
+		t.position.z = groundZero-100;
 		t.scale.x = 0.0001;
 		t.scale.z = 0.0001;
 		t.visible = true;
-		TweenMax.to( t.position, 1.7, { y: goalY, delay: i * 0.15, ease:Elastic.easeOut, onComplete: function() {
+		var delay = 0.02;
+		var delay2 = 0.5;
+		TweenMax.to( t.position, 1.7, { z: goalZ, delay: i * delay + delay2, ease:Elastic.easeOut, onComplete: function() {
 			self._animatedObjects--;
 			if(self._animatedObjects == 0) {
 				self._planeState = 2;
 				self._animatedObjects = self._trees.length;
 			}
 		}});
-		TweenMax.to( t.scale, 1.7, { x: 1, z: 1, delay: i * 0.15, ease:Elastic.easeOut} );
-		TweenMax.to( t.rotation, 1.7, { y: t.rotation.y + degToRad( 360 * Math.random() ), delay: i * 0.15} );
+		TweenMax.to( t.scale, 1.7, { x: 1, z: 1, delay: i * delay + delay2, ease:Elastic.easeOut} );
+		TweenMax.to( t.rotation, 1.7, { y: t.rotation.y + degToRad( 360 * Math.random() ), delay: i * delay + delay2} );
 	}
 }
 

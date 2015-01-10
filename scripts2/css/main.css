@@ -15,7 +15,7 @@ html, body {
  ***********************************************/
 #mainmenu {
 	position: absolute;
-	top: 0px;
+	top: -110px;
 	width: 100%;
 	height: 110px;
 	background-color: #050505;
@@ -81,7 +81,7 @@ html, body {
 #weather {
 	position: fixed;
 	padding: 6px;
-	bottom: 0px;
+	bottom: -28px;
 	left: 0px;
 	right: 0px;
 	height: 15px;
@@ -143,6 +143,15 @@ html, body {
 	left: 20px;
 	border: solid;
 	border-color: #000000;
+}
+
+/***********************************************
+ * Main Loading
+ ***********************************************/
+.main_loading_title {
+	position: absolute;
+	top: 38%;
+	color: rgba(255, 255, 255, 1);
 }
 
 /***********************************************

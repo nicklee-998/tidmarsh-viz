@@ -6,6 +6,13 @@ var container, scene, renderer, camera, controls, sw, sh;
 var ground, groundWid, groundHei, groundZero;
 var stats;
 
+// loading animation
+var _spinner;
+var _counter;
+var _counterIdx = 0;
+var _counterTotal = 0;
+var _counterInterval;
+
 // ui
 var mainmenu = null;
 var intro = null;
@@ -72,6 +79,9 @@ function onGmapInit()
 	// INIT 3D
 	init3d();
 
+	// Loading animation
+	initLoadingScreen();
+
 	jQuery.subscribe(SERVER_SUMMARY_COMPLETE, onServerSummary);
 	jQuery.subscribe(SERVER_DEVICE_INFO_COMPLETE, onDeviceInfoComplete);
 	jQuery.subscribe(SERVER_INIT_COMPLETE, onServerInitCompelte);
@@ -81,19 +91,19 @@ function onGmapInit()
 
 function onServerSummary(e, i)
 {
-	//_counterTotal = i.totalCount;
-	//
-	//_counterInterval = setInterval(function() {
-	//	var number = (_counterIdx / _counterTotal) * 100;
-	//	_counter.countUpTo(Math.round(number));
-	//}, 800);
+	_counterTotal = i.totalCount;
+
+	_counterInterval = setInterval(function() {
+		var number = (_counterIdx / _counterTotal) * 100;
+		_counter.countUpTo(Math.round(number));
+	}, 800);
 }
 
 function onDeviceInfoComplete(e, i)
 {
 	network.createDevice(i);
-
-	//_counterIdx++;
+	// for opening loading
+	_counterIdx++;
 }
 
 function onServerInitCompelte()
@@ -106,8 +116,9 @@ function onServerInitCompelte()
 	network.createVoronoi();
 
 	// stop update opening loader
-	//clearInterval(_counterInterval);
-	//_counter.countUpTo(99);
+	clearInterval(_counterInterval);
+	_counter.countUpTo(99);
+	clearLoadingScreen();
 }
 
 function init3d()
@@ -209,6 +220,7 @@ function init3d()
 			apManager = new APManager();
 			apManager.init();
 
+			// Todo: Can't rely on weather infomation to start all the web
 			animate();
 		},
 		error : function(xhr, textStatus, error) {
@@ -494,6 +506,57 @@ function onMainMenuClick(e)
 }
 
 /////////////////////////////////////////////
+// MAIN LOADING ANIMATION
+/////////////////////////////////////////////
+function initLoadingScreen()
+{
+	// 3d scene
+	camera.position.x = 910;
+	camera.position.y = 1500;
+	camera.position.z = 2891;
+
+	ground.position.y = 570;
+
+	// title
+	$("body").append("<div id='mainloading_title' class='main_loading_title'>Tidmarsh Living Observatory</div>");
+	var twid = $("#mainloading_title").width();
+	$("#mainloading_title").css("left", (window.innerWidth / 2 - twid / 2));
+
+	// loading number
+	var owid = $("#opening_loader").width();
+	$("#opening_loader").css("left", window.innerWidth / 2 - owid / 2 - 5);
+}
+
+function clearLoadingScreen()
+{
+	//
+	TweenMax.to(ground.position, 2, {y: -200, delay:0.7, ease:Quint.easeOut});
+	TweenMax.to(camera.position, 2.5, {x:4, y:440, z:1503, delay:1.1, ease:Quart.easeInOut, onComplete:function() {
+		// ui
+		mainmenu.show();
+		$("#weather").animate({
+			"bottom": 0
+		}, 500);
+		// shwo ap
+		apManager.showAP();
+	}});
+
+	// loading
+	$("#opening_loader").animate({
+		"opacity": 0
+	}, 300, function() {
+		$(this).css("visibility", "hidden");
+	});
+
+	// title
+	$("#mainloading_title").animate({
+		"opacity": 0
+	}, 300, function() {
+		$(this).css("visibility", "hidden");
+	});
+}
+
+/////////////////////////////////////////////
 // USER INTERFACE
 /////////////////////////////////////////////
 function showCal(flg)
@@ -632,7 +695,7 @@ function onKeyboardDown()
 	}
 	else if(d3.event.keyCode == 68) 	// D:
 	{
-
+		console.log(camera);
 	}
 	else if(d3.event.keyCode == 73)	// I:
 	{

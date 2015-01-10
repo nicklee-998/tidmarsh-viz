@@ -89,11 +89,12 @@ NodeNetwork.prototype.createDevice = function(dInfo)
 	);
 	var pnt = this.latLngToCube(dInfo.lat, dInfo.lng);
 	box.position.x = pnt.x * groundWid - groundWid / 2;
-	box.position.z = pnt.y * groundHei - groundHei / 2;
-	box.position.y = groundZero + 8;
+	box.position.y = -(pnt.y * groundHei - groundHei / 2);
+	box.position.z = 8;
+	box.rotation.x = -Math.PI / 2;
 	box.name = dInfo.title;
 	this.devices.push({type: "cell", mesh: box, id: dInfo.title, cell: null});
-	scene.add(box);
+	ground.add(box);
 
 	// poisson dict -
 	this._sample(pnt.x * groundWid, pnt.y * groundHei);
@@ -137,12 +138,12 @@ NodeNetwork.prototype.createFakeDevices = function()
 
 NodeNetwork.prototype.growAnimation = function(d)
 {
-	var goalY = d.position.y;
-	d.position.y = -250;
+	var goalZ = d.position.z;
+	d.position.z = -80;
 	d.scale.x = 0;
 	d.scale.z = 0;
-	TweenMax.to(d.position, 2, {y:goalY, ease:Elastic.easeOut});
-	TweenMax.to(d.scale, 2, {x:1, z:1, ease:Elastic.easeOut});
+	TweenMax.to(d.position, 3, {z:goalZ, ease:Elastic.easeOut});
+	TweenMax.to(d.scale, 3, {x:1, z:1, ease:Elastic.easeOut});
 }
 
 // -------------------------------------------------------
