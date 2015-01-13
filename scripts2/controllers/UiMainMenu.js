@@ -101,35 +101,35 @@ function UiMainMenu()
 			// ------------------------------
 			// Send main menu event
 			// ------------------------------
-			jQuery.publish(MAINMENU_DATA_TEMPRATURE);
+			jQuery.publish(MAINMENU_DATA);
 
 		} else if(btnname == "mainmenu_sbtn_i") {
 			self.currSelectSensorIdx = 1;
 			// ------------------------------
 			// Send main menu event
 			// ------------------------------
-			jQuery.publish(MAINMENU_DATA_ILLUMINANCE);
+			jQuery.publish(MAINMENU_DATA);
 
 		} else if(btnname == "mainmenu_sbtn_p") {
 			self.currSelectSensorIdx = 2;
 			// ------------------------------
 			// Send main menu event
 			// ------------------------------
-			jQuery.publish(MAINMENU_DATA_PRESSURE);
+			jQuery.publish(MAINMENU_DATA);
 
 		} else if(btnname == "mainmenu_sbtn_h") {
 			self.currSelectSensorIdx = 3;
 			// ------------------------------
 			// Send main menu event
 			// ------------------------------
-			jQuery.publish(MAINMENU_DATA_HUMIDITY);
+			jQuery.publish(MAINMENU_DATA);
 
 		}else if(btnname == "mainmenu_sbtn_v") {
 			self.currSelectSensorIdx = 4;
 			// ------------------------------
 			// Send main menu event
 			// ------------------------------
-			jQuery.publish(MAINMENU_DATA_VOLTAGE);
+			jQuery.publish(MAINMENU_DATA);
 		}
 		self.arrangeSensorButtons();
 	}
@@ -151,14 +151,14 @@ function UiMainMenu()
 			// ------------------------------
 			// Send main menu event
 			// ------------------------------
-			jQuery.publish(MAINMENU_REALTIME);
+			jQuery.publish(MAINMENU_DATA);
 
 		} else if(btnname == "mainmenu_sbtn_history") {
 			self.currSelectRH = 1;
 			// ------------------------------
 			// Send main menu event
 			// ------------------------------
-			jQuery.publish(MAINMENU_HISTORY);
+			jQuery.publish(MAINMENU_DATA);
 		}
 		self.arrangeRHButtons();
 	}

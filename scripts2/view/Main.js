@@ -8,12 +8,12 @@ var stats;
 
 // camera controllor params
 var MIN_POLAR_ANGLE = 0.88;
-var MAX_POLAR_ANGLE = 1.85;
+var MAX_POLAR_ANGLE = 1.67;
 var MIN_AZIMUTHAL_ANGLE = -0.008388765430145858;
 var MAX_AZIMUTHAL_ANGLE = 0.02936067900551244;
 
 // 3d scene state
-var scnenState = 0;             // 0 - loading; 1 - Intro; 2 - Network&Data; 3 - Device
+var sceneState = 0;             // 0 - loading; 1 - Intro; 2 - Network&Data; 3 - Device
 
 // loading animation
 var _spinner;
@@ -26,9 +26,15 @@ var _counterInterval;
 var mainmenu = null;
 var intro = null;
 
+// sensor node
+var sensornode = null;
+var SENSOR_NODE_HEIGHT = 2000;
+
 //
 var weather = null;
 var network, chainManager, apManager;
+
+var siteWebsocket = null;
 
 // interactive
 var raycaster;
@@ -252,6 +258,7 @@ function init3d()
 function createWorld()
 {
 	createBaseGround();
+	createSensorNode();
 	initInfoPanel();
 }
 
@@ -272,6 +279,22 @@ function createBaseGround()
 	scene.add(ground);
 
 	camera.lookAt(ground.position);
+}
+
+function createSensorNode()
+{
+	var loader = new THREE.ColladaLoader();
+	loader.options.convertUpAxis = true;
+	loader.load('./res/SensorNode/sensornode.dae', function(collada) {
+		sensornode = collada.scene;
+		sensornode.scale.x = sensornode.scale.y = sensornode.scale.z = 3500;
+		sensornode.position.y = SENSOR_NODE_HEIGHT;
+		sensornode.rotation.x = Math.PI;
+		sensornode.rotation.y = Math.PI;
+		sensornode.visible = false;
+		sensornode.updateMatrix();
+		scene.add(sensornode);
+	});
 }
 
 function animate()
@@ -367,11 +390,6 @@ function render()
 	controls.update();
 }
 
-function processMessage(did, sid, value)
-{
-	network.updateVoronoi(did, sid, value);
-}
-
 /////////////////////////////////////////////
 // MAIN MENU
 /////////////////////////////////////////////
@@ -394,6 +412,8 @@ function onMainMenuClick(e)
 		// Hide cal and dragbar
 		showCal(false);
 		showDragBar(false);
+		// Close realtime message
+		closeIncomingMessage();
 		// Set 3d scene
 		setScenePerspective(1);
 
@@ -409,6 +429,8 @@ function onMainMenuClick(e)
 		// Hide cal and dragbar
 		showCal(false);
 		showDragBar(false);
+		// Close realtime message
+		closeIncomingMessage();
 		// Set 3d scene
 		setScenePerspective(2);
 		// Set default sign
@@ -416,6 +438,9 @@ function onMainMenuClick(e)
 		showNodeSign(network.deviceBoxes[getRandomInt(0, len)], 0.8);
 
 	} else if(e.type == MAINMENU_DATA) {
+
+		//console.log("Mainmenu Data: " + mainmenu.currSelectSensorIdx + ", " + mainmenu.currSelectRH);
+
 		// 隐藏介绍文字
 		intro.hideIntroPage();
 		// 隐藏指示牌和信息板
@@ -430,89 +455,44 @@ function onMainMenuClick(e)
 		// Choose Sensor
 		selectSensor = sensorTable[mainmenu.currSelectSensorIdx];
 		// Set 3d scene
-		setScenePerspective(2);
+		setScenePerspective(3);
 
-	} else if(e.type == MAINMENU_DATA_TEMPRATURE) {
-		// CLEAR GRAPH
-		network.clearVoronoi(true);
-		// Choose Sensor
-		selectSensor = "sht_temperature";
-		// Recolor dragbar and cal
-		recolorDragbar("#E77227");
-		$(".ui-state-active").css("background", "#E77227");
-		$("#mainmenu_selector").css("background", "#E77227");
-
-		if(mainmenu.currSelectRH == 0) {
-			// realtime
-		} else {
-			// history
-			getDevicesDataBySensorMenu();
+		if(mainmenu.currSelectSensorIdx == 0) {
+			// Recolor dragbar and cal
+			recolorDragbar("#E77227");
+			$(".ui-state-active").css("background", "#E77227");
+			$("#mainmenu_selector").css("background", "#E77227");
+		} else if(mainmenu.currSelectSensorIdx == 1) {
+			// Recolor dragbar
+			recolorDragbar("#D81E00");
+			$(".ui-state-active").css("background", "#D81E00");
+			$("#mainmenu_selector").css("background", "#D81E00");
+		} else if(mainmenu.currSelectSensorIdx == 2) {
+			// Recolor dragbar
+			recolorDragbar("#E445BA");
+			$(".ui-state-active").css("background", "#E445BA");
+			$("#mainmenu_selector").css("background", "#E445BA");
+		} else if(mainmenu.currSelectSensorIdx == 3) {
+			// Recolor dragbar
+			recolorDragbar("#3242DF");
+			$(".ui-state-active").css("background", "#3242DF");
+			$("#mainmenu_selector").css("background", "#3242DF");
+		} else if(mainmenu.currSelectSensorIdx == 4) {
+			// Recolor dragbar
+			recolorDragbar("#57C66C");
+			$(".ui-state-active").css("background", "#57C66C");
+			$("#mainmenu_selector").css("background", "#57C66C");
 		}
 
-	} else if(e.type == MAINMENU_DATA_ILLUMINANCE) {
-		// CLEAR GRAPH
-		network.clearVoronoi(true);
-		// Choose Sensor
-		selectSensor = "illuminance";
-		// Recolor dragbar
-		recolorDragbar("#D81E00");
-		$(".ui-state-active").css("background", "#D81E00");
-		$("#mainmenu_selector").css("background", "#D81E00");
-
 		if(mainmenu.currSelectRH == 0) {
+			// Hide cal and dragbar
+			showCal(false);
+			showDragBar(false);
 			// realtime
+			openIncomingMessage();
 		} else {
-			// history
-			getDevicesDataBySensorMenu();
-		}
-
-	} else if(e.type == MAINMENU_DATA_PRESSURE) {
-		// CLEAR GRAPH
-		network.clearVoronoi(true);
-		// Choose Sensor
-		selectSensor = "bmp_pressure";
-		// Recolor dragbar
-		recolorDragbar("#E445BA");
-		$(".ui-state-active").css("background", "#E445BA");
-		$("#mainmenu_selector").css("background", "#E445BA");
-
-		if(mainmenu.currSelectRH == 0) {
 			// realtime
-		} else {
-			// history
-			getDevicesDataBySensorMenu();
-		}
-
-	} else if(e.type == MAINMENU_DATA_HUMIDITY) {
-		// CLEAR GRAPH
-		network.clearVoronoi(true);
-		// Choose Sensor
-		selectSensor = "sht_humidity";
-		// Recolor dragbar
-		recolorDragbar("#3242DF");
-		$(".ui-state-active").css("background", "#3242DF");
-		$("#mainmenu_selector").css("background", "#3242DF");
-
-		if(mainmenu.currSelectRH == 0) {
-			// realtime
-		} else {
-			// history
-			getDevicesDataBySensorMenu();
-		}
-
-	} else if(e.type == MAINMENU_DATA_VOLTAGE) {
-		// CLEAR GRAPH
-		network.clearVoronoi(true);
-		// Choose Sensor
-		selectSensor = "battery_voltage";
-		// Recolor dragbar
-		recolorDragbar("#57C66C");
-		$(".ui-state-active").css("background", "#57C66C");
-		$("#mainmenu_selector").css("background", "#57C66C");
-
-		if(mainmenu.currSelectRH == 0) {
-			// realtime
-		} else {
+			closeIncomingMessage();
 			// history
 			getDevicesDataBySensorMenu();
 		}
@@ -528,19 +508,11 @@ function onMainMenuClick(e)
 		// Hide cal and dragbar
 		showCal(false);
 		showDragBar(false);
+		// Close realtime message
+		closeIncomingMessage();
+		// Set 3d scene
+		setScenePerspective(4);
 
-	} else if(e.type == MAINMENU_REALTIME) {
-		// Hide cal and dragbar
-		showCal(false);
-		showDragBar(false);
-		// CLEAR GRAPH
-		network.clearVoronoi(true);
-
-	} else if(e.type == MAINMENU_HISTORY) {
-		// CLEAR GRAPH
-		network.clearVoronoi(true);
-		// history
-		getDevicesDataBySensorMenu();
 	}
 }
 
@@ -549,30 +521,72 @@ function onMainMenuClick(e)
 /////////////////////////////////////////////
 function setScenePerspective(idx)
 {
-	if(scnenState == idx)
+	if(sceneState == idx)
 		return;
+
+	controls.minPolarAngle = 0;
+	controls.maxPolarAngle = Math.PI;
+	ground.visible = true;
 
 	if(idx == 1) {
 		TweenMax.to(ground.position, 0.9, {y: -430, delay:0, ease:Quint.easeOut});
 		TweenMax.to(camera.position, 1.1, {x:0, y:-320, z:1532, delay:0.1, ease:Quart.easeInOut, onComplete:function() {
-
+			// set control
+			controls.minPolarAngle = controls.getPolarAngle();
+			controls.maxPolarAngle = controls.getPolarAngle();
 		}});
+		// Hide sensor node
+		if(sensornode.visible) {
+			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+				sensornode.visible = false;
+			}});
+		}
 
-		// set control
-		controls.minPolarAngle = MIN_POLAR_ANGLE;
-		controls.maxPolarAngle = MAX_POLAR_ANGLE;
-
-		scnenState = 1;
+		sceneState = 1;
 
 	} else if(idx == 2) {
 		TweenMax.to(ground.position, 1, {y: -220, delay:0.1, ease:Quint.easeOut});
 		TweenMax.to(camera.position, 1.2, {x:0, y:550, z:1466, delay:0, ease:Quart.easeOut, onComplete:function() {
 			// set control
-			controls.minPolarAngle = controls.getPolarAngle();
-			controls.maxPolarAngle = controls.getPolarAngle();
+			controls.minPolarAngle = MIN_POLAR_ANGLE;
+			controls.maxPolarAngle = MAX_POLAR_ANGLE;
+			//controls.minPolarAngle = controls.getPolarAngle();
+			//controls.maxPolarAngle = controls.getPolarAngle();
 		}});
+		// Hide sensor node
+		if(sensornode.visible) {
+			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+				sensornode.visible = false;
+			}});
+		}
 
-		scnenState = 2;
+		sceneState = 2;
+	} else if(idx == 3) {
+		TweenMax.to(ground.position, 1, {y: -220, delay:0.1, ease:Quint.easeOut});
+		TweenMax.to(camera.position, 1.2, {x:0, y:550, z:1466, delay:0, ease:Quart.easeOut, onComplete:function() {
+			// set control
+			controls.minPolarAngle = MIN_POLAR_ANGLE;
+			controls.maxPolarAngle = MAX_POLAR_ANGLE;
+			//controls.minPolarAngle = controls.getPolarAngle();
+			//controls.maxPolarAngle = controls.getPolarAngle();
+		}});
+		// Hide sensor node
+		if(sensornode.visible) {
+			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+				sensornode.visible = false;
+			}});
+		}
+
+		sceneState = 3;
+	} else if(idx == 4) {
+		sensornode.visible = true;
+		TweenMax.to(sensornode.position, 1, {y:0, ease:Quint.easeOut});
+		TweenMax.to(ground.position, 1, {y:-SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+			ground.visible = false;
+		}});
+		TweenMax.to(camera.position, 1.2, {x:-603, y:628, z:1300, ease:Quart.easeOut});
+
+		sceneState = 4;
 	}
 }
 
@@ -613,8 +627,8 @@ function clearLoadingScreen()
 		// show intro
 		intro.showIntroPage(1600);
 		// set control
-		controls.minPolarAngle = MIN_POLAR_ANGLE;
-		controls.maxPolarAngle = MAX_POLAR_ANGLE;
+		controls.minPolarAngle = controls.getPolarAngle();
+		controls.maxPolarAngle = controls.getPolarAngle();
 		controls.minDistance = 500;
 		controls.maxDistance = 3500;
 		controls.noZoom = false;
@@ -668,6 +682,51 @@ function showDragBar(flg)
 			$('#bar').css('visibility', 'hidden');
 		});
 	}
+}
+
+/////////////////////////////////////////////
+// Real-time Message
+/////////////////////////////////////////////
+function openIncomingMessage()
+{
+	if(siteWebsocket == null) {
+		siteWebsocket = new WebSocket('ws://chain-api.media.mit.edu/ws/site-7');
+		siteWebsocket.onopen = function(evt) {
+			console.log('tidmarsh site realtime message onopen');
+		};
+		siteWebsocket.onclose = function(evt) {
+			console.log('tidmarsh site realtime message onclose');
+		};
+		siteWebsocket.onmessage = function(evt) {
+			//console.log(evt);
+			var tmpobj = $.parseJSON(evt.data);
+			var href = tmpobj['_links']['ch:sensor']['href'];
+			var iobj = chainManager.getDeviceBySensor(href);
+			if(iobj != null) {
+				if(iobj.sid == sensorTable[mainmenu.currSelectSensorIdx]) {
+					//console.log(iobj.did + ", " + iobj.sid + ", " + tmpobj.value);
+					processMessage(iobj.did, iobj.sid, tmpobj.value);
+				}
+			}
+		};
+		siteWebsocket.onerror = function(evt) {
+			console.log('tidmarsh siste realtime message onerror');
+		};
+	}
+}
+
+function closeIncomingMessage()
+{
+	if(siteWebsocket != null) {
+		console.log('tidmarsh site realtime message closing...');
+		siteWebsocket.close();
+		siteWebsocket = null;
+	}
+}
+
+function processMessage(did, sid, value)
+{
+	network.updateVoronoi(did, sid, value);
 }
 
 /////////////////////////////////////////////

@@ -178,7 +178,6 @@ function showNodeSign(node, delay)
 
 function hideNodeSign()
 {
-	console.log("swwww");
 	TweenMax.to(infoSignPlane.position, 0.4, {z: -80, ease:Cubic.easeOut, onComplete: function() {
 		infoSignPlane.visible = false;
 	}});

@@ -125,6 +125,9 @@ WeatherEffect.prototype._sunny = function()
 
 WeatherEffect.prototype._clearSunny = function()
 {
+	if(this._sunnyLights == null)
+		return;
+
 	for(var i = 0; i < this._sunnyLights.length; i++) {
 		scene.remove(this._sunnyLights[i]);
 	}
@@ -244,13 +247,14 @@ WeatherEffect.prototype._rain = function()
 
 		this._rainParticuleEmitter = new THREE.PointCloud(this._rainParticuleParticules, rainParticuleEmitterMaterial);
 		this._rainParticuleEmitter.sortParticles = true;
-		this._rainParticuleEmitter.position.z = 0;
-		scene.add(this._rainParticuleEmitter);
+		this._rainParticuleEmitter.position.z = 210;
+		this._rainParticuleEmitter.rotation.x = Math.PI / 2;
+		ground.add(this._rainParticuleEmitter);
 	} else {
 		for(var i = 0; i < this._rainLights.length; i++) {
 			scene.add(this._rainLights[i]);
 		}
-		scene.add(this._rainParticuleEmitter);
+		ground.add(this._rainParticuleEmitter);
 	}
 
 }
@@ -260,7 +264,7 @@ WeatherEffect.prototype._clearRain = function()
 	for(var i = 0; i < this._rainLights.length; i++) {
 		scene.remove(this._rainLights[i]);
 	}
-	scene.remove(this._rainParticuleEmitter);
+	ground.remove(this._rainParticuleEmitter);
 }
 
 WeatherEffect.prototype._animateRain = function()
@@ -322,8 +326,9 @@ WeatherEffect.prototype._snow = function()
 
 		this._snowParticuleEmitter = new THREE.PointCloud(this._snowParticuleParticules, snowParticuleEmitterMaterial);
 		this._snowParticuleEmitter.sortParticles = true;
-		this._snowParticuleEmitter.position.z = 0;
-		scene.add(this._snowParticuleEmitter);
+		this._snowParticuleEmitter.position.z = 210;
+		this._snowParticuleEmitter.rotation.x = Math.PI / 2;
+		ground.add(this._snowParticuleEmitter);
 
 		// floor
 		this._createSnowFloor( groundWid, groundHei, 15, 5, 5, 0xffffff );
@@ -332,8 +337,8 @@ WeatherEffect.prototype._snow = function()
 		for(var i = 0; i < this._snowLights.length; i++) {
 			scene.add(this._snowLights[i]);
 		}
-		scene.add(this._snowParticuleEmitter);
-		scene.add(this._mountain);
+		ground.add(this._snowParticuleEmitter);
+		ground.add(this._mountain);
 	}
 }
 
@@ -342,8 +347,8 @@ WeatherEffect.prototype._clearSnow = function()
 	for(var i = 0; i < this._snowLights.length; i++) {
 		scene.remove(this._snowLights[i]);
 	}
-	scene.remove(this._snowParticuleEmitter);
-	scene.remove(this._mountain);
+	ground.remove(this._snowParticuleEmitter);
+	ground.remove(this._mountain);
 }
 
 WeatherEffect.prototype._createSnowFloor = function( width, depth, height, xSeg, ySeg, color )
@@ -387,10 +392,10 @@ WeatherEffect.prototype._createSnowFloor = function( width, depth, height, xSeg,
 		}
 	}
 
-	this._mountain.rotation.x = degToRad( -90 );
-	this._mountain.position.y = groundZero + 4;
+	//this._mountain.rotation.x = degToRad( -90 );
+	this._mountain.position.z = 2;
 
-	scene.add( this._mountain );
+	ground.add( this._mountain );
 }
 
 WeatherEffect.prototype._animateSnow = function()

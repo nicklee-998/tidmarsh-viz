@@ -231,7 +231,7 @@ NodeNetwork.prototype.createVoronoi = function()
 			mesh.translateX( - theCenter.x);
 			mesh.translateY( - theCenter.y);
 			mesh.visible = false;
-			//scene.add(mesh);
+			scene.add(mesh);
 
 			// 将cell加入到device的信息中
 			if(j == 0) {
@@ -257,6 +257,7 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value)
 			// change height
 			//device.cell.scale.z = mobj.height;
 			device.cell.visible = true;
+			device.cell.position.y = ground.position.y + 2;
 			TweenMax.to(device.cell.scale, 0.5, {z:mobj.height, ease:Elastic.easeOut});
 
 		} else {
@@ -274,9 +275,10 @@ NodeNetwork.prototype.clearVoronoi = function(isAnim)
 			continue;
 
 		if(isAnim) {
-			TweenMax.to(device.cell.scale, 0.2, {z:0.001, ease:Expo.easeOut, onComplete: function() {
-				device.cell.visible = false;
-			}});
+			device.cell.visible = false;
+			//TweenMax.to(device.cell.scale, 0.2, {z:0.001, ease:Expo.easeOut, onComplete:function() {
+			//	device.cell.visible = false;
+			//}});
 		} else {
 			device.cell.visible = false;
 		}
