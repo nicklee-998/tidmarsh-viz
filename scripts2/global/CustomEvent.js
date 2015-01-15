@@ -4,6 +4,11 @@
 
 
 /***********************************
+ * 3D SCENE EVENT
+ ***********************************/
+var DEVICE_MODEL_LOADED = "device_model_loaded";
+
+/***********************************
  * GOOGLE MAP Event
  ***********************************/
 var GMAP_INIT = "gmap_init_done";

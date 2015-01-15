@@ -33,6 +33,7 @@ var SENSOR_NODE_HEIGHT = 2000;
 //
 var weather = null;
 var network, chainManager, apManager;
+var calendar = null;
 
 var siteWebsocket = null;
 
@@ -92,16 +93,26 @@ function onGmapInit()
 	jQuery.unsubscribe(GMAP_INIT, onGmapInit);
 
 	// INIT 3D
+	jQuery.subscribe(DEVICE_MODEL_LOADED, onDeviceModelLoaded);
 	init3d();
 
 	// Loading animation
 	initLoadingScreen();
 
+	// Loading node data on server...
 	jQuery.subscribe(SERVER_SUMMARY_COMPLETE, onServerSummary);
 	jQuery.subscribe(SERVER_DEVICE_INFO_COMPLETE, onDeviceInfoComplete);
 	jQuery.subscribe(SERVER_INIT_COMPLETE, onServerInitCompelte);
 	chainManager = new ChainManager("http://chain-api.media.mit.edu/devices/?site_id=7");
 	chainManager.init();
+}
+
+function onDeviceModelLoaded()
+{
+	jQuery.unsubscribe(DEVICE_MODEL_LOADED, onDeviceModelLoaded);
+	console.log("Device model loaded...");
+
+	// Not Used now...
 }
 
 function onServerSummary(e, i)
@@ -258,8 +269,12 @@ function init3d()
 function createWorld()
 {
 	createBaseGround();
-	createSensorNode();
 	initInfoPanel();
+	createSensorNode();
+
+	// calendar
+	calendar = new CalendarEffect(scene, camera);
+	calendar.init(2014);
 }
 
 function createBaseGround()
@@ -286,14 +301,16 @@ function createSensorNode()
 	var loader = new THREE.ColladaLoader();
 	loader.options.convertUpAxis = true;
 	loader.load('./res/SensorNode/sensornode.dae', function(collada) {
-		sensornode = collada.scene;
-		sensornode.scale.x = sensornode.scale.y = sensornode.scale.z = 3500;
-		sensornode.position.y = SENSOR_NODE_HEIGHT;
-		sensornode.rotation.x = Math.PI;
-		sensornode.rotation.y = Math.PI;
-		sensornode.visible = false;
-		sensornode.updateMatrix();
-		scene.add(sensornode);
+		sensornode = collada.scene.children[0];
+		sensornode.scale.x = sensornode.scale.y = sensornode.scale.z = 200;
+		//sensornode.position.y = SENSOR_NODE_HEIGHT;
+		//sensornode.updateMatrix();
+		//scene.add(sensornode);
+
+		// ------------------------------
+		// Send model loaded event
+		// ------------------------------
+		jQuery.publish(DEVICE_MODEL_LOADED);
 	});
 }
 
@@ -340,7 +357,6 @@ function render()
 	var intersects = raycaster.intersectObjects(ground.children, true);
 
 	if(intersects.length > 0 && mainmenu.currSelectIdx == 2) {
-
 		if(chainManager != null && chainManager.getDeviceByName(intersects[0].object.name) != null) {
 			if(INTERSECTED != intersects[0].object) {
 				if(INTERSECTED) {
@@ -388,6 +404,10 @@ function render()
 
 	renderer.render(scene, camera);
 	controls.update();
+
+	if(calendar != null) {
+		calendar.render(mouse.x, mouse.y);
+	}
 }
 
 /////////////////////////////////////////////
@@ -536,11 +556,11 @@ function setScenePerspective(idx)
 			controls.maxPolarAngle = controls.getPolarAngle();
 		}});
 		// Hide sensor node
-		if(sensornode.visible) {
-			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
-				sensornode.visible = false;
-			}});
-		}
+		//if(sensornode.visible) {
+		//	TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+		//		sensornode.visible = false;
+		//	}});
+		//}
 
 		sceneState = 1;
 
@@ -554,11 +574,11 @@ function setScenePerspective(idx)
 			//controls.maxPolarAngle = controls.getPolarAngle();
 		}});
 		// Hide sensor node
-		if(sensornode.visible) {
-			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
-				sensornode.visible = false;
-			}});
-		}
+		//if(sensornode.visible) {
+		//	TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+		//		sensornode.visible = false;
+		//	}});
+		//}
 
 		sceneState = 2;
 	} else if(idx == 3) {
@@ -571,11 +591,11 @@ function setScenePerspective(idx)
 			//controls.maxPolarAngle = controls.getPolarAngle();
 		}});
 		// Hide sensor node
-		if(sensornode.visible) {
-			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
-				sensornode.visible = false;
-			}});
-		}
+		//if(sensornode.visible) {
+		//	TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+		//		sensornode.visible = false;
+		//	}});
+		//}
 
 		sceneState = 3;
 	} else if(idx == 4) {
@@ -872,11 +892,13 @@ function onKeyboardDown()
 	}
 	else if(d3.event.keyCode == 56)	// 8
 	{
-		ground.position.y -= 10;
+		calendar.show();
+		//ground.position.y -= 10;
 	}
 	else if(d3.event.keyCode == 57)	// 9
 	{
-		ground.position.y += 10;
+		calendar.hide();
+		//ground.position.y += 10;
 	}
 	else if(d3.event.keyCode == 49)	// 1
 	{

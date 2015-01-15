@@ -88,11 +88,14 @@ NodeNetwork.prototype.createDevice = function(dInfo)
 		new THREE.MeshPhongMaterial({color: 0x666666, shading: THREE.FlatShading})
 		//new THREE.MeshPhongMaterial({ambient: 0x555555, color: 0x555555, specular: 0xffffff, shininess: 50, shading: THREE.SmoothShading})
 	);
+
+	//var box = new SensorNode(sensornode.clone(), dInfo.title);
 	var pnt = this.latLngToCube(dInfo.lat, dInfo.lng);
 	box.position.x = pnt.x * groundWid - groundWid / 2;
 	box.position.y = -(pnt.y * groundHei - groundHei / 2);
 	box.position.z = 8;
-	box.rotation.x = -Math.PI / 2;
+	box.rotation.x -= Math.PI / 2;
+	box.rotation.z = -Math.PI;
 	box.name = dInfo.title;
 	this.devices.push({type: "cell", mesh: box, id: dInfo.title, cell: null});
 	this.deviceBoxes.push(box);
