@@ -83,13 +83,8 @@ function NodeNetwork()
 // -------------------------------------------------------
 NodeNetwork.prototype.createDevice = function(dInfo)
 {
-	var box = new THREE.Mesh(
-		new THREE.CylinderGeometry(10, 10, 12, 10),
-		new THREE.MeshPhongMaterial({color: 0x666666, shading: THREE.FlatShading})
-		//new THREE.MeshPhongMaterial({ambient: 0x555555, color: 0x555555, specular: 0xffffff, shininess: 50, shading: THREE.SmoothShading})
-	);
-
-	//var box = new SensorNode(sensornode.clone(), dInfo.title);
+	var node = new SensorNode(dInfo.title);
+	var box = node._mesh;
 	var pnt = this.latLngToCube(dInfo.lat, dInfo.lng);
 	box.position.x = pnt.x * groundWid - groundWid / 2;
 	box.position.y = -(pnt.y * groundHei - groundHei / 2);
@@ -97,8 +92,13 @@ NodeNetwork.prototype.createDevice = function(dInfo)
 	box.rotation.x -= Math.PI / 2;
 	box.rotation.z = -Math.PI;
 	box.name = dInfo.title;
-	this.devices.push({type: "cell", mesh: box, id: dInfo.title, cell: null});
+	this.devices.push({type: "cell", mesh: box, node:node, id: dInfo.title, cell: null});
 	this.deviceBoxes.push(box);
+	if(dInfo.lastUpdated != null) {
+		node.isOnline(dInfo.lastUpdated);
+	} else {
+		node.online(false);
+	}
 	ground.add(box);
 
 	// poisson dict -
@@ -130,7 +130,7 @@ NodeNetwork.prototype.createFakeDevices = function()
 				box.position.y = -(py - groundHei / 2);
 				box.position.z = 8;
 				box.rotation.x = -Math.PI / 2;
-				this.devices.push({type: "blank", mesh: box, id: "blank"+i, cell: null});
+				this.devices.push({type: "blank", mesh: box, node:null, id: "blank"+i, cell: null});
 				//ground.add(box);
 				//this.growAnimation(box);
 
@@ -138,6 +138,17 @@ NodeNetwork.prototype.createFakeDevices = function()
 			} else {
 				over = true;
 			}
+		}
+	}
+}
+
+NodeNetwork.prototype.updateNode = function(did, date)
+{
+	for(var i = 0; i < this.devices.length; i++) {
+		var device = this.devices[i];
+		if(device.id == did) {
+			device.node.isOnline(date);
+			break;
 		}
 	}
 }

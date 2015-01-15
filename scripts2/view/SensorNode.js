@@ -1,27 +1,54 @@
 /**
  * Created by marian_mcpartland on 15/1/12.
  */
-function SensorNode(model, title)
+function SensorNode(title)
 {
-	this.title = title;
-	this.mesh = model;
+	this._title = title;
+	this._mesh = new THREE.Mesh(
+		new THREE.CylinderGeometry(10, 10, 12, 10),
+		new THREE.MeshPhongMaterial({color: 0x666666, shading: THREE.FlatShading})
+	);
 
-	this._part01 = model.getObjectByName("_065T_0A-1Imported1", true).children[0];
-	this._part02 = model.getObjectByName("_065B_0A-1Boss-Extrude3", true).children[0];
-	this._part01.material = new THREE.MeshPhongMaterial({color: 0x404040, shading: THREE.FlatShading});
-	this._part02.material = new THREE.MeshPhongMaterial({color: 0x404040, shading: THREE.FlatShading});
-	this._part01.userData = {"title": title, "host": this};
-	this._part02.userData = {"title": title, "host": this};
+	this._onlineTimer = null;
+	this._onlineCounter;
+	this.ONLINE_TOTAL_TIME = 600;   // 单位：秒
 }
 
-SensorNode.prototype.mouseOver = function()
+SensorNode.prototype.isOnline = function(date)
 {
-	this._part01.material.emissive.setHex(0xff0000);
-	this._part02.material.emissive.setHex(0xff0000);
+	var now = new Date();
+	var interval = (now - date) / 60000;    // 单位：分钟
+
+	if(interval > 10) {
+		this.online(false);
+	} else {
+		this.online(true);
+	}
 }
 
-SensorNode.prototype.mouseOut = function()
+SensorNode.prototype.online = function(val)
 {
-	this._part01.material.emissive.setHex(0x404040);
-	this._part02.material.emissive.setHex(0x404040);
+	var self = this;
+
+	if(val) {
+		// online
+		this._mesh.material.color.setHex("0xff0000");
+
+		// set on timer
+		this._onlineCounter = this.ONLINE_TOTAL_TIME;
+		if(this._onlineTimer == null) {
+			this._onlineTimer = setInterval(function() {
+				if(self._onlineCounter == 0) {
+					self.online(false);
+					clearInterval(self._onlineTimer);
+					self._onlineTimer = null;
+				} else {
+					self._onlineCounter--;
+				}
+			}, 1000);
+		}
+	} else {
+		// offline
+		this._mesh.material.color.setHex("0x666666");
+	}
 }

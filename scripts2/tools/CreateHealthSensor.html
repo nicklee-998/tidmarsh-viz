@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Create Health Sensor</title>
+</head>
+<body>
+
+<script src="../../libs/jquery-1.11.1.min.js"></script>
+<script>
+
+	var site_url = "http://chain-api.media.mit.edu/devices/?site_id=7";
+
+	var devices;
+	var load_idx = 0;
+
+	function createHealthSensors()
+	{
+		$.getJSON(site_url, function(dat) {
+
+			// TODO: That's use a little trick way to get all sensors from on request, maybe change the way in future...
+			var url = site_url + '&limit=' + dat.totalCount + '&offset=0';
+			$.getJSON(url, function(dat2) {
+				devices = dat2._links.items;
+
+				// load all device info
+				load_idx = 0;
+				startCreateSensor();
+
+				//console.log(self.devices);
+			});
+		});
+	}
+
+
+	function startCreateSensor()
+	{
+		//if(load_idx == devices.length) {
+		if(load_idx == 3) {
+			// create complete
+			var result_str = "Create health sensor completed, total created " + load_idx + " health sensors";
+			alert(result_str);
+
+			return;
+		}
+
+		var device = devices[load_idx];
+		$.getJSON(device.href, function(dat) {
+
+			$.getJSON(dat["_links"]["ch:sensors"]["href"], function(dat2) {
+
+				var create_url = dat2["_links"]["createForm"]["href"];
+				var data2 = '{"sensor-type":"scalar", "metric":"health", "unit":"health", "":}';
+
+				var isfind = false;
+				for(var i = 0; i < dat2["_links"]["items"].length; i++)
+				{
+					var t = dat2["_links"]["items"][i].title;
+					if(t == "health") {
+						isfind = true;
+						break;
+					}
+				}
+
+				console.log(isfind);
+
+				if(!isfind) {
+					$.ajax({
+						type: 'POST',
+						url: create_url,
+						data: data2,
+						dataType: "json",
+						beforeSend: function (xhr) {
+							xhr.setRequestHeader(
+								'Authentication',
+								'Basic ' + btoa('nick_lee:234567'));
+						},
+						success: function(val) {
+							console.log(val);
+							//alert("success"+val);
+						},
+						error: function(e) {
+							console.log(e);
+							//alert("Failure"+ JSON.stringify(e));
+						}
+					});
+				}
+
+				// go on next device...
+				load_idx++;
+				startCreateSensor();
+			});
+		});
+	}
+
+	function getBasicAuth(username, password)
+	{
+		var token = username + ':' + password;
+		var hash = Base64.encode(token);
+		return "Basic " + hash;
+	}
+
+	function post(path, params, method)
+	{
+		method = method || "post"; // Set method to post by default if not specified.
+
+		// The rest of this code assumes you are not using a library.
+		// It can be made less wordy if you use one.
+		var form = document.createElement("form");
+		form.setAttribute("method", method);
+		form.setAttribute("action", path);
+
+		for(var key in params) {
+			if(params.hasOwnProperty(key)) {
+				var hiddenField = document.createElement("input");
+				hiddenField.setAttribute("type", "hidden");
+				hiddenField.setAttribute("name", key);
+				hiddenField.setAttribute("value", params[key]);
+
+				form.appendChild(hiddenField);
+			}
+		}
+
+		//console.log(form);
+
+		document.body.appendChild(form);
+		form.submit();
+	}
+
+	createHealthSensors();
+
+</script>
+
+</body>
+</html>

@@ -104,6 +104,8 @@ ChainManager.prototype._getAllDeviceInfo = function()
 		device.floor = dat.floor;
 		device.description = dat.description;
 		device.websocket = dat["_links"]["ch:websocketStream"]["href"];
+		device.lastUpdated = null;
+
 		if(dat.geoLocation) {
 			device.lat = dat.geoLocation.latitude;
 			device.lng = dat.geoLocation.longitude;
@@ -115,24 +117,45 @@ ChainManager.prototype._getAllDeviceInfo = function()
 		$.getJSON(dat["_links"]["ch:sensors"]["href"], function(dat2) {
 
 			var arr = [];
+			var lastUpdatedUrl = null;
 			for(var i = 0; i < dat2["_links"]["items"].length; i++)
 			{
 				var t = dat2["_links"]["items"][i].title;
 				var h = dat2["_links"]["items"][i].href;
+
+				if(t == "battery_voltage") {
+					lastUpdatedUrl = h;
+				}
 
 				// sensor object...
 				arr.push({title:t, href:h, dataHistory:"", dataType:"", metric:"", unit:"", dataPrev:"", dataNext:"", loadFlag:false});
 			}
 			device.sensors = arr;
 
-			// ------------------------
-			// Send device init event
-			// ------------------------
-			jQuery.publish(SERVER_DEVICE_INFO_COMPLETE, device);
+			// get last updated date
+			if(lastUpdatedUrl != null) {
+				$.getJSON(lastUpdatedUrl, function(dat3) {
+					device.lastUpdated = new Date(dat3["updated"]);
 
-			// go on next device...
-			self._loadIdx++;
-			self._getAllDeviceInfo();
+					// ------------------------
+					// Send device init event
+					// ------------------------
+					jQuery.publish(SERVER_DEVICE_INFO_COMPLETE, device);
+
+					// go on next device...
+					self._loadIdx++;
+					self._getAllDeviceInfo();
+				});
+			} else {
+				// ------------------------
+				// Send device init event
+				// ------------------------
+				jQuery.publish(SERVER_DEVICE_INFO_COMPLETE, device);
+
+				// go on next device...
+				self._loadIdx++;
+				self._getAllDeviceInfo();
+			}
 		});
 	});
 }

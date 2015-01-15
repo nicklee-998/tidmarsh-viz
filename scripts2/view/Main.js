@@ -934,7 +934,11 @@ function simulateIncomingData()
 	var iiidx = getRandomInt(0, chainManager.devices.length);
 	var devtitle = chainManager.devices[iiidx].title;
 
-	processMessage(devtitle, sid, v);
+	var now = new Date();
+	chainManager.devices[iiidx].lastUpdated = now;
+	network.updateNode(devtitle, now);
+
+	//processMessage(devtitle, sid, v);
 
 	_sensorIdx++;
 	if(_sensorIdx == sarr.length) {

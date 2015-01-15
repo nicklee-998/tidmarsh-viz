@@ -26,6 +26,7 @@ CalendarEffect.prototype.init = function(year)
 	if(this._dayContainer == null) {
 		this._dayContainer = new THREE.Object3D();
 		this._dayContainer.rotation.x = Math.PI;
+		this._dayContainer.visible = false;
 		this._scene.add(this._dayContainer);
 	}
 
@@ -60,7 +61,7 @@ CalendarEffect.prototype.show = function()
 
 		TweenMax.to(pDay.position, 1, {x:px, y:py, z:pz, delay: rt, ease:Expo.easeOut});
 		TweenMax.to(pDay.rotation, 1, {x:rx, y:ry, z:rz, delay: rt, ease:Circ.easeOut});
-		TweenMax.to(pDay.material, 1.2, {opacity:1, delay: rt, ease:Expo.easeOut});
+		TweenMax.to(pDay.material, 1, {opacity:1, delay: rt, ease:Expo.easeOut});
 	}
 }
 
