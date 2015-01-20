@@ -24,11 +24,18 @@
 	<div id='slider'></div>
 </div>
 <div id="datepicker"></div>
-<div id="mainmenu"></div>
 <div id="weather">
 	<div id="forecast">getting weather...</div>
 	<div id="sunrise_sunset"></div>
 </div>
+<!-- health graph -->
+<div id="health_calendar"></div>
+<div id="health_tooltip"></div>
+<div id="health_sensor"></div>
+<!-- main menu -->
+<div id="mainmenu"></div>
+
+<div id="state"></div>
 <div id="opening_loader" class='wrapper'><div id="a" /></div>
 
 <script src="./libs/three.min.js"></script>
@@ -36,12 +43,12 @@
 <script src="./libs/jquery-1.11.1.min.js"></script>
 <script src="./libs/jquery-ui.js"></script>
 <script src="./libs/tiny-pubsub.js"></script>
+<script src="./libs/EasePack.min.js"></script>
+<script src="./libs/TweenMax.min.js"></script>
 <script src="./js/controls/OrbitControls.js"></script>
 <script src="./js/libs/stats.min.js"></script>
 <script src="./js/SimulationRenderer.js"></script>
 <script src="./js/loaders/ColladaLoader.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/easing/EasePack.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
 <script src="http://jqueryrotate.googlecode.com/svn/trunk/jQueryRotate.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
@@ -62,6 +69,7 @@
 <script src="./scripts2/controllers/UiNodeInfoPanel.js"></script>
 <script src="./scripts2/controllers/UiMainMenu.js"></script>
 <script src="./scripts2/controllers/UiIntroPage.js"></script>
+<script src="./scripts2/controllers/UiHealthCalendar.js"></script>
 <script src="./scripts/opening_loader.js"></script>
 
 <script>

@@ -14,6 +14,11 @@ var DEVICE_MODEL_LOADED = "device_model_loaded";
 var GMAP_INIT = "gmap_init_done";
 
 /***********************************
+ * Network Event
+ ***********************************/
+var NETWORK_HEALTH_NODE = "network_health_node_click";
+
+/***********************************
  * Chain API Event
  ***********************************/
 var SERVER_SUMMARY_COMPLETE = "server_summary_loaded";          // 获得了server的summary

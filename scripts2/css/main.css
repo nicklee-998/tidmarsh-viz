@@ -76,6 +76,86 @@ html, body {
 }
 
 /***********************************************
+ * Health calendar
+ ***********************************************/
+#health_calendar {
+	 position: absolute;
+	 top: 130px;
+	 left: 50px;
+ }
+
+.calendar_year {
+	fill: #ffffff;
+	font-size: 20px;
+}
+
+.calendar_day {
+	stroke: #ccc;
+}
+
+.calendar_month {
+	fill: none;
+	stroke: #000;
+	stroke-width: 2px;
+}
+
+.calendar_month_title {
+	fill: #ffffff;
+	font-size: 9px;
+}
+
+/***********************************************
+ * Health sensor pie chart
+ ***********************************************/
+#health_sensor {
+	position: absolute;
+	top: 150px;
+	left: 320px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 15px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	background-color: rgba(0, 0, 0, 0.8);
+}
+
+.pie_labels {
+	fill: #ffffff;
+	font-size: 9px;
+}
+
+.pie_polyline {
+	opacity: .3;
+	stroke: white;
+	stroke-width: 2px;
+	fill: none;
+}
+
+/***********************************************
+ * Health tooltip
+ ***********************************************/
+#health_tooltip {
+	position: absolute;
+	width: 54px;
+	height: 18px;
+	padding: 10px;
+	background-color: #f5d328;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 15px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+	bottom: 45px;
+	right: 15px;
+	font-size: 16px;
+	visibility:hidden;
+	font-family: "Roboto";
+}
+
+/***********************************************
  * Weather
  ***********************************************/
 #weather {

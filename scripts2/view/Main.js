@@ -34,8 +34,7 @@ var SENSOR_NODE_HEIGHT = 2000;
 var weather = null;
 var network, chainManager, apManager;
 var calendar = null;
-
-var siteWebsocket = null;
+var calendar_node = null;
 
 // interactive
 var raycaster;
@@ -52,11 +51,14 @@ var clock = new THREE.Clock();
 
 // FOR TEST
 var _sensorIdx = 0;
+var square = null;
 
 $(document).ready(function() {
 
 	// INIT UI
 	initSliderBar();
+	initHealthCalendar();
+
 	// MAIN MENU
 	jQuery.subscribe(MAINMENU_BEGIN, onMainMenuClick);
 	jQuery.subscribe(MAINMENU_NETWORK, onMainMenuClick);
@@ -177,7 +179,7 @@ function init3d()
 
 	// STATS
 	stats = new Stats();
-	container.append(stats.domElement);
+	$("#state").append(stats.domElement);
 
 	// CONTROLS
 	controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -272,9 +274,14 @@ function createWorld()
 	initInfoPanel();
 	createSensorNode();
 
-	// calendar
-	calendar = new CalendarEffect(scene, camera);
-	calendar.init(2014);
+	//
+	square = new THREE.Mesh(
+		new THREE.PlaneBufferGeometry(50, 50, 20, 20),
+		new THREE.MeshPhongMaterial({color: 0xff0000, shading: THREE.FlatShading, side: THREE.DoubleSide, transparent:true})
+	);
+	square.position.y = -5;
+	square.position.z = -150;
+	//camera.add(square);
 }
 
 function createBaseGround()
@@ -302,10 +309,11 @@ function createSensorNode()
 	loader.options.convertUpAxis = true;
 	loader.load('./res/SensorNode/sensornode.dae', function(collada) {
 		sensornode = collada.scene.children[0];
-		sensornode.scale.x = sensornode.scale.y = sensornode.scale.z = 200;
-		//sensornode.position.y = SENSOR_NODE_HEIGHT;
-		//sensornode.updateMatrix();
-		//scene.add(sensornode);
+		sensornode.scale.x = sensornode.scale.y = sensornode.scale.z = 2500;
+		sensornode.position.y = SENSOR_NODE_HEIGHT;
+		sensornode.visible = false;
+		sensornode.updateMatrix();
+		scene.add(sensornode);
 
 		// ------------------------------
 		// Send model loaded event
@@ -351,53 +359,6 @@ function onDocumentMouseUp( event )
 
 function render()
 {
-	// find intersections
-	var vector = new THREE.Vector3(mouse.x, mouse.y, 1).unproject(camera);
-	raycaster.set(camera.position, vector.sub(camera.position).normalize());
-	var intersects = raycaster.intersectObjects(ground.children, true);
-
-	if(intersects.length > 0 && mainmenu.currSelectIdx == 2) {
-		if(chainManager != null && chainManager.getDeviceByName(intersects[0].object.name) != null) {
-			if(INTERSECTED != intersects[0].object) {
-				if(INTERSECTED) {
-					INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-				}
-				INTERSECTED = intersects[0].object;
-				INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-				INTERSECTED.material.emissive.setHex(0xff0000);
-			}
-		} else if(intersects[0].object.name == "info_sign_plane" || intersects[0].object.name == "signmesh") {
-			var sign = null;
-			for(var i = 0; i < intersects.length; i++) {
-				if(intersects[i].object.name == "info_sign_plane") {
-					sign = intersects[i].object;
-					break;
-				}
-			}
-
-			if(sign != null) {
-				if(INTERSECTED != sign) {
-					if(INTERSECTED) {
-						INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-					}
-					INTERSECTED = sign;
-					INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-					INTERSECTED.material.emissive.setHex(0xff0000);
-				}
-			}
-		} else {
-			if ( INTERSECTED ) {
-				INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-			}
-			INTERSECTED = null;
-		}
-	} else {
-		if ( INTERSECTED ) {
-			INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-		}
-		INTERSECTED = null;
-	}
-
 	if(infoSignPlane != null) {
 		infoSignPlane.rotation.y = controls.getAzimuthalAngle();
 	}
@@ -405,9 +366,19 @@ function render()
 	renderer.render(scene, camera);
 	controls.update();
 
+	if(network != null) {
+		network.render(mouse.x, mouse.y);
+	}
+
 	if(calendar != null) {
 		calendar.render(mouse.x, mouse.y);
 	}
+}
+
+function onNetworkNodeClick(e, d)
+{
+	calendar_node = "./res/data_2014/" + d + "_2014.csv";
+	setHealthCalendar(calendar_node);
 }
 
 /////////////////////////////////////////////
@@ -428,12 +399,14 @@ function onMainMenuClick(e)
 		// 显示天气
 		weather.showWeather();
 		// CLEAR GRAPH
+		network.closeIncomingMessage();
 		network.clearVoronoi(true);
 		// Hide cal and dragbar
 		showCal(false);
 		showDragBar(false);
-		// Close realtime message
-		closeIncomingMessage();
+		// Device health
+		hideHealthCalendar();
+		network.clearHealthGraph();
 		// Set 3d scene
 		setScenePerspective(1);
 
@@ -445,12 +418,14 @@ function onMainMenuClick(e)
 		// 显示天气
 		weather.showWeather();
 		// CLEAR GRAPH
+		network.closeIncomingMessage();
 		network.clearVoronoi(true);
 		// Hide cal and dragbar
 		showCal(false);
 		showDragBar(false);
-		// Close realtime message
-		closeIncomingMessage();
+		// Device health
+		hideHealthCalendar();
+		network.clearHealthGraph();
 		// Set 3d scene
 		setScenePerspective(2);
 		// Set default sign
@@ -474,6 +449,9 @@ function onMainMenuClick(e)
 		network.clearVoronoi(true);
 		// Choose Sensor
 		selectSensor = sensorTable[mainmenu.currSelectSensorIdx];
+		// Device health
+		hideHealthCalendar();
+		network.clearHealthGraph();
 		// Set 3d scene
 		setScenePerspective(3);
 
@@ -509,30 +487,37 @@ function onMainMenuClick(e)
 			showCal(false);
 			showDragBar(false);
 			// realtime
-			openIncomingMessage();
+			network.openIncomingMessage();
 		} else {
 			// realtime
-			closeIncomingMessage();
+			network.closeIncomingMessage();
 			// history
 			getDevicesDataBySensorMenu();
 		}
 
 	} else if(e.type == MAINMENU_DEVICE) {
+
 		// 隐藏介绍文字
 		intro.hideIntroPage();
 		// 隐藏指示牌和信息板
 		hideNodeSign();
 		hideInfoPanel();
+		// 隐藏动物和植物
+		apManager.hideAP();
+		// 关闭天气
+		weather.hideWeather();
 		// CLEAR GRAPH
+		network.closeIncomingMessage();
 		network.clearVoronoi(true);
-		// Hide cal and dragbar
-		showCal(false);
-		showDragBar(false);
-		// Close realtime message
-		closeIncomingMessage();
+		// Device health
+		hideHealthCalendar();
 		// Set 3d scene
 		setScenePerspective(4);
+		// enter health mode
+		jQuery.subscribe(NETWORK_HEALTH_NODE, onNetworkNodeClick);
 
+		var cfile = "./res/data_2014/2014_all.csv"
+		network.createHealthGraph(cfile);
 	}
 }
 
@@ -556,11 +541,15 @@ function setScenePerspective(idx)
 			controls.maxPolarAngle = controls.getPolarAngle();
 		}});
 		// Hide sensor node
-		//if(sensornode.visible) {
-		//	TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
-		//		sensornode.visible = false;
-		//	}});
-		//}
+		if(sensornode.visible) {
+			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+				sensornode.visible = false;
+			}});
+		}
+		// Hide calendar
+		if(calendar != null) {
+			calendar.hide();
+		}
 
 		sceneState = 1;
 
@@ -574,11 +563,15 @@ function setScenePerspective(idx)
 			//controls.maxPolarAngle = controls.getPolarAngle();
 		}});
 		// Hide sensor node
-		//if(sensornode.visible) {
-		//	TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
-		//		sensornode.visible = false;
-		//	}});
-		//}
+		if(sensornode.visible) {
+			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+				sensornode.visible = false;
+			}});
+		}
+		// Hide calendar
+		if(calendar != null) {
+			calendar.hide();
+		}
 
 		sceneState = 2;
 	} else if(idx == 3) {
@@ -591,22 +584,50 @@ function setScenePerspective(idx)
 			//controls.maxPolarAngle = controls.getPolarAngle();
 		}});
 		// Hide sensor node
-		//if(sensornode.visible) {
-		//	TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
-		//		sensornode.visible = false;
-		//	}});
-		//}
+		if(sensornode.visible) {
+			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+				sensornode.visible = false;
+			}});
+		}
+		// Hide calendar
+		if(calendar != null) {
+			calendar.hide();
+		}
 
 		sceneState = 3;
 	} else if(idx == 4) {
-		sensornode.visible = true;
-		TweenMax.to(sensornode.position, 1, {y:0, ease:Quint.easeOut});
+
+		TweenMax.to(ground.position, 1, {y:-430, ease:Quint.easeOut});
+		TweenMax.to(camera.position, 1.2, {x:7, y:-173, z:1556, ease:Quart.easeOut});
+		// Hide sensor node
+		if(sensornode.visible) {
+			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+				sensornode.visible = false;
+			}});
+		}
+		// Hide calendar
+		if(calendar != null) {
+			calendar.hide();
+		}
+
+		sceneState = 4;
+	} else if(idx == 5) {
+
 		TweenMax.to(ground.position, 1, {y:-SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
 			ground.visible = false;
 		}});
-		TweenMax.to(camera.position, 1.2, {x:-603, y:628, z:1300, ease:Quart.easeOut});
+		TweenMax.to(camera.position, 1.2, {x:11, y:-38, z:1565, ease:Quart.easeOut});
 
-		sceneState = 4;
+		sensornode.visible = true;
+		TweenMax.to(sensornode.position, 1, {y:0, ease:Quint.easeOut, onComplete:function() {
+			// calendar
+			if(calendar == null) {
+				calendar = new CalendarEffect(scene, camera);
+			}
+			calendar.init(2014, calendar_node);
+		}});
+
+		sceneState = 5;
 	}
 }
 
@@ -705,51 +726,6 @@ function showDragBar(flg)
 }
 
 /////////////////////////////////////////////
-// Real-time Message
-/////////////////////////////////////////////
-function openIncomingMessage()
-{
-	if(siteWebsocket == null) {
-		siteWebsocket = new WebSocket('ws://chain-api.media.mit.edu/ws/site-7');
-		siteWebsocket.onopen = function(evt) {
-			console.log('tidmarsh site realtime message onopen');
-		};
-		siteWebsocket.onclose = function(evt) {
-			console.log('tidmarsh site realtime message onclose');
-		};
-		siteWebsocket.onmessage = function(evt) {
-			//console.log(evt);
-			var tmpobj = $.parseJSON(evt.data);
-			var href = tmpobj['_links']['ch:sensor']['href'];
-			var iobj = chainManager.getDeviceBySensor(href);
-			if(iobj != null) {
-				if(iobj.sid == sensorTable[mainmenu.currSelectSensorIdx]) {
-					//console.log(iobj.did + ", " + iobj.sid + ", " + tmpobj.value);
-					processMessage(iobj.did, iobj.sid, tmpobj.value);
-				}
-			}
-		};
-		siteWebsocket.onerror = function(evt) {
-			console.log('tidmarsh siste realtime message onerror');
-		};
-	}
-}
-
-function closeIncomingMessage()
-{
-	if(siteWebsocket != null) {
-		console.log('tidmarsh site realtime message closing...');
-		siteWebsocket.close();
-		siteWebsocket = null;
-	}
-}
-
-function processMessage(did, sid, value)
-{
-	network.updateVoronoi(did, sid, value);
-}
-
-/////////////////////////////////////////////
 // GET SENSOR HISTORY DATA
 /////////////////////////////////////////////
 function getDevicesDataBySensorMenu()
@@ -820,7 +796,11 @@ function updateNetworkNode()
 function onKeyboardDown()
 {
 	// 返回键退出
-	if(d3.event.keyCode == 66) 	// B:
+	if(d3.event.keyCode == 27)
+	{
+
+	}
+	else if(d3.event.keyCode == 66) 	// B:
 	{
 		simulateIncomingData();
 	}
@@ -864,7 +844,16 @@ function onKeyboardDown()
 	}
 	else if(d3.event.keyCode == 73)	// I:
 	{
-
+		var cfile = "./res/data_2014/2014_all.csv"
+		network.createHealthGraph(cfile);
+	}
+	else if(d3.event.keyCode == 74) // J:
+	{
+		network.showHealthGraph(2);
+	}
+	else if(d3.event.keyCode == 75) // K:
+	{
+		network.showHealthGraph(1);
 	}
 	else if(d3.event.keyCode == 79)	// O:
 	{
@@ -890,16 +879,6 @@ function onKeyboardDown()
 			controls.maxAzimuthAngle = Infinity;
 		}
 	}
-	else if(d3.event.keyCode == 56)	// 8
-	{
-		calendar.show();
-		//ground.position.y -= 10;
-	}
-	else if(d3.event.keyCode == 57)	// 9
-	{
-		calendar.hide();
-		//ground.position.y += 10;
-	}
 	else if(d3.event.keyCode == 49)	// 1
 	{
 		weather.create("SUNNY");
@@ -914,11 +893,39 @@ function onKeyboardDown()
 	}
 	else if(d3.event.keyCode == 52)	// 4
 	{
-		weather.create("SNOW");
+		//weather.create("SNOW");
+
+		square.position.y -= 10;
 	}
 	else if(d3.event.keyCode == 53)	// 5
 	{
-		weather.create("FOG");
+		//weather.create("FOG");
+
+		square.position.y += 10;
+	}
+	else if(d3.event.keyCode == 54)	// 6
+	{
+		square.position.x -= 10;
+	}
+	else if(d3.event.keyCode == 55)	// 7
+	{
+		square.position.x += 10;
+	}
+	else if(d3.event.keyCode == 56)	// 8
+	{
+		//calendar.show();
+		//calendar._dayContainer.position.z -= 10;
+		//ground.position.y -= 10;
+
+		square.position.z -= 10;
+	}
+	else if(d3.event.keyCode == 57)	// 9
+	{
+		//calendar.hide();
+		//calendar._dayContainer.position.z += 10;
+		//ground.position.y += 10;
+
+		square.position.z += 10;
 	}
 }
 d3.select("body").on("keydown", onKeyboardDown);

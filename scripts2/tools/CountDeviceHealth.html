@@ -128,10 +128,13 @@
 
 		var arr = new Array();
 		//for(var i = 0; i < devices.length; i++) {
-		for(var i = 50; i < devices.length; i++) {
+		for(var i = 30; i < devices.length; i++) {
 			arr.push(devices[i].title);
 		}
-		fetchMultiDevicesByDate(arr, ["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage"]);
+		fetchMultiDevicesByDate(arr, [
+			"sht_temperature", "bmp_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage",
+			"charge_flags_charge", "charge_flags_fault", "solar_voltage", "wind_direction", "wind_speed"
+		]);
 	}
 
 	//---------------------------------------------------------------------
@@ -207,10 +210,15 @@
 			// 保存该设备的csv文件
 			// -----------------------------------
 			var csvData = new Array();
-			csvData.push('"did", "sht_temperature", "illuminance", "bmp_pressure", ' +
-			'"sht_humidity", "battery_voltage", "total_package", "date"');
+			csvData.push('"did", "sht_temperature", "bmp_temperature", "illuminance", "bmp_pressure", ' +
+			'"sht_humidity", "battery_voltage", "charge_flags_charge", "charge_flags_fault", ' +
+			'"solar_voltage", "wind_direction", "wind_speed", "date"');
+
 			allYearData.forEach(function(item, index, array) {
-				csvData.push('"' + item.did + '","' + item.sht_temperature + '","' + item.illuminance + '","' + item.bmp_pressure + '","' + item.sht_humidity + '","' + item.battery_voltage + '","' + item.total_package + '","' + item.date + '"');
+				csvData.push('"' + item.did + '","' + item.sht_temperature + '","' + item.bmp_temperature + '","' +
+				item.illuminance + '","' + item.bmp_pressure + '","' + item.sht_humidity + '","' + item.battery_voltage + '","' +
+				item.charge_flags_charge + '","' + item.charge_flags_fault + '","' + item.solar_voltage + '","' +
+				item.wind_direction + '","' + item.wind_speed + '","' + item.date + '"');
 			});
 
 			// download stuff
@@ -247,12 +255,17 @@
 
 		oneDayData = {
 			"did": _dayDeviceId,
-			"sht_temperature": 0,
-			"illuminance": 0,
-			"bmp_pressure": 0,
-			"sht_humidity": 0,
-			"battery_voltage": 0,
-			"total_package": 0,
+			"sht_temperature": -999,
+			"bmp_temperature": -999,
+			"illuminance": -999,
+			"bmp_pressure": -999,
+			"sht_humidity": -999,
+			"battery_voltage": -999,
+			"charge_flags_charge": -999,
+			"charge_flags_fault": -999,
+			"solar_voltage": -999,
+			"wind_direction": -999,
+			"wind_speed": -999,
 			"date": _start
 		};
 
@@ -261,16 +274,6 @@
 
 	function _onDayComplete()
 	{
-		// -------------------------------
-		// 计算当天的总package数量
-		// -------------------------------
-		var num_t = oneDayData.sht_temperature;
-		var num_i = oneDayData.illuminance;
-		var num_p = oneDayData.bmp_pressure;
-		var num_h = oneDayData.sht_humidity;
-		var num_v = oneDayData.battery_voltage;
-		oneDayData.total_package = num_t + num_i + num_p + num_h + num_v;
-
 		allYearData.push(oneDayData);
 		console.log(oneDayData);
 
@@ -379,6 +382,8 @@
 			//console.log("[" + _start + "] to [" + _end + "] Total data number is: " + dat.data.length);
 			if(_sensor.title == "sht_temperature") {
 				oneDayData.sht_temperature = dat.data.length;
+			} else if(_sensor.title == "bmp_temperature") {
+				oneDayData.bmp_temperature = dat.data.length;
 			} else if(_sensor.title == "illuminance") {
 				oneDayData.illuminance = dat.data.length;
 			} else if(_sensor.title == "bmp_pressure") {
@@ -387,24 +392,23 @@
 				oneDayData.sht_humidity = dat.data.length;
 			} else if(_sensor.title == "battery_voltage") {
 				oneDayData.battery_voltage = dat.data.length;
+			} else if(_sensor.title == "charge_flags_charge") {
+				oneDayData.charge_flags_charge = dat.data.length;
+			} else if(_sensor.title == "charge_flags_fault") {
+				oneDayData.charge_flags_fault = dat.data.length;
+			} else if(_sensor.title == "solar_voltage") {
+				oneDayData.solar_voltage = dat.data.length;
+			} else if(_sensor.title == "wind_direction") {
+				oneDayData.wind_direction = dat.data.length;
+			} else if(_sensor.title == "wind_speed") {
+				oneDayData.wind_speed = dat.data.length;
 			}
 
 			_expired = true;
 			_startSensorDataChain();
 		}).fail(function() {
-			console.log("Failure: " + _dayDeviceId + "[" + _start + "] to [" + _end + "]");
-
-			if(_sensor.title == "sht_temperature") {
-				oneDayData.sht_temperature = 0;
-			} else if(_sensor.title == "illuminance") {
-				oneDayData.illuminance = 0;
-			} else if(_sensor.title == "bmp_pressure") {
-				oneDayData.bmp_pressure = 0;
-			} else if(_sensor.title == "sht_humidity") {
-				oneDayData.sht_humidity = 0;
-			} else if(_sensor.title == "battery_voltage") {
-				oneDayData.battery_voltage = 0;
-			}
+			var str = "Failure: " + _dayDeviceId + "[" + _start + "] to [" + _end + "]";
+			$("#labAllSensorInfo").append("<p>" + str + "</p>");
 
 			_expired = true;
 			_startSensorDataChain();

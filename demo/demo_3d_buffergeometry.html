@@ -95,6 +95,9 @@
 
 			indices[ i ] = i % ( 3 * chunkSize );
 
+			if(i < 20000) {
+				console.log(indices[i]);
+			}
 		}
 
 		var positions = new Float32Array( triangles * 3 * 3 );

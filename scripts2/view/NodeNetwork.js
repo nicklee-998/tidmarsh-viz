@@ -3,6 +3,15 @@
  */
 function NodeNetwork()
 {
+	// Mode
+	this.NETWORK_MODE_NONE = "network_mode_none";
+	this.NETWORK_MODE_NORMAL = "network_mode_normal";
+	this.NETWORK_MODE_HEALTH = "network_mode_health";
+	this.NETWORK_MODE_VORONOI_REALTIME = "network_mode_voronoi_realtime";
+	this.NETWORK_MODE_VORONOI_HISTORY = "network_mode_voronoi_history";
+
+	this._mode = this.NETWORK_MODE_NONE;
+
 	// Network
 	this.animatedObjects;
 	this.devices = new Array();
@@ -10,6 +19,10 @@ function NodeNetwork()
 
 	// Voronoi
 	this.vertices;
+
+	// Health Graph
+	this._healthDateLayers = null;
+	this._healthSelectedNode = null;
 
 	// Poisson disc
 	this._k = 30;
@@ -23,7 +36,52 @@ function NodeNetwork()
 	this._queueSize = 0;
 	this._sampleSize = 0;
 
+	// Real-time message
+	this._siteWebsocket = null;
+
+	// ------------------------------------------
+	//  Mouse interaction
+	// ------------------------------------------
+	this._raycaster = new THREE.Raycaster();
+	this._intersected = null;
+	this._mouseX;
+	this._mouseY;
+
+
+	document.addEventListener( 'mousemove', function(event) {
+		self._mouseX = event.clientX;
+		self._mouseY = event.clientY;
+	}, false );
+
+	document.addEventListener( 'mouseup', function() {
+
+		if(self._intersected) {
+
+			$("#health_tooltip").css("visibility", "hidden");
+
+			if(self._healthSelectedNode == self._intersected) {
+				self._healthSelectedNode.material.emissive.setHex(0x666666);
+				self._healthSelectedNode.material.color.setHex(0x666666);
+				self._healthSelectedNode = null;
+				//self.onHealthMouseOut();
+			} else {
+				if(self._healthSelectedNode != null) {
+					self._healthSelectedNode.material.emissive.setHex(0x666666);
+					self._healthSelectedNode.material.color.setHex(0x666666);
+				}
+				self._healthSelectedNode = self._intersected;
+
+				// ------------------------
+				// Send click event
+				// ------------------------
+				jQuery.publish(NETWORK_HEALTH_NODE, self._intersected.name);
+			}
+		}
+	}, false );
+
+	// ------------------------------------------
 	// Google Map
+	// ------------------------------------------
 	// Todo: the area lat and lng info should be in Config file
 	var swBound = new google.maps.LatLng(41.90321131560879, -70.57343602180481);
 	var neBound = new google.maps.LatLng(41.904696544596135, -70.57117223739624);
@@ -92,7 +150,7 @@ NodeNetwork.prototype.createDevice = function(dInfo)
 	box.rotation.x -= Math.PI / 2;
 	box.rotation.z = -Math.PI;
 	box.name = dInfo.title;
-	this.devices.push({type: "cell", mesh: box, node:node, id: dInfo.title, cell: null});
+	this.devices.push({type: "cell", mesh: box, node:node, healthBoxes:new Array(), id: dInfo.title, cell: null});
 	this.deviceBoxes.push(box);
 	if(dInfo.lastUpdated != null) {
 		node.isOnline(dInfo.lastUpdated);
@@ -163,6 +221,332 @@ NodeNetwork.prototype.growAnimation = function(d)
 		TweenMax.to(d.position, 1.2, {z:goalZ, ease:Expo.easeOut});
 	}});
 	//TweenMax.to(d.scale, 3, {x:1, z:1, ease:Elastic.easeOut});
+}
+
+// -------------------------------------------------------
+//  Health Graph
+// -------------------------------------------------------
+NodeNetwork.prototype.createHealthGraph = function(csvfile)
+{
+	// Make all nodes offline
+	for(var i = 0; i < this.devices.length; i++) {
+		var device = this.devices[i];
+		if(device.type != "blank") {
+			device.node.online(false);
+		}
+	}
+
+	// Create graph
+	var self = this;
+	var c1 = "hsl(0, 100%, 100%)";
+	var c2 = "hsl(113, 100%, 55%)";
+	var valueToColorScale = d3.scale
+		.sqrt()
+		//.linear()
+		.domain([0, 1])
+		.range([c1, c2])
+		.interpolate(d3.interpolateHsl);
+
+	d3.csv(csvfile, function(d) {
+		//console.log(self.devices);
+
+		var did = "default";
+		var device = null;
+		var zidx = 0;
+		for(var i = 0; i < d.length; i++) {
+
+			// Find the device
+			if(did != d[i]["did"]) {
+				for(var j = 0; j < self.devices.length; j++) {
+					if(self.devices[j].id == d[i]["did"]) {
+						device = self.devices[j];
+						did = d[i]["did"];
+						zidx = 0;
+						break;
+					}
+				}
+			}
+
+			var obj = d[i];
+			var arr = new Array();
+			var health = 0;
+			for(value in obj) {
+				if(value == "did" || value.indexOf("date") != -1 || value == "charge_flags_charge" || value == "charge_flags_fault") {
+					continue;
+				} else {
+					var val = parseInt(obj[value]);
+					if(val == -999) {
+						continue;
+					} else {
+						// fixme: 4320 is the message ratio, it's hard code right now
+						var f = val / 4320;
+						arr.push(f);
+					}
+					//console.log(value + ", " + obj[value]);
+				}
+			}
+
+			// calculate health
+			var total = 0;
+			for(index in arr) {
+				total += arr[index];
+			}
+			health = total / arr.length;
+
+			if(health != 0) {
+				var hColor = valueToColorScale(health);
+				hColor = "0x" + hColor.substring(1);
+
+				var box = new THREE.Mesh (
+					new THREE.BoxGeometry(25, 25, 2),
+					new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent:true} )
+				);
+				box.material.color.setHex(hColor);
+				box.position.x = device.mesh.position.x;
+				box.position.y = device.mesh.position.y;
+				box.position.z = zidx * 2;
+				box.userData = {
+					px:box.position.x, py:box.position.y, pz:box.position.z,
+					rx:box.rotation.x, ry:box.rotation.y, rz:box.rotation.z,
+					sx:box.scale.x, sy:box.scale.y, sz:box.scale.z
+				};
+				device.healthBoxes.push(box);
+
+				TweenMax.from(box.position, 0.5, {z:0, ease:Expo.easeOut});
+
+				ground.add(box);
+			} else {
+				device.healthBoxes.push(null);
+			}
+
+			zidx++;
+		}
+
+		// 选择日期层
+		//if(self._healthDateLayers == null) {
+		//
+		//	self._healthDateLayers = new Array();
+		//	for(var k = 0; k < 365; k++) {
+		//		var layer = new THREE.Mesh(
+		//			new THREE.BoxGeometry(groundWid, groundHei, 2),
+		//			new THREE.MeshLambertMaterial( {color: 0xff0000, transparent:true} )
+		//		);
+		//		layer.material.opacity = 0;
+		//		//layer.position.x = -groundWid / 2;
+		//		//layer.position.y = -groundHei / 2;
+		//		layer.position.z = k * 2;
+		//		layer.name = "dateLayer_" + k;
+		//		layer.userData = {idx:k};
+		//		ground.add(layer);
+		//
+		//		self._healthDateLayers.push(layer);
+		//	}
+		//}
+
+		self._mode = self.NETWORK_MODE_HEALTH;
+	});
+}
+
+NodeNetwork.prototype.clearHealthGraph = function()
+{
+	for(var i = 0; i < this.devices.length; i++) {
+		if(this.devices[i].type != "blank") {
+			for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
+				var box = this.devices[i].healthBoxes[j];
+				if(box != null) {
+
+					ground.remove(box);
+					box.geometry.dispose();
+					box.material.dispose();
+
+					//console.log(box);
+					//box.userData = null;
+					//TweenMax.to(box.material, 0.6, {opacity:0, ease:Expo.easeOut, onComplete:function() {
+					//	ground.remove(box);
+					//	box.geometry.dispose();
+					//	box.material.dispose();
+					//}});
+				}
+			}
+			this.devices[i].healthBoxes = new Array();
+		}
+	}
+}
+
+NodeNetwork.prototype.showHealthGraph = function(mode)
+{
+	if(mode == 1) {
+
+		for(var i = 0; i < this.devices.length; i++) {
+
+			if(this.devices[i].type != "blank") {
+				for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
+					var box = this.devices[i].healthBoxes[j];
+					if(box != null) {
+						//console.log(box);
+						var obj = box.userData;
+						var rd = getRandomArbitrary(0.1, 0.5);
+
+						TweenMax.to(box.position, 1, {x:obj.px, y:obj.py, z:obj.pz, delay:rd, ease:Expo.easeOut});
+						TweenMax.to(box.rotation, 1, {x:obj.rx, delay:rd, ease:Expo.easeOut});
+						TweenMax.to(box.scale, 1, {x:obj.sx, y:obj.sy, z:obj.sz, delay:rd, ease:Expo.easeOut});
+					}
+				}
+			}
+		}
+
+	} else if(mode == 2) {
+
+		var deviceIdx = 0;
+		for(var i = 0; i < this.devices.length; i++) {
+
+			if(this.devices[i].type != "blank") {
+				for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
+					var box = this.devices[i].healthBoxes[j];
+					if(box != null) {
+						//console.log(box);
+						var ps = 0.5;
+						var gap = (25 + 1) * ps;
+						var wwid = gap * 365;
+						var px = j * gap - wwid / 2;
+						var py = -(groundHei / 2 + 200);
+						var pz = deviceIdx * gap + 300;
+						var rd = getRandomArbitrary(0.1, 0.5);
+
+						TweenMax.to(box.position, 1, {x:px, y:py, z:pz, delay:rd, ease:Expo.easeOut});
+						TweenMax.to(box.rotation, 1, {x:Math.PI / 2, delay:rd, ease:Expo.easeOut});
+						TweenMax.to(box.scale, 1, {x:ps, y:ps, z:ps, delay:rd, ease:Expo.easeOut});
+					}
+				}
+
+				deviceIdx++;
+			}
+		}
+	}
+}
+
+NodeNetwork.prototype.onHealthMouseOver = function(did)
+{
+	//dobj.material.opacity = 0.6;
+
+	for(var i = 0; i < this.devices.length; i++) {
+		if(this.devices[i].type != "blank") {
+
+			if(this.devices[i].id == did) {
+				$("#health_tooltip").css("visibility", "visible");
+				$("#health_tooltip").text(did);
+				$("#health_tooltip").css("left", this._mouseX + 13);
+				$("#health_tooltip").css("top", this._mouseY - 10);
+
+				for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
+					var box = this.devices[i].healthBoxes[j];
+					if(box != null) {
+						TweenMax.to(box.material, 0.5, {opacity:1, ease:Expo.easeOut});
+					}
+				}
+
+			} else {
+				for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
+					var box = this.devices[i].healthBoxes[j];
+					if(box != null) {
+						TweenMax.to(box.material, 0.5, {opacity:0.01, ease:Expo.easeOut});
+					}
+				}
+			}
+		}
+	}
+}
+
+NodeNetwork.prototype.onHealthMouseOut = function()
+{
+	$("#health_tooltip").css("visibility", "hidden");
+
+	//for(var j = 0; j < this._healthDateLayers.length; j++) {
+	//	var layer = this._healthDateLayers[j];
+	//	layer.material.opacity = 0;
+	//}
+
+	if(this._healthSelectedNode != null) {
+
+		for(var i = 0; i < this.devices.length; i++) {
+			if(this.devices[i].type != "blank") {
+				if(this.devices[i].id == this._healthSelectedNode.name) {
+					for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
+						var box = this.devices[i].healthBoxes[j];
+						if(box != null) {
+							TweenMax.to(box.material, 0.5, {opacity:1, ease:Expo.easeOut});
+						}
+					}
+				} else {
+					for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
+						var box = this.devices[i].healthBoxes[j];
+						if(box != null) {
+							TweenMax.to(box.material, 0.5, {opacity:0.01, ease:Expo.easeOut});
+						}
+					}
+				}
+			}
+		}
+
+	} else {
+
+		for(var i = 0; i < this.devices.length; i++) {
+			if(this.devices[i].type != "blank") {
+				for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
+					var box = this.devices[i].healthBoxes[j];
+					if(box != null) {
+						TweenMax.to(box.material, 0.5, {opacity:1, ease:Expo.easeOut});
+					}
+				}
+			}
+		}
+	}
+}
+
+// -------------------------------------------------------
+//  Real-time Message
+// -------------------------------------------------------
+NodeNetwork.prototype.openIncomingMessage = function()
+{
+	var self = this;
+	if(this._siteWebsocket == null) {
+		this._siteWebsocket = new WebSocket('ws://chain-api.media.mit.edu/ws/site-7');
+		this._siteWebsocket.onopen = function(evt) {
+			console.log('tidmarsh site realtime message onopen');
+		};
+		this._siteWebsocket.onclose = function(evt) {
+			console.log('tidmarsh site realtime message onclose');
+		};
+		this._siteWebsocket.onmessage = function(evt) {
+			//console.log(evt);
+			var tmpobj = $.parseJSON(evt.data);
+			var href = tmpobj['_links']['ch:sensor']['href'];
+			var iobj = chainManager.getDeviceBySensor(href);
+			if(iobj != null) {
+				if(iobj.sid == sensorTable[mainmenu.currSelectSensorIdx]) {
+					//console.log(iobj.did + ", " + iobj.sid + ", " + tmpobj.value);
+					self.processMessage(iobj.did, iobj.sid, tmpobj.value);
+				}
+			}
+		};
+		this._siteWebsocket.onerror = function(evt) {
+			console.log('tidmarsh siste realtime message onerror');
+		};
+	}
+}
+
+NodeNetwork.prototype.closeIncomingMessage = function()
+{
+	if(this._siteWebsocket != null) {
+		console.log('tidmarsh site realtime message closing...');
+		this._siteWebsocket.close();
+		this._siteWebsocket = null;
+	}
+}
+
+NodeNetwork.prototype.processMessage = function(did, sid, value)
+{
+	this.updateVoronoi(did, sid, value);
 }
 
 // -------------------------------------------------------
@@ -317,6 +701,94 @@ NodeNetwork.prototype.getDeviceById = function(did)
 		}
 	}
 	return null;
+}
+
+//----------------------------------------------
+// Intersect
+//----------------------------------------------
+NodeNetwork.prototype.render = function(mx, my)
+{
+	// find intersections
+	var vector = new THREE.Vector3(mx, my, 1).unproject(camera);
+	this._raycaster.set(camera.position, vector.sub(camera.position).normalize());
+	var intersects = this._raycaster.intersectObjects(ground.children, true);
+
+	if(intersects.length > 0) {
+
+		if(this.getDeviceById(intersects[0].object.name) != null) {
+			if(this._intersected != intersects[0].object) {
+				if(this._intersected) {
+					this._intersected.material.emissive.setHex(this._intersected.currentHex);
+				}
+				this._intersected = intersects[0].object;
+				this._intersected.currentHex = this._intersected.material.emissive.getHex();
+				this._intersected.material.emissive.setHex(0xff0000);
+
+				// mouse over
+				if(this._mode == this.NETWORK_MODE_HEALTH) {
+					this.onHealthMouseOver(this._intersected.name);
+				}
+			}
+		}
+		//else if(intersects[0].object.name.indexOf("dateLayer") != -1) {
+		//
+		//	if(this._intersected != intersects[0].object) {
+		//		if(this._intersected) {
+		//			this._intersected.material.emissive.setHex(this._intersected.currentHex);
+		//		}
+		//		this._intersected = intersects[0].object;
+		//		this._intersected.currentHex = this._intersected.material.emissive.getHex();
+		//		this._intersected.material.emissive.setHex(0xff0000);
+		//
+		//		// mouse over
+		//		if(this._mode == this.NETWORK_MODE_HEALTH) {
+		//			this.onHealthMouseOver(this._intersected);
+		//		}
+		//	}
+		//
+		//}
+		else if(intersects[0].object.name == "info_sign_plane" || intersects[0].object.name == "signmesh") {
+			var sign = null;
+			for(var i = 0; i < intersects.length; i++) {
+				if(intersects[i].object.name == "info_sign_plane") {
+					sign = intersects[i].object;
+					break;
+				}
+			}
+
+			if(sign != null) {
+				if(this._intersected != sign) {
+					if(this._intersected) {
+						this._intersected.material.emissive.setHex(this._intersected.currentHex);
+					}
+					this._intersected = sign;
+					this._intersected.currentHex = this._intersected.material.emissive.getHex();
+					this._intersected.material.emissive.setHex(0xff0000);
+				}
+			}
+		} else {
+			if (this._intersected) {
+				this._intersected.material.emissive.setHex( this._intersected.currentHex );
+			}
+			this._intersected = null;
+		}
+
+	} else {
+		if (this._intersected) {
+			this._intersected.material.emissive.setHex( this._intersected.currentHex );
+
+			// mouse out in health mode
+			if(this._mode == this.NETWORK_MODE_HEALTH) {
+				this.onHealthMouseOut();
+			}
+		}
+		this._intersected = null;
+	}
+
+	//
+	if(this._healthSelectedNode != null) {
+		this._healthSelectedNode.material.emissive.setHex(0xff0000);
+	}
 }
 
 //----------------------------------------------
