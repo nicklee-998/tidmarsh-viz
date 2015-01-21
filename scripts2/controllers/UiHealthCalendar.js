@@ -19,6 +19,14 @@ var pheight;
 var pradius;
 var pieIsHide;
 
+var _barSvg;
+var _barWidth;
+var _barHeight;
+var _barXScale;
+var _barYScale;
+var _barIsHide;
+var _barGoY;
+
 function initHealthCalendar()
 {
 	//$("#health_calendar").append("<p id='health_calendar_year'>2015</p>");
@@ -55,20 +63,18 @@ function initHealthCalendar()
 		.append("svg")
 		.attr("width", width)
 		.attr("height", height)
-		.attr("transform", "translate(0, 0)")
-		.on("mouseout", function() {
-			// hide
-			console.log("mouseout");
+		.attr("transform", "translate(0, 0)");
 
-			if(!pieIsHide) {
-				var py = -pheight;
-				$("#health_sensor").animate({
-					"top": py
-				}, 500, "easeOutQuint", function() {
-					pieIsHide = true;
-				});
-			}
-		});
+	$("#health_calendar").mouseover(function(evt) {
+		//console.log(evt);
+		_barGoY = evt.clientY;
+	});
+	$("#health_calendar").mouseout(function(evt) {
+		if(evt.offsetX < 0 || evt.offsetY < 0 || evt.offsetX > width || evt.offsetY > height) {
+			// hide chart
+			showChart(false);
+		}
+	});
 
 	var title = svg.append("text")
 		.attr("class", "calendar_year")
@@ -139,6 +145,7 @@ function initHealthCalendar()
 			return weekidx * cellSize;
 		})
 		.on("mouseover", function(d, i) {
+
 			if(calendarCsv != null) {
 				var str = d3.select(this).attr("name");
 				var idx = parseInt(str.substring(4));
@@ -168,11 +175,15 @@ function initHealthCalendar()
 						//console.log(value + ", " + obj[value]);
 					}
 				}
-				if(total != 0) {
-					pieChange(arr);
-				} else {
-					pieChange(null);
-				}
+
+				barChange(arr);
+				showChart(true);
+
+				//if(total != 0) {
+				//	pieChange(arr);
+				//} else {
+				//	pieChange(null);
+				//}
 			}
 		})
 		.on("mouseout", function(d, i) {
@@ -187,57 +198,173 @@ function initHealthCalendar()
 	$("#health_calendar").css("left", -width);
 	_calendarIsHide = true;
 
-
 	// -----------------------------------------
-	//  Sensor graph
+	//  Sensor graph - Bar Chart
 	// -----------------------------------------
-	var pwidth = 440;
-	pheight = 200;
-	pradius = Math.min(pwidth, pheight) / 2;
+	var margin = {top:10, right:0, bottom:10, left:10};
+	_barWidth = 350;
+	_barHeight = 180;
 
-	pie_svg = d3.select("#health_sensor")
-		.append("svg")
-		.attr("width", pwidth)
-		.attr("height", pheight)
-		.append("g");
-	pie_svg.append("g").attr("class", "slices");
-	pie_svg.append("g").attr("class", "pie_labels");
-	pie_svg.append("g").attr("class", "pie_polyline");
-
-	pie = d3.layout.pie()
-		.sort(null)
-		.value(function(d) {
-			return d.value;
-		});
-	pie_arc = d3.svg.arc()
-		.outerRadius(pradius * 0.8)
-		.innerRadius(pradius * 0.5);
-	pie_outerArc = d3.svg.arc()
-		.innerRadius(pradius * 0.9)
-		.outerRadius(pradius * 0.9);
-
-	pie_svg.attr("transform", "translate(" + pwidth / 2 + "," + pheight / 2 + ")");
-	pie_key = function(d) {
-		return d.data.label;
-	};
-
-	pie_color = d3.scale.ordinal()
+	_barXScale = d3.scale.ordinal()
 		.domain(["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage", "bmp_temperature"])
-		.range(["#E77227", "#D81E00", "#E445BA", "#3242DF", "#57C66C", "#FFC87D"]);
+		.rangeRoundBands([0, _barWidth], 0.3);
+	_barYScale = d3.scale.linear()
+		.domain([0, 4320])
+		.range([_barHeight - margin.top - margin.bottom, 0]);
 
+	_barSvg = d3.select("#health_sensor")
+		.append("svg")
+		.attr("width", _barWidth + margin.left + margin.right)
+		.attr("height", _barHeight + margin.top + margin.bottom)
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	function randomData (){
-		var labels = pie_color.domain();
-		return labels.map(function(label){
-			return { label: label, value: Math.random() }
-		});
-	}
-	pieChange(randomData());
+	var dataset = [{label:"sht_temperature", value:0}, {label:"bmp_temperature", value:0}, {label:"illuminance", value:0},
+		{label:"bmp_pressure", value:0}, {label:"sht_humidity", value:0}, {label:"battery_voltage", value:0}];
+	var colors = ["#E77227", "#FFC87D", "#D81E00", "#E445BA", "#3242DF", "#57C66C"];
 
-	//
+	_barSvg.selectAll("rect")
+		.data(dataset)
+		.enter()
+		.append("rect")
+		.attr("x", function(d) {
+			return _barXScale(d.label);
+		})
+		.attr("y", function(d) { return _barYScale(d.value); })
+		.attr("width", _barXScale.rangeBand())
+		.attr("height", function(d) { return _barHeight - _barYScale(d.value); })
+		.attr("fill", function(d, i) { return colors[i] });
+
+	_barSvg.selectAll("text")
+		.data(dataset)
+		.enter()
+		.append("text")
+		.attr("class", "value_text")
+		.attr("x", function(d) {
+			return _barXScale(d.label) + _barXScale.rangeBand() / 2;
+		})
+		.attr("y", function(d) {
+			return _barYScale(d.value) + 15;
+		})
+		.attr("font-size", "11px")
+		.attr("text-anchor", "middle")
+		.attr("fill", "white")
+		.text(function(d) { return d.value; });
+
+	var titleSvg = _barSvg.append("g");
+
+	titleSvg.selectAll("text")
+		.data(dataset)
+		.enter()
+		.append("text")
+		.attr("y", function(d) {
+			return _barXScale(d.label) + _barXScale.rangeBand() / 2 - 20;
+		})
+		.attr("x", -_barHeight)
+		.attr("transform", "rotate(-90)")
+		.attr("font-size", "10px")
+		.attr("text-anchor", "left")
+		.attr("fill", "#999999")
+		.text(function(d) { return d.label; });
+
 	// hide graph
-	$("#health_sensor").css("top", -(pheight+20));
-	pieIsHide = true;
+	$("#health_sensor").css("top", -(_barHeight+20));
+	_barIsHide = true;
+
+	// -----------------------------------------
+	//  Sensor graph - Pie Chart
+	// -----------------------------------------
+	//var pwidth = 440;
+	//pheight = 200;
+	//pradius = Math.min(pwidth, pheight) / 2;
+	//
+	//pie_svg = d3.select("#health_sensor")
+	//	.append("svg")
+	//	.attr("width", pwidth)
+	//	.attr("height", pheight)
+	//	.append("g");
+	//pie_svg.append("g").attr("class", "slices");
+	//pie_svg.append("g").attr("class", "pie_labels");
+	//pie_svg.append("g").attr("class", "pie_polyline");
+	//
+	//pie = d3.layout.pie()
+	//	.sort(null)
+	//	.value(function(d) {
+	//		return d.value;
+	//	});
+	//pie_arc = d3.svg.arc()
+	//	.outerRadius(pradius * 0.8)
+	//	.innerRadius(pradius * 0.5);
+	//pie_outerArc = d3.svg.arc()
+	//	.innerRadius(pradius * 0.9)
+	//	.outerRadius(pradius * 0.9);
+	//
+	//pie_svg.attr("transform", "translate(" + pwidth / 2 + "," + pheight / 2 + ")");
+	//pie_key = function(d) {
+	//	return d.data.label;
+	//};
+	//
+	//pie_color = d3.scale.ordinal()
+	//	.domain(["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage", "bmp_temperature"])
+	//	.range(["#E77227", "#D81E00", "#E445BA", "#3242DF", "#57C66C", "#FFC87D"]);
+	//
+	//
+	//function randomData (){
+	//	var labels = pie_color.domain();
+	//	return labels.map(function(label){
+	//		return { label: label, value: Math.random() }
+	//	});
+	//}
+	//pieChange(randomData());
+}
+
+function showChart(flag)
+{
+	if(flag) {
+		//if(_barIsHide) {
+		$("#health_sensor").clearQueue();
+			$("#health_sensor").animate({
+				"top": _barGoY
+			}, 500, "easeOutQuint", function() {
+				_barIsHide = false;
+			});
+		//}
+	} else {
+		// hide
+		if(!_barIsHide) {
+			var py = -_barHeight;
+			$("#health_sensor").animate({
+				"top": py
+			}, 500, "easeOutQuint", function() {
+				_barIsHide = true;
+			});
+		}
+	}
+}
+
+function barChange(data)
+{
+	//console.log("bar change");
+	//var dataset = [{label:"sht_temperature", value:430}, {label:"bmp_temperature", value:200}, {label:"illuminance", value:110},
+	//	{label:"bmp_pressure", value:1240}, {label:"sht_humidity", value:1310}, {label:"battery_voltage", value:20}];
+
+	_barSvg.selectAll("rect")
+		.data(data)
+		.transition()
+		.duration(1000)
+		.attr("y", function(d) { return _barYScale(d.value); })
+		.attr("height", function(d) { return _barHeight - _barYScale(d.value); });
+
+	_barSvg.selectAll(".value_text")
+		.data(data)
+		.transition()
+		.duration(1000)
+		.text(function(d) {
+			return d.value;
+		})
+		.attr("y", function(d) {
+			return _barYScale(d.value) + 15;
+		});
 }
 
 function pieChange(data)
@@ -252,6 +379,7 @@ function pieChange(data)
 				pieIsHide = true;
 			});
 		}
+		return;
 	} else {
 		// show
 		if(pieIsHide) {
