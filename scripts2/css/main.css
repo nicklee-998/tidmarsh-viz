@@ -191,6 +191,37 @@ html, body {
 }
 
 /***********************************************
+ * Weather 2
+ ***********************************************/
+#weather_big {
+	position: absolute;
+	top: 150px;
+	left: 50px;
+	width: 220px;
+	height: 150px;
+	color: white;
+	visibility: hidden;
+}
+
+#weather_big_temp {
+	position: absolute;
+	font-size: 100px;
+}
+
+#weather_big_symbol {
+	position: absolute;
+	font-size: 17px;
+	top: 10px;
+	left: 100px;
+}
+
+#weather_big_state {
+	position: absolute;
+	font-size: 18px;
+	top: 100px;
+}
+
+/***********************************************
  * Node info panel
  ***********************************************/
 #info-panel {

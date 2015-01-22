@@ -32,6 +32,7 @@ var SENSOR_NODE_HEIGHT = 2000;
 
 //
 var weather = null;
+var weather_today = null;               // 进入网站时的默认天气
 var network, chainManager, apManager;
 var calendar = null;
 var calendar_node = null;
@@ -175,7 +176,6 @@ function init3d()
 	// Raycaster for MOUSEEVENT
 	raycaster = new THREE.Raycaster();
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
 
 	// STATS
 	stats = new Stats();
@@ -218,34 +218,48 @@ function init3d()
 	//  Init weather effect
 	// -------------------------------------
 	$.ajax({
-		url : "http://api.wunderground.com/api/21a533a6637f54ab/geolookup/forecast/astronomy/q/MA/manomet.json",
+		//url : "http://api.wunderground.com/api/21a533a6637f54ab/geolookup/forecast/astronomy/q/MA/manomet.json",
+		url : "http://api.wunderground.com/api/21a533a6637f54ab/conditions/astronomy/q/MA/manomet.json",
 		dataType : "jsonp",
 		success : function(parsed_json) {
-			var forecast = parsed_json['forecast']['txt_forecast']['forecastday'][0]['fcttext'];
+			//var forecast = parsed_json['forecast']['txt_forecast']['forecastday'][0]['fcttext'];
+			var current = parsed_json['current_observation']['weather'];
 			var sunrise_hour = parsed_json['moon_phase']['sunrise']['hour'];
 			var sunrise_minute = parsed_json['moon_phase']['sunrise']['minute'];
 			var sunset_hour = parsed_json['moon_phase']['sunset']['hour'];
 			var sunset_minute = parsed_json['moon_phase']['sunset']['minute'];
 			var sunrise_sunset = "sunrise: " + sunrise_hour + ":" + sunrise_minute + " / sunset: " + sunset_hour + ":" + sunset_minute;
-			$("#forecast").text("Today in bog weather : " + forecast + " | " + sunrise_sunset);
+			$("#forecast").text("Today in bog weather : " + current + " | " + sunrise_sunset);
 			//$("#sunrise_sunset").text(sunrise_sunset);
 
 			weather = new WeatherEffect();
-			forecast = forecast.toLowerCase();
-			if(forecast.indexOf("clear") != -1 || forecast.indexOf("sunny") != -1 || forecast.indexOf("sunshine") != -1) {
-				weather.create("SUNNY");
-			} else if(forecast.indexOf("cloud") != -1) {
-				weather.create("CLOUDY");
-			} else if(forecast.indexOf("snow") != -1) {
-				weather.create("SNOW");
-			} else if(forecast.indexOf("rain") != -1 || forecast.indexOf("shower") != -1) {
-				weather.create("RAIN");
-			} else if(forecast.indexOf("fog") != -1) {
-				weather.create("FOG");
+			var wstr = parsed_json["current_observation"]["weather"].toLowerCase();
+			if(wstr.indexOf("clear") != -1 || wstr.indexOf("sunny") != -1 || wstr.indexOf("sunshine") != -1) {
+				weather_today = "SUNNY";
+			} else if(wstr.indexOf("cloud") != -1 || wstr.indexOf("overcast") != -1) {
+				weather_today = "CLOUDY";
+			} else if(wstr.indexOf("snow") != -1) {
+				weather_today = "SNOW";
+			} else if(wstr.indexOf("rain") != -1 || wstr.indexOf("shower") != -1) {
+				weather_today = "RAIN";
+			} else if(wstr.indexOf("fog") != -1) {
+				weather_today = "FOG";
 			} else {
 				// Default weather is sunny
-				weather.create("SUNNY");
+				weather_today = "SUNNY";
 			}
+			weather.create(weather_today);
+
+			// Update big weath menu
+			$("#weather_big_temp").text(parsed_json["current_observation"]["temp_f"]);
+			$("#weather_big_state").text(parsed_json["current_observation"]["weather"]);
+
+			var bwid = $("#weather_big").width();
+			var swid = $("#weather_big_state").width();
+			//$("#weather_big_state").css("left", (bwid - 30) / 2 - swid / 2);
+			var twid = $("#weather_big_temp").width();
+			$("#weather_big_symbol").css("left", twid);
+			$("#weather_big").css("left", -bwid)
 
 			// Animal & Planet effect
 			apManager = new APManager();
@@ -343,20 +357,6 @@ function onDocumentMouseMove( event )
 	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 }
 
-function onDocumentMouseUp( event )
-{
-	event.preventDefault();
-
-	if(INTERSECTED && mainmenu.currSelectIdx == 2) {
-
-		if(INTERSECTED.name == "info_sign_plane") {
-			showInfoPanel(INTERSECTED);
-		} else {
-			showNodeSign(INTERSECTED);
-		}
-	}
-}
-
 function render()
 {
 	if(infoSignPlane != null) {
@@ -375,12 +375,6 @@ function render()
 	}
 }
 
-function onNetworkNodeClick(e, d)
-{
-	calendar_node = "./res/data_2014/" + d + "_2014.csv";
-	setHealthCalendar(calendar_node);
-}
-
 /////////////////////////////////////////////
 // MAIN MENU
 /////////////////////////////////////////////
@@ -397,7 +391,9 @@ function onMainMenuClick(e)
 		// 显示动物和植物
 		apManager.showAP();
 		// 显示天气
-		weather.showWeather();
+		weather.create(weather_today);
+		// weather big
+		showWeatherBig(false);
 		// CLEAR GRAPH
 		network.closeIncomingMessage();
 		network.clearVoronoi(true);
@@ -416,10 +412,12 @@ function onMainMenuClick(e)
 		// 显示动物和植物
 		apManager.showAP();
 		// 显示天气
-		weather.showWeather();
+		weather.create(weather_today);
+		// weather big
+		showWeatherBig(true);
 		// CLEAR GRAPH
-		network.closeIncomingMessage();
 		network.clearVoronoi(true);
+		network.enterNormalMode();
 		// Hide cal and dragbar
 		showCal(false);
 		showDragBar(false);
@@ -432,6 +430,10 @@ function onMainMenuClick(e)
 		var len = network.deviceBoxes.length - 1;
 		showNodeSign(network.deviceBoxes[getRandomInt(0, len)], 0.8);
 
+		// Register click event
+		jQuery.subscribe(NETWORK_NORMAL_SIGN_CLICK, onNetworkSignClicked);
+		jQuery.subscribe(NETWORK_NORMAL_MESH_CLICK, onNetworkMeshClicked);
+
 	} else if(e.type == MAINMENU_DATA) {
 
 		//console.log("Mainmenu Data: " + mainmenu.currSelectSensorIdx + ", " + mainmenu.currSelectRH);
@@ -443,8 +445,10 @@ function onMainMenuClick(e)
 		hideInfoPanel();
 		// 隐藏动物和植物
 		apManager.hideAP();
-		// 关闭天气
-		weather.hideWeather();
+		// 切换天气
+		weather.create("VORONOI");
+		// weather big
+		showWeatherBig(false);
 		// CLEAR GRAPH
 		network.clearVoronoi(true);
 		// Choose Sensor
@@ -487,10 +491,10 @@ function onMainMenuClick(e)
 			showCal(false);
 			showDragBar(false);
 			// realtime
-			network.openIncomingMessage();
+			network.enterVoronoi("REALTIME");
 		} else {
 			// realtime
-			network.closeIncomingMessage();
+			network.enterVoronoi("HISTORY");
 			// history
 			getDevicesDataBySensorMenu();
 		}
@@ -505,7 +509,9 @@ function onMainMenuClick(e)
 		// 隐藏动物和植物
 		apManager.hideAP();
 		// 关闭天气
-		weather.hideWeather();
+		weather.create("CLOUDY");
+		// weather big
+		showWeatherBig(false);
 		// CLEAR GRAPH
 		network.closeIncomingMessage();
 		network.clearVoronoi(true);
@@ -514,7 +520,8 @@ function onMainMenuClick(e)
 		// Set 3d scene
 		setScenePerspective(4);
 		// enter health mode
-		jQuery.subscribe(NETWORK_HEALTH_NODE, onNetworkNodeClick);
+		jQuery.subscribe(NETWORK_HEALTH_NODE_SELECTED, onNetworkNodeSelected);
+		jQuery.subscribe(NETWORK_HEALTH_NODE_DESELECTED, onNetworkNodeDeselected);
 
 		var cfile = "./res/data_2014/2014_all.csv"
 		network.createHealthGraph(cfile);
@@ -632,6 +639,35 @@ function setScenePerspective(idx)
 }
 
 /////////////////////////////////////////////
+// Node Menu
+/////////////////////////////////////////////
+function onNetworkMeshClicked(e, d)
+{
+	// 打开node提示板
+	showNodeSign(d);
+}
+
+function onNetworkSignClicked(e, d)
+{
+	// 打开node内容页
+	showInfoPanel(d);
+}
+
+/////////////////////////////////////////////
+// Health Menu
+/////////////////////////////////////////////
+function onNetworkNodeSelected(e, d)
+{
+	calendar_node = "./res/data_2014/" + d + "_2014.csv";
+	setHealthCalendar(calendar_node);
+}
+
+function onNetworkNodeDeselected(e, d)
+{
+	hideHealthCalendar();
+}
+
+/////////////////////////////////////////////
 // MAIN LOADING ANIMATION
 /////////////////////////////////////////////
 function initLoadingScreen()
@@ -721,6 +757,21 @@ function showDragBar(flg)
 	} else {
 		$('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
 			$('#bar').css('visibility', 'hidden');
+		});
+	}
+}
+
+function showWeatherBig(flg)
+{
+	if(flg) {
+		var wid = parseInt($('#weather_big').css('width'));
+		$('#weather_big').css('visibility', 'visible');
+		$('#weather_big').css('left', '-' + wid + 'px');
+		$('#weather_big').animate({left:'50px'}, 500, 'easeOutQuint');
+	} else {
+		var wid = parseInt($('#weather_big').css('width'));
+		$('#weather_big').animate({left:'-' + wid + 'px'}, 500, 'easeOutQuint', function() {
+			$('#weather_big').css('visibility', 'hidden');
 		});
 	}
 }
@@ -905,7 +956,8 @@ function onKeyboardDown()
 	}
 	else if(d3.event.keyCode == 54)	// 6
 	{
-		square.position.x -= 10;
+		weather.create("VORONOI");
+		//square.position.x -= 10;
 	}
 	else if(d3.event.keyCode == 55)	// 7
 	{
@@ -942,7 +994,6 @@ function simulateIncomingData()
 	var devtitle = chainManager.devices[iiidx].title;
 
 	var now = new Date();
-	chainManager.devices[iiidx].lastUpdated = now;
 	network.updateNode(devtitle, now);
 
 	//processMessage(devtitle, sid, v);

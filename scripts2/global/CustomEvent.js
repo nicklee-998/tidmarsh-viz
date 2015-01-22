@@ -16,7 +16,10 @@ var GMAP_INIT = "gmap_init_done";
 /***********************************
  * Network Event
  ***********************************/
-var NETWORK_HEALTH_NODE = "network_health_node_click";
+var NETWORK_HEALTH_NODE_SELECTED = "network_health_node_selected";
+var NETWORK_HEALTH_NODE_DESELECTED = "network_health_node_deselected";
+var NETWORK_NORMAL_SIGN_CLICK = "network_normal_sign_clicked";
+var NETWORK_NORMAL_MESH_CLICK = "network_normal_mesh_clicked";
 
 /***********************************
  * Chain API Event

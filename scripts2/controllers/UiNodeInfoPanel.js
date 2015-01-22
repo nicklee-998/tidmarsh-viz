@@ -247,6 +247,10 @@ function loadNodeInfo(device)
 	// Loading image...
 	var imgpath = " + ../../images/sensors/" + device.title + ".jpg";
 	$("#imageholder").attr("src", imgpath);
+	$("#imageholder").error(function () {
+		var path = " + ../../images/sensors/default.jpg";
+		$("#imageholder").attr("src", path);
+	});
 
 	// Loading lastest info...
 	$("#info_title").text(device.title);
@@ -318,17 +322,34 @@ function openDeviceWebsocket(wsurl)
 		//console.log(evt);
 		var tmpobj = $.parseJSON(evt.data);
 		console.log("Incoming data: " + tmpobj);
+		console.log(tmpobj);
 
 		// todo: update node status here:
+		var href = tmpobj['_links']['ch:sensor']['href'];
+		var iobj = chainManager.getDeviceBySensor(href);
 
-		//if(gMap.state == 1 || gMap.state == 4 || gMap.state == 5 || gMap.state == 6) {
-		//	var tmpobj = $.parseJSON(evt.data);
-		//	var href = tmpobj['_links']['ch:sensor']['href'];
-		//	var iobj = sManager.getDeviceBySensor(href);
-		//	if(iobj != null) {
-		//		processMessage(iobj.did, iobj.sid, tmpobj.value);
-		//	}
-		//}
+		if(iobj != null) {
+			//processMessage(iobj.did, iobj.sid, tmpobj.value);
+			var txt = tmpobj.value.toFixed(2) + " " + rollupUnit(iobj.unit);
+			var date = new Date(tmpobj.timestamp);
+
+			if(iobj.sid == 'sht_temperature') {
+				$('#info_temp').text("temperature: " + txt);
+				$('#info_lastest').text("received date: " + date.toTimeString());
+			} else if(iobj.sid == 'bmp_pressure') {
+				$('#info_pressure').text("pressure: " + txt);
+			} else if(iobj.sid == 'illuminance') {
+				$('#info_illuminance').text("illuminance: " + txt);
+			} else if(iobj.sid == 'battery_voltage') {
+				$('#info_volt').text("battery voltage: " + txt);
+			} else if(iobj.sid == 'sht_humidity') {
+				$('#info_humidity').text("humidity: " + txt);
+			}
+			// todo: Havn't add the audio link into Chain API
+			else if(iobj.sid == "audio") {
+				$('#info_audio').css("visibility", "visible");
+			}
+		}
 	};
 	infoDeviceWebsocket.onerror = function(evt) {
 		console.log(wsurl + ' onerror');

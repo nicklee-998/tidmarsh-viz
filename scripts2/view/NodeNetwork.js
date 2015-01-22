@@ -57,25 +57,44 @@ function NodeNetwork()
 
 		if(self._intersected) {
 
-			$("#health_tooltip").css("visibility", "hidden");
+			// Health mode click
+			if(self._mode == self.NETWORK_MODE_HEALTH) {
 
-			if(self._healthSelectedNode == self._intersected) {
-				self._healthSelectedNode.material.emissive.setHex(0x666666);
-				self._healthSelectedNode.material.color.setHex(0x666666);
-				self._healthSelectedNode = null;
-				//self.onHealthMouseOut();
-			} else {
-				if(self._healthSelectedNode != null) {
-					self._healthSelectedNode.material.emissive.setHex(0x666666);
-					self._healthSelectedNode.material.color.setHex(0x666666);
+				$("#health_tooltip").css("visibility", "hidden");
+
+				if(self._healthSelectedNode == self._intersected) {
+					self._healthSelectedNode.material.emissive.setHex(self._healthSelectedNode.currentHex);
+					self._healthSelectedNode = null;
+					//self.onHealthMouseOut();
+
+					// ------------------------
+					// Send click event
+					// ------------------------
+					jQuery.publish(NETWORK_HEALTH_NODE_DESELECTED, self._intersected.name);
+
+				} else {
+					if(self._healthSelectedNode != null) {
+						self._healthSelectedNode.material.emissive.setHex(self._healthSelectedNode.currentHex);
+					}
+					self._healthSelectedNode = self._intersected;
+					self._healthSelectedNode.material.emissive.setHex(0xff0000);
+
+					// ------------------------
+					// Send click event
+					// ------------------------
+					jQuery.publish(NETWORK_HEALTH_NODE_SELECTED, self._intersected.name);
 				}
-				self._healthSelectedNode = self._intersected;
+			} else if(self._mode == self.NETWORK_MODE_NORMAL) {
 
-				// ------------------------
-				// Send click event
-				// ------------------------
-				jQuery.publish(NETWORK_HEALTH_NODE, self._intersected.name);
+				if(self._intersected) {
+					if(self._intersected.name == "info_sign_plane") {
+						jQuery.publish(NETWORK_NORMAL_SIGN_CLICK, self._intersected);
+					} else {
+						jQuery.publish(NETWORK_NORMAL_MESH_CLICK, self._intersected);
+					}
+				}
 			}
+
 		}
 	}, false );
 
@@ -152,11 +171,12 @@ NodeNetwork.prototype.createDevice = function(dInfo)
 	box.name = dInfo.title;
 	this.devices.push({type: "cell", mesh: box, node:node, healthBoxes:new Array(), id: dInfo.title, cell: null});
 	this.deviceBoxes.push(box);
-	if(dInfo.lastUpdated != null) {
-		node.isOnline(dInfo.lastUpdated);
-	} else {
-		node.online(false);
-	}
+	// todo:
+	//if(dInfo.lastUpdated != null) {
+	//	node.isOnline(dInfo.lastUpdated);
+	//} else {
+	//	node.online(false);
+	//}
 	ground.add(box);
 
 	// poisson dict -
@@ -221,6 +241,26 @@ NodeNetwork.prototype.growAnimation = function(d)
 		TweenMax.to(d.position, 1.2, {z:goalZ, ease:Expo.easeOut});
 	}});
 	//TweenMax.to(d.scale, 3, {x:1, z:1, ease:Elastic.easeOut});
+}
+
+// -------------------------------------------------------
+//  Normal State
+// -------------------------------------------------------
+NodeNetwork.prototype.enterNormalMode = function()
+{
+	// Restore all buttons to origin color
+	// Make all nodes offline
+	for(var i = 0; i < this.devices.length; i++) {
+		var device = this.devices[i];
+		if(device.type != "blank") {
+			device.node.online(false);
+		}
+	}
+
+	// Open incoming message
+	this.openIncomingMessage();
+
+	this._mode = this.NETWORK_MODE_NORMAL;
 }
 
 // -------------------------------------------------------
@@ -522,10 +562,19 @@ NodeNetwork.prototype.openIncomingMessage = function()
 			var tmpobj = $.parseJSON(evt.data);
 			var href = tmpobj['_links']['ch:sensor']['href'];
 			var iobj = chainManager.getDeviceBySensor(href);
-			if(iobj != null) {
-				if(iobj.sid == sensorTable[mainmenu.currSelectSensorIdx]) {
-					//console.log(iobj.did + ", " + iobj.sid + ", " + tmpobj.value);
-					self.processMessage(iobj.did, iobj.sid, tmpobj.value);
+
+			// Behalf depends on defferent modes
+			if(self._mode == self.NETWORK_MODE_NORMAL) {
+
+				self.updateNode(iobj.did, new Date(tmpobj.timestamp));
+
+			} else if(self._mode == self.NETWORK_MODE_VORONOI_REALTIME) {
+
+				if(iobj != null) {
+					if(iobj.sid == sensorTable[mainmenu.currSelectSensorIdx]) {
+						//console.log(iobj.did + ", " + iobj.sid + ", " + tmpobj.value);
+						self.processMessage(iobj.did, iobj.sid, tmpobj.value);
+					}
 				}
 			}
 		};
@@ -596,16 +645,16 @@ NodeNetwork.prototype.createVoronoi = function()
 	len = thePaths.length;
 	for (i = 0; i < len; ++i) {
 		var device = this.getDeviceByPoint(theVertices[i]);
-		var op = 0.8;
+		var op = 1;
 		if(device.type == "blank") {
 			op = 0.8;
 		}
 		path = $d3g.transformSVGPath(thePaths[i]);
 		color = theColors[i];
-		material = new THREE.MeshBasicMaterial({
+		material = new THREE.MeshLambertMaterial({
 			color: color,
-			//ambient: color,
-			//emissive: color,
+			ambient: color,
+			emissive: color,
 			transparent: true,
 			side: THREE.DoubleSide,
 			opacity: op
@@ -617,6 +666,7 @@ NodeNetwork.prototype.createVoronoi = function()
 		simpleShapes = path.toShapes(true);
 		len1 = simpleShapes.length;
 
+		// len1基本上就是 1
 		for (j = 0; j < len1; ++j) {
 			simpleShape = simpleShapes[j];
 			shape3d = simpleShape.extrude({
@@ -639,6 +689,22 @@ NodeNetwork.prototype.createVoronoi = function()
 	}
 }
 
+NodeNetwork.prototype.enterVoronoi = function(mode)
+{
+	if(mode == "REALTIME")
+	{
+		this.openIncomingMessage();
+
+		this._mode = this.NETWORK_MODE_VORONOI_REALTIME;
+	}
+	else if(mode == "HISTORY")
+	{
+		this.closeIncomingMessage();
+
+		this._mode = this.NETWORK_MODE_VORONOI_HISTORY;
+	}
+}
+
 NodeNetwork.prototype.updateVoronoi = function(did, sid, value)
 {
 	var device = this.getDeviceById(did);
@@ -649,8 +715,8 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value)
 			// change color
 			var clr = "0x" + String(mobj.color).substr(1);
 			device.cell.material.color.setHex(clr);
-			//device.cell.material.ambient.setHex(clr);
-			//device.cell.material.emissive.setHex(clr);
+			device.cell.material.ambient.setHex(clr);
+			device.cell.material.emissive.setHex(clr);
 
 			// change height
 			//device.cell.scale.z = mobj.height;
@@ -703,9 +769,9 @@ NodeNetwork.prototype.getDeviceById = function(did)
 	return null;
 }
 
-//----------------------------------------------
-// Intersect
-//----------------------------------------------
+//---------------------------------------------------------
+// Mainly for detecting mouseover and mouseout event
+//---------------------------------------------------------
 NodeNetwork.prototype.render = function(mx, my)
 {
 	// find intersections
@@ -716,13 +782,18 @@ NodeNetwork.prototype.render = function(mx, my)
 	if(intersects.length > 0) {
 
 		if(this.getDeviceById(intersects[0].object.name) != null) {
+
 			if(this._intersected != intersects[0].object) {
 				if(this._intersected) {
 					this._intersected.material.emissive.setHex(this._intersected.currentHex);
 				}
 				this._intersected = intersects[0].object;
-				this._intersected.currentHex = this._intersected.material.emissive.getHex();
-				this._intersected.material.emissive.setHex(0xff0000);
+
+				// 已经选定的点不要变色
+				if(this._healthSelectedNode != intersects[0].object) {
+					this._intersected.currentHex = this._intersected.material.emissive.getHex();
+					this._intersected.material.emissive.setHex(0x746331);
+				}
 
 				// mouse over
 				if(this._mode == this.NETWORK_MODE_HEALTH) {
@@ -766,16 +837,29 @@ NodeNetwork.prototype.render = function(mx, my)
 					this._intersected.material.emissive.setHex(0xff0000);
 				}
 			}
-		} else {
+		}
+		else {
 			if (this._intersected) {
-				this._intersected.material.emissive.setHex( this._intersected.currentHex );
+
+				// 已经选定的点不要变色
+				if(this._healthSelectedNode != this._intersected) {
+					this._intersected.material.emissive.setHex( this._intersected.currentHex );
+				}
+
+				// mouse out in health mode
+				if(this._mode == this.NETWORK_MODE_HEALTH) {
+					this.onHealthMouseOut();
+				}
 			}
 			this._intersected = null;
 		}
 
 	} else {
 		if (this._intersected) {
-			this._intersected.material.emissive.setHex( this._intersected.currentHex );
+			// 已经选定的点不要变色
+			if(this._healthSelectedNode != this._intersected) {
+				this._intersected.material.emissive.setHex( this._intersected.currentHex );
+			}
 
 			// mouse out in health mode
 			if(this._mode == this.NETWORK_MODE_HEALTH) {
@@ -783,11 +867,6 @@ NodeNetwork.prototype.render = function(mx, my)
 			}
 		}
 		this._intersected = null;
-	}
-
-	//
-	if(this._healthSelectedNode != null) {
-		this._healthSelectedNode.material.emissive.setHex(0xff0000);
 	}
 }
 

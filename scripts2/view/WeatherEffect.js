@@ -20,6 +20,8 @@ function WeatherEffect()
 	this._rainParticuleParticules;
 	this._rainParticuleEmitter;
 	this._rainLights = null;
+	// Voronoi
+	this._voronoiLights = null;
 }
 
 WeatherEffect.prototype.create = function(type)
@@ -37,6 +39,8 @@ WeatherEffect.prototype.create = function(type)
 		this._clearCloudy();
 	} else if(this._mode == "FOG") {
 		this._clearFog();
+	} else if(this._mode == "VORONOI") {
+		this._clearVoronoi();
 	}
 
 	this._mode = type;
@@ -51,6 +55,8 @@ WeatherEffect.prototype.create = function(type)
 		this._cloudy();
 	} else if(type == "FOG") {
 		this._fog();
+	} else if(type == "VORONOI") {
+		this._voronoi();
 	}
 }
 
@@ -68,6 +74,8 @@ WeatherEffect.prototype.showWeather = function()
 		this._cloudy();
 	} else if(this._mode == "FOG") {
 		this._fog();
+	} else if(this._mode == "VORONOI") {
+		this._voronoi();
 	}
 }
 
@@ -83,9 +91,47 @@ WeatherEffect.prototype.hideWeather = function()
 		this._clearCloudy();
 	} else if(this._mode == "FOG") {
 		this._clearFog();
+	} else if(this._mode == "VORONOI") {
+		this._clearVoronoi();
 	}
 
 	this._sunny();
+}
+
+// ------------------------------------------------
+//  WEATHER - VORONOI
+// ------------------------------------------------
+WeatherEffect.prototype._voronoi = function()
+{
+	if(this._voronoiLights == null) {
+
+		var light = new THREE.DirectionalLight( 0xffffff );
+		light.position.set( 0, groundZero + 500, 0 );
+		scene.add( light );
+
+		/// ambient light1
+		var ambientLight = new THREE.AmbientLight(0xd5d5d5);
+		ambientLight.position.set( 0, groundZero + 500, 0 );
+		scene.add( ambientLight );
+
+		this._voronoiLights = new Array();
+		this._voronoiLights.push(light);
+		this._voronoiLights.push(ambientLight)
+	} else {
+		for(var i = 0; i < this._voronoiLights.length; i++) {
+			scene.add(this._voronoiLights[i]);
+		}
+	}
+}
+
+WeatherEffect.prototype._clearVoronoi = function()
+{
+	if(this._voronoiLights == null)
+		return;
+
+	for(var i = 0; i < this._voronoiLights.length; i++) {
+		scene.remove(this._voronoiLights[i]);
+	}
 }
 
 // ------------------------------------------------

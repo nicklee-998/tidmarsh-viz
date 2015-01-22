@@ -268,7 +268,7 @@ function initHealthCalendar()
 		.text(function(d) { return d.label; });
 
 	// hide graph
-	$("#health_sensor").css("top", -(_barHeight+20));
+	$("#health_sensor").css("top", -(_barHeight+50));
 	_barIsHide = true;
 
 	// -----------------------------------------

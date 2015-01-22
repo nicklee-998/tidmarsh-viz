@@ -9,9 +9,21 @@ function SensorNode(title)
 		new THREE.MeshPhongMaterial({color: 0x666666, shading: THREE.FlatShading})
 	);
 
+	this._lastUpdated = null;
+
+	// timer
 	this._onlineTimer = null;
 	this._onlineCounter;
-	this.ONLINE_TOTAL_TIME = 600;   // 单位：秒
+	this.ONLINE_TOTAL_TIME = 30;   // 单位：秒
+
+	// color
+	var c1 = "hsl(0, 0%, 40%)";
+	var c2 = "hsl(120, 70%, 45%)";
+	this._colorScale = d3.scale
+		.linear()
+		.domain([0, this.ONLINE_TOTAL_TIME])
+		.range([c1, c2])
+		.interpolate(d3.interpolateHsl);
 }
 
 SensorNode.prototype.isOnline = function(date)
@@ -24,6 +36,9 @@ SensorNode.prototype.isOnline = function(date)
 	} else {
 		this.online(true);
 	}
+
+	// just record now...
+	this._lastUpdated = date;
 }
 
 SensorNode.prototype.online = function(val)
@@ -32,7 +47,9 @@ SensorNode.prototype.online = function(val)
 
 	if(val) {
 		// online
-		this._mesh.material.color.setHex("0xff0000");
+		var clr = this._colorScale(this.ONLINE_TOTAL_TIME).toString();
+		clr = "0x" + clr.substring(1);
+		this._mesh.material.color.setHex(clr);
 
 		// set on timer
 		this._onlineCounter = this.ONLINE_TOTAL_TIME;
@@ -44,11 +61,17 @@ SensorNode.prototype.online = function(val)
 					self._onlineTimer = null;
 				} else {
 					self._onlineCounter--;
+
+					var clr = self._colorScale(self._onlineCounter).toString();
+					clr = "0x" + clr.substring(1);
+					self._mesh.material.color.setHex(clr);
 				}
 			}, 1000);
 		}
 	} else {
 		// offline
-		this._mesh.material.color.setHex("0x666666");
+		var clr = this._colorScale(0).toString();
+		clr = "0x" + clr.substring(1);
+		this._mesh.material.color.setHex(clr);
 	}
 }
