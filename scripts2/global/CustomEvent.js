@@ -20,6 +20,13 @@ var NETWORK_HEALTH_NODE_SELECTED = "network_health_node_selected";
 var NETWORK_HEALTH_NODE_DESELECTED = "network_health_node_deselected";
 var NETWORK_NORMAL_SIGN_CLICK = "network_normal_sign_clicked";
 var NETWORK_NORMAL_MESH_CLICK = "network_normal_mesh_clicked";
+var NETWORK_VORONOI_MOUSE_OVER = "network_voronoi_mouse_over";
+var NETWORK_VORONOI_MOUSE_OUT = "network_voronoi_mouse_out";
+
+/***********************************
+ * Line Chart
+ ***********************************/
+var LINE_CHART_DRAG = "line_chart_drag";
 
 /***********************************
  * Chain API Event

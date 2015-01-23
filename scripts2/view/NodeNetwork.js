@@ -19,6 +19,7 @@ function NodeNetwork()
 
 	// Voronoi
 	this.vertices;
+	this._voronoiContainer;
 
 	// Health Graph
 	this._healthDateLayers = null;
@@ -44,6 +45,8 @@ function NodeNetwork()
 	// ------------------------------------------
 	this._raycaster = new THREE.Raycaster();
 	this._intersected = null;
+	this._raycasterVor = new THREE.Raycaster();
+	this._intersectedVor = null;
 	this._mouseX;
 	this._mouseY;
 
@@ -642,6 +645,12 @@ NodeNetwork.prototype.createVoronoi = function()
 	var theCenter = obj.center;
 	var theVertices = obj.vertices;
 
+	// create voronoi container
+	this._voronoiContainer = new THREE.Object3D();
+	this._voronoiContainer.rotation.x -= Math.PI / 2;
+	//this._voronoiContainer.position.y = groundZero;
+	scene.add(this._voronoiContainer);
+
 	len = thePaths.length;
 	for (i = 0; i < len; ++i) {
 		var device = this.getDeviceByPoint(theVertices[i]);
@@ -674,12 +683,13 @@ NodeNetwork.prototype.createVoronoi = function()
 				bevelEnabled: false
 			});
 			mesh = new THREE.Mesh(shape3d, material);
-			mesh.rotation.x = -Math.PI / 2;
+			//mesh.rotation.x = -Math.PI / 2;
 			mesh.translateZ( groundZero);
 			mesh.translateX( - theCenter.x);
 			mesh.translateY( - theCenter.y);
+			mesh.name = "voronoi_" + device.id;
 			mesh.visible = false;
-			scene.add(mesh);
+			this._voronoiContainer.add(mesh);
 
 			// 将cell加入到device的信息中
 			if(j == 0) {
@@ -721,7 +731,7 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value)
 			// change height
 			//device.cell.scale.z = mobj.height;
 			device.cell.visible = true;
-			device.cell.position.y = ground.position.y + 2;
+			//device.cell.position.y = ground.position.y + 2;
 			TweenMax.to(device.cell.scale, 0.5, {z:mobj.height, ease:Elastic.easeOut});
 
 		} else {
@@ -747,6 +757,26 @@ NodeNetwork.prototype.clearVoronoi = function(isAnim)
 			device.cell.visible = false;
 		}
 	}
+}
+
+NodeNetwork.prototype.onVoronoiMouseOver = function(name)
+{
+	var did = name.substring(name.indexOf("_") + 1);
+
+	// --------------------------------
+	// Send voronoi mouseover event
+	// --------------------------------
+	jQuery.publish(NETWORK_VORONOI_MOUSE_OVER, did);
+}
+
+NodeNetwork.prototype.onVoronoiMouseOut = function(name)
+{
+	var did = name.substring(name.indexOf("_") + 1);
+
+	// --------------------------------
+	// Send voronoi mouseout event
+	// --------------------------------
+	jQuery.publish(NETWORK_VORONOI_MOUSE_OUT, did);
 }
 
 NodeNetwork.prototype.getDeviceByPoint = function(point)
@@ -778,6 +808,53 @@ NodeNetwork.prototype.render = function(mx, my)
 	var vector = new THREE.Vector3(mx, my, 1).unproject(camera);
 	this._raycaster.set(camera.position, vector.sub(camera.position).normalize());
 	var intersects = this._raycaster.intersectObjects(ground.children, true);
+
+	if(this._voronoiContainer) {
+
+		var vector2 = new THREE.Vector3(mx, my, 1).unproject(camera);
+		this._raycasterVor.set(camera.position, vector2.sub(camera.position).normalize());
+		var intersects2 = this._raycasterVor.intersectObjects(this._voronoiContainer.children, true);
+
+		if(intersects2.length > 0) {
+
+			if(intersects2[0].object.name.indexOf("voronoi_") != -1 && intersects2[0].object.name.indexOf("blank") == -1)
+			{
+				if(this._intersectedVor != intersects2[0].object) {
+
+					if(this._intersectedVor) {
+						this._intersectedVor.material.emissive.setHex(this._intersectedVor.currentHex);
+					}
+					this._intersectedVor = intersects2[0].object;
+					this._intersectedVor.currentHex = this._intersectedVor.material.emissive.getHex();
+					this._intersectedVor.material.emissive.setHex(0x746331);
+
+					// mouse over
+					if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
+						if(this._intersectedVor.visible) {
+							this.onVoronoiMouseOver(this._intersectedVor.name);
+						}
+					}
+				}
+			} else {
+				if (this._intersectedVor) {
+					// mouse out in health mode
+					if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
+						this.onVoronoiMouseOut(this._intersectedVor.name);
+					}
+				}
+				this._intersectedVor = null;
+			}
+		} else {
+			if (this._intersectedVor) {
+				// mouse out in health mode
+				if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
+					this.onVoronoiMouseOut(this._intersectedVor.name);
+				}
+			}
+			this._intersectedVor = null;
+		}
+	}
+
 
 	if(intersects.length > 0) {
 

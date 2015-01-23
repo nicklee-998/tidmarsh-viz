@@ -44,6 +44,10 @@ var mouse = new THREE.Vector2(), INTERSECTED;
 // data history
 var selectSensor;
 var sensorTable = ["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage"];
+var sensorColorTable = ["#E77227", "#D81E00", "#E445BA", "#3242DF", "#57C66C"];
+
+// line chart of sensors
+var lineChart;
 
 // --------------------------
 //  Birds
@@ -54,11 +58,19 @@ var clock = new THREE.Clock();
 var _sensorIdx = 0;
 var square = null;
 
+//
+d3.selection.prototype.moveToFront = function() {
+	return this.each(function(){
+		this.parentNode.appendChild(this);
+	});
+};
+
 $(document).ready(function() {
 
 	// INIT UI
 	initSliderBar();
 	initHealthCalendar();
+	lineChart = new UiLineChart();
 
 	// MAIN MENU
 	jQuery.subscribe(MAINMENU_BEGIN, onMainMenuClick);
@@ -394,6 +406,7 @@ function onMainMenuClick(e)
 		weather.create(weather_today);
 		// weather big
 		showWeatherBig(false);
+		showWeatherSmall(true);
 		// CLEAR GRAPH
 		network.closeIncomingMessage();
 		network.clearVoronoi(true);
@@ -415,6 +428,7 @@ function onMainMenuClick(e)
 		weather.create(weather_today);
 		// weather big
 		showWeatherBig(true);
+		showWeatherSmall(true);
 		// CLEAR GRAPH
 		network.clearVoronoi(true);
 		network.enterNormalMode();
@@ -449,6 +463,7 @@ function onMainMenuClick(e)
 		weather.create("VORONOI");
 		// weather big
 		showWeatherBig(false);
+		showWeatherSmall(false);
 		// CLEAR GRAPH
 		network.clearVoronoi(true);
 		// Choose Sensor
@@ -497,6 +512,10 @@ function onMainMenuClick(e)
 			network.enterVoronoi("HISTORY");
 			// history
 			getDevicesDataBySensorMenu();
+
+			jQuery.subscribe(NETWORK_VORONOI_MOUSE_OVER, onNetworkVoronoiOver);
+			jQuery.subscribe(NETWORK_VORONOI_MOUSE_OUT, onNetworkVoronoiOut);
+			jQuery.subscribe(LINE_CHART_DRAG, onLineChartDrag);
 		}
 
 	} else if(e.type == MAINMENU_DEVICE) {
@@ -512,6 +531,7 @@ function onMainMenuClick(e)
 		weather.create("CLOUDY");
 		// weather big
 		showWeatherBig(false);
+		showWeatherSmall(true);
 		// CLEAR GRAPH
 		network.closeIncomingMessage();
 		network.clearVoronoi(true);
@@ -654,6 +674,21 @@ function onNetworkSignClicked(e, d)
 }
 
 /////////////////////////////////////////////
+// Voronoi Menu
+/////////////////////////////////////////////
+function onNetworkVoronoiOver(e, d)
+{
+	console.log("mouse over: " + d);
+	lineChart.highlight(d);
+}
+
+function onNetworkVoronoiOut(e, d)
+{
+	console.log("mouse out: " + d);
+	lineChart.highlight(null);
+}
+
+/////////////////////////////////////////////
 // Health Menu
 /////////////////////////////////////////////
 function onNetworkNodeSelected(e, d)
@@ -665,6 +700,15 @@ function onNetworkNodeSelected(e, d)
 function onNetworkNodeDeselected(e, d)
 {
 	hideHealthCalendar();
+}
+
+/////////////////////////////////////////////
+// Line chart drag
+/////////////////////////////////////////////
+function onLineChartDrag(e, d)
+{
+	//console.log("line drag: " + d);
+	updateNetworkNode(d);
 }
 
 /////////////////////////////////////////////
@@ -776,6 +820,21 @@ function showWeatherBig(flg)
 	}
 }
 
+function showWeatherSmall(flg)
+{
+	if(flg) {
+		var hei = parseInt($('#weather').css('height'));
+		$('#weather').css('visibility', 'visible');
+		$('#weather').css('bottom', '-' + hei + 'px');
+		$('#weather').animate({bottom:'0px'}, 300, 'easeOutQuint');
+	} else {
+		var hei = parseInt($('#weather').css('height'));
+		$('#weather').animate({bottom:'-' + hei + 'px'}, 300, 'easeOutQuint', function() {
+			$('#weather').css('visibility', 'hidden');
+		});
+	}
+}
+
 /////////////////////////////////////////////
 // GET SENSOR HISTORY DATA
 /////////////////////////////////////////////
@@ -824,17 +883,22 @@ function onDeviceData(e, i)
 
 		// 显示日历和拖动条
 		showCal(true);
-		showDragBar(true);
+		//showDragBar(true);
 		//showUIMenu(true);
 		//showLoading(false);
+
+		// TEST
+		var start = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);
+		var end = new Date(sliderYear, sliderMonth, sliderDay, 23, 59, 59);
+		lineChart.make(selectSensor, start, end, chainManager._dFactory.dataset);
 	}
 }
 
-function updateNetworkNode()
+function updateNetworkNode(date)
 {
 	for(var i = 0; i < chainManager.devices.length; i++)
 	{
-		var dat = chainManager.fetchData(chainManager.devices[i].title, selectSensor, sliderCurrent);
+		var dat = chainManager.fetchData(chainManager.devices[i].title, selectSensor, date);
 		if(dat != null) {
 			network.updateVoronoi(dat.did, dat.sid, dat.value);
 		}

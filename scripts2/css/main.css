@@ -257,6 +257,54 @@ html, body {
 }
 
 /***********************************************
+ * Line Chart
+ ***********************************************/
+#chart_div {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+}
+
+.line_chart_axis {
+	stroke-width: 4;
+	stroke-opacity: 1;
+	stroke: #ffffff;
+}
+
+.line_chart_axis_y {
+	stroke-width: 2;
+	stroke-opacity: 1;
+	stroke: #ffffff;
+}
+
+.xTicks, .yTicks {
+	stroke-width: 1;
+	stroke: #ffffff;
+}
+
+.xLabel, .yLabel {
+	font-size: 12px;
+	fill: #e2e2e2;
+}
+
+.line_chart_path {
+	stroke: #ffffff;
+	stroke-width: 4;
+	stroke-opacity: 0.6;
+	fill: none;
+}
+
+.line_chart_dragger {
+	fill: #ff0000;
+}
+
+.line_chart_svg_dragger {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+
+/***********************************************
  * Main Loading
  ***********************************************/
 .main_loading_title {
