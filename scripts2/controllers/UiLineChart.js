@@ -272,16 +272,21 @@ UiLineChart.prototype.highlight = function(did)
 
 	if(did == null) {
 		this._viz.selectAll("path")
-			.style("stroke", "#ffffff");
+			.style("stroke", "#ffffff")
+			.style("stroke-opacity", 0.6);
 	} else {
 		this._viz.selectAll("path")
 			.attr("name", function(d) {
 
 				if(d3.select(this).attr("name") == did) {
-					d3.select(this).style("stroke", sensorColorTable[mainmenu.currSelectSensorIdx]);
+					d3.select(this)
+						.style("stroke", sensorColorTable[mainmenu.currSelectSensorIdx])
+						.style("stroke-opacity", 1);
 					d3.select(this).moveToFront();
 				} else {
-					d3.select(this).style("stroke", "#ffffff");
+					d3.select(this)
+						.style("stroke", "#ffffff")
+						.style("stroke-opacity", 0.6);
 				}
 
 				return d3.select(this).attr("name");

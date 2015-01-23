@@ -339,8 +339,10 @@ ChainManager.prototype._startSensorDataChain = function()
 	var self = this;
 
 	// TODO: a hacker way, not offical method to get date...
-	var ststr = (this._start.getTime() - this._start.getTimezoneOffset() * 60000).toString();
-	var edstr = (this._end.getTime() - this._end.getTimezoneOffset() * 60000).toString();
+	//var ststr = (this._start.getTime() - this._start.getTimezoneOffset() * 60000).toString();
+	//var edstr = (this._end.getTime() - this._end.getTimezoneOffset() * 60000).toString();
+	var ststr = (this._start.getTime()).toString();
+	var edstr = (this._end.getTime()).toString();
 	var short_ststr = ststr.substr(0, 10);
 	var short_edstr = edstr.substr(0, 10);
 	var url = this._sensor.dataHistory + '&timestamp__gte=' + short_ststr + '&timestamp__lt=' + short_edstr;
@@ -370,6 +372,16 @@ ChainManager.prototype._startSensorDataChain = function()
 				// 判断这个数据是不是在目前的窗口内
 				for(var i = idx; i < dat["data"].length; i++) {
 					var tmpd = new Date(dat["data"][i].timestamp);
+
+					// TEST
+					//if(self._device.title == "0x816C" && self._sensor.title == "sht_temperature") {
+					//	console.log("stpnter: " + stpnter);
+					//	console.log("edpnter: " + edpnter);
+					//	console.log(tmpd);
+					//	console.log((tmpd > stpnter && tmpd <= edpnter));
+					//	console.log("=================================");
+					//}
+
 					if(tmpd > stpnter && tmpd <= edpnter) {
 						amount += dat["data"][i].value;
 						count++;
@@ -386,10 +398,13 @@ ChainManager.prototype._startSensorDataChain = function()
 			}
 		}
 
-		//for(var i = dat["data"].length-1; i >= 0; i--) {
-		//	console.log(self._start + ", " + self._end);
-		//	self._dFactory.addData(self._device.title, self._sensor.title, dat["data"][i]);
-		//}
+		//console.log("avg = " + avg);
+		//console.log(self._device.title + ", " + self._sensor.title + ": [" + self._start + " - " + self._end + "] ");
+		//console.log(dat["data"]);
+		for(var i = dat["data"].length-1; i >= 0; i--) {
+			//console.log(self._device.title + ", " + self._sensor.title + ": [" + self._start + " - " + self._end + "] " + dat["data"][i]);
+			//self._dFactory.addData(self._device.title, self._sensor.title, dat["data"][i]);
+		}
 
 		self._sensor.dataPrev = dat["_links"]["previous"]["href"];
 		self._loadIdx++;

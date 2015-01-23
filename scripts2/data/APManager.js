@@ -30,7 +30,7 @@ function APManager()
 APManager.prototype.init = function()
 {
 	//Define if a tile is a mountain tile or not
-	var maxMountainTiles = 5;
+	var maxMountainTiles = 12;
 	for( var i = 0; i < this._tilePerSide; i++ ) {
 		var row = [];
 		for( var j = 0; j < this._tilePerSide; j++ ) {

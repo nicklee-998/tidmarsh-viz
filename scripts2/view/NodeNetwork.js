@@ -731,7 +731,7 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value)
 			// change height
 			//device.cell.scale.z = mobj.height;
 			device.cell.visible = true;
-			//device.cell.position.y = ground.position.y + 2;
+			device.cell.position.z = ground.position.y + 3;
 			TweenMax.to(device.cell.scale, 0.5, {z:mobj.height, ease:Elastic.easeOut});
 
 		} else {
@@ -808,53 +808,6 @@ NodeNetwork.prototype.render = function(mx, my)
 	var vector = new THREE.Vector3(mx, my, 1).unproject(camera);
 	this._raycaster.set(camera.position, vector.sub(camera.position).normalize());
 	var intersects = this._raycaster.intersectObjects(ground.children, true);
-
-	if(this._voronoiContainer) {
-
-		var vector2 = new THREE.Vector3(mx, my, 1).unproject(camera);
-		this._raycasterVor.set(camera.position, vector2.sub(camera.position).normalize());
-		var intersects2 = this._raycasterVor.intersectObjects(this._voronoiContainer.children, true);
-
-		if(intersects2.length > 0) {
-
-			if(intersects2[0].object.name.indexOf("voronoi_") != -1 && intersects2[0].object.name.indexOf("blank") == -1)
-			{
-				if(this._intersectedVor != intersects2[0].object) {
-
-					if(this._intersectedVor) {
-						this._intersectedVor.material.emissive.setHex(this._intersectedVor.currentHex);
-					}
-					this._intersectedVor = intersects2[0].object;
-					this._intersectedVor.currentHex = this._intersectedVor.material.emissive.getHex();
-					this._intersectedVor.material.emissive.setHex(0x746331);
-
-					// mouse over
-					if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
-						if(this._intersectedVor.visible) {
-							this.onVoronoiMouseOver(this._intersectedVor.name);
-						}
-					}
-				}
-			} else {
-				if (this._intersectedVor) {
-					// mouse out in health mode
-					if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
-						this.onVoronoiMouseOut(this._intersectedVor.name);
-					}
-				}
-				this._intersectedVor = null;
-			}
-		} else {
-			if (this._intersectedVor) {
-				// mouse out in health mode
-				if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
-					this.onVoronoiMouseOut(this._intersectedVor.name);
-				}
-			}
-			this._intersectedVor = null;
-		}
-	}
-
 
 	if(intersects.length > 0) {
 
@@ -944,6 +897,57 @@ NodeNetwork.prototype.render = function(mx, my)
 			}
 		}
 		this._intersected = null;
+	}
+
+	// -------------------------------------------------
+	//  Mouse interaction in voronoi graph
+	// -------------------------------------------------
+	if(this._voronoiContainer) {
+
+		var vector2 = new THREE.Vector3(mx, my, 1).unproject(camera);
+		this._raycasterVor.set(camera.position, vector2.sub(camera.position).normalize());
+		var intersects2 = this._raycasterVor.intersectObjects(this._voronoiContainer.children, true);
+
+		if(intersects2.length > 0) {
+
+			if(intersects2[0].object.name.indexOf("voronoi_") != -1 && intersects2[0].object.name.indexOf("blank") == -1)
+			{
+				if(this._intersectedVor != intersects2[0].object) {
+
+					if(this._intersectedVor) {
+						this._intersectedVor.material.emissive.setHex(this._intersectedVor.currentHex);
+					}
+					this._intersectedVor = intersects2[0].object;
+					this._intersectedVor.currentHex = this._intersectedVor.material.emissive.getHex();
+					this._intersectedVor.material.emissive.setHex(0x746331);
+
+					// mouse over
+					if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
+						if(this._intersectedVor.visible) {
+							this.onVoronoiMouseOver(this._intersectedVor.name);
+						}
+					}
+				}
+			} else {
+				if (this._intersectedVor) {
+					// mouse out in health mode
+					if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
+						this._intersectedVor.material.emissive.setHex( this._intersectedVor.currentHex );
+						this.onVoronoiMouseOut(this._intersectedVor.name);
+					}
+				}
+				this._intersectedVor = null;
+			}
+		} else {
+			if (this._intersectedVor) {
+				// mouse out in health mode
+				if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
+					this._intersectedVor.material.emissive.setHex( this._intersectedVor.currentHex );
+					this.onVoronoiMouseOut(this._intersectedVor.name);
+				}
+			}
+			this._intersectedVor = null;
+		}
 	}
 }
 
