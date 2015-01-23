@@ -413,6 +413,7 @@ function onMainMenuClick(e)
 		// Hide cal and dragbar
 		showCal(false);
 		showDragBar(false);
+		showLineChart(false);
 		// Device health
 		hideHealthCalendar();
 		network.clearHealthGraph();
@@ -435,6 +436,7 @@ function onMainMenuClick(e)
 		// Hide cal and dragbar
 		showCal(false);
 		showDragBar(false);
+		showLineChart(false);
 		// Device health
 		hideHealthCalendar();
 		network.clearHealthGraph();
@@ -464,6 +466,7 @@ function onMainMenuClick(e)
 		// weather big
 		showWeatherBig(false);
 		showWeatherSmall(false);
+		showLineChart(false);
 		// CLEAR GRAPH
 		network.clearVoronoi(true);
 		// Choose Sensor
@@ -531,10 +534,13 @@ function onMainMenuClick(e)
 		weather.create("CLOUDY");
 		// weather big
 		showWeatherBig(false);
-		showWeatherSmall(true);
+		showWeatherSmall(false);
 		// CLEAR GRAPH
 		network.closeIncomingMessage();
 		network.clearVoronoi(true);
+		// close some ui
+		showCal(false);
+		showLineChart(false);
 		// Device health
 		hideHealthCalendar();
 		// Set 3d scene
@@ -835,6 +841,21 @@ function showWeatherSmall(flg)
 	}
 }
 
+function showLineChart(flg)
+{
+	if(flg) {
+		var hei = parseInt($('#chart_div').css('height'));
+		$('#chart_div').css('visibility', 'visible');
+		$('#chart_div').css('bottom', '-' + hei + 'px');
+		$('#chart_div').animate({bottom:'0px'}, 300, 'easeOutQuint');
+	} else {
+		var hei = parseInt($('#chart_div').css('height'));
+		$('#chart_div').animate({bottom:'-' + hei + 'px'}, 300, 'easeOutQuint', function() {
+			$('#chart_div').css('visibility', 'hidden');
+		});
+	}
+}
+
 /////////////////////////////////////////////
 // GET SENSOR HISTORY DATA
 /////////////////////////////////////////////
@@ -870,7 +891,8 @@ function onDeviceData(e, i)
 		//	});
 		//}
 		// 隐藏日历
-		//showCal(false);
+		showCal(false);
+		showLineChart(false);
 		//showUIMenu(false);
 		//showLoading(true);
 	} else if(e.type == SERVER_DEVICE_LIST_COMPLETE) {
@@ -878,19 +900,22 @@ function onDeviceData(e, i)
 		console.log("数据集载入完毕!");
 
 		// 显示菜单, 默认载入中午
-		updateSliderInfo(bar.offsetLeft + bar_line.offsetLeft + bar_line.offsetWidth/2, 0.5);
-		updateNetworkNode();
+		//updateSliderInfo(bar.offsetLeft + bar_line.offsetLeft + bar_line.offsetWidth/2, 0.5);
+		//updateNetworkNode();
 
 		// 显示日历和拖动条
 		showCal(true);
+		showLineChart(true);
 		//showDragBar(true);
 		//showUIMenu(true);
 		//showLoading(false);
 
-		// TEST
+		// Draw line graph
 		var start = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);
 		var end = new Date(sliderYear, sliderMonth, sliderDay, 23, 59, 59);
 		lineChart.make(selectSensor, start, end, chainManager._dFactory.dataset);
+		// init dragger positon
+		lineChart.updateDragger(0.5);
 	}
 }
 

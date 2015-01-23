@@ -295,7 +295,12 @@ html, body {
 }
 
 .line_chart_dragger {
-	fill: #ff0000;
+	fill: #ffffff;
+}
+
+.line_chart_dragger_date {
+	fill: #ffffff;
+	font-size: 15px;
 }
 
 .line_chart_svg_dragger {

@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7d4f2cda-708d-45cd-96e4-586ac0f7b141" name="Default" comment="1. Adjust again the color of different sensors&#10;2. Fix the mouse drag &amp; click bugs&#10;3. Fix the problem of bad incoming data&#10;4. Add radio bar for select incoming sensor type&#10;5. Add loading animation&#10;6. Remove the color of package in sensor mode&#10;7. Add clock ticks to wind history graph&#10;">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts2/controllers/UiLineChart.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/global/CustomEvent.js" afterPath="$PROJECT_DIR$/scripts2/global/CustomEvent.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/Main.js" afterPath="$PROJECT_DIR$/scripts2/view/Main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" afterPath="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo_loader.html" afterPath="$PROJECT_DIR$/demo_loader.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index_version_2.html" afterPath="$PROJECT_DIR$/index_version_2.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/controllers/UiLineChart.js" afterPath="$PROJECT_DIR$/scripts2/controllers/UiLineChart.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/css/main.css" afterPath="$PROJECT_DIR$/scripts2/css/main.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -36,11 +32,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
+      <file leaf-file-name="index_version_2.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index_version_2.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-15.625" vertical-offset="255" max-vertical-offset="4950">
+              <caret line="42" column="18" selection-start-line="42" selection-start-column="9" selection-end-line="42" selection-end-column="18" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="Main.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.62053573" vertical-offset="10263" max-vertical-offset="16110">
-              <caret line="712" column="0" selection-start-line="712" selection-start-column="0" selection-end-line="712" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.24408284" vertical-offset="7560" max-vertical-offset="16485">
+              <caret line="515" column="16" selection-start-line="515" selection-start-column="16" selection-end-line="515" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -49,8 +55,8 @@
       <file leaf-file-name="main.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts2/css/main.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-21.0" vertical-offset="3903" max-vertical-offset="4935">
-              <caret line="298" column="1" selection-start-line="298" selection-start-column="1" selection-end-line="298" selection-end-column="1" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="3993" max-vertical-offset="5010">
+              <caret line="302" column="20" selection-start-line="302" selection-start-column="20" selection-end-line="302" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -59,18 +65,8 @@
       <file leaf-file-name="NodeNetwork.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-16.074074" vertical-offset="12076" max-vertical-offset="15720">
+            <state vertical-scroll-proportion="0.0" vertical-offset="12076" max-vertical-offset="15720">
               <caret line="834" column="49" selection-start-line="834" selection-start-column="49" selection-end-line="834" selection-end-column="49" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="UiIntroPage.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiIntroPage.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="44" max-vertical-offset="750">
-              <caret line="22" column="57" selection-start-line="22" selection-start-column="8" selection-end-line="22" selection-end-column="57" />
               <folding />
             </state>
           </provider>
@@ -79,8 +75,8 @@
       <file leaf-file-name="UiLineChart.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiLineChart.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="765" max-vertical-offset="3960">
-              <caret line="92" column="34" selection-start-line="92" selection-start-column="34" selection-end-line="92" selection-end-column="34" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="4395">
+              <caret line="21" column="8" selection-start-line="21" selection-start-column="8" selection-end-line="21" selection-end-column="8" />
               <folding>
                 <element signature="n#!!doc;n#UiLineChart#0" expanded="false" />
               </folding>
@@ -91,8 +87,8 @@
       <file leaf-file-name="UiSliderBar.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiSliderBar.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.888889" vertical-offset="1773" max-vertical-offset="2655">
-              <caret line="127" column="36" selection-start-line="127" selection-start-column="16" selection-end-line="127" selection-end-column="36" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1818" max-vertical-offset="2655">
+              <caret line="154" column="8" selection-start-line="154" selection-start-column="8" selection-end-line="155" selection-end-column="38" />
               <folding />
             </state>
           </provider>
@@ -103,16 +99,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="990">
               <caret line="28" column="19" selection-start-line="28" selection-start-column="4" selection-end-line="28" selection-end-column="19" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="UiHealthCalendar.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiHealthCalendar.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="676" max-vertical-offset="8580">
-              <caret line="67" column="8" selection-start-line="67" selection-start-column="8" selection-end-line="76" selection-end-column="11" />
               <folding />
             </state>
           </provider>
@@ -193,10 +179,9 @@
     <detection-done>true</detection-done>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1" />
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="817" />
+    <option name="height" value="821" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -240,20 +225,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="tidmarsh-viz">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -402,6 +373,20 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="css" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="tidmarsh-viz">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -586,7 +571,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1" y="23" width="1440" height="817" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="821" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3255814" sideWeight="0.49964765" order="12" side_tool="false" content_ui="tabs" />
@@ -602,12 +587,12 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32831737" sideWeight="0.49964765" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27247956" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27247956" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -828,7 +813,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="3139" max-vertical-offset="5385">
           <caret line="234" column="29" selection-start-line="234" selection-start-column="21" selection-end-line="234" selection-end-column="29" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -878,7 +862,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1140">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -894,7 +877,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.08583691" vertical-offset="0" max-vertical-offset="699">
           <caret line="4" column="27" selection-start-line="4" selection-start-column="9" selection-end-line="4" selection-end-column="27" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -902,7 +884,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="699">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -918,15 +899,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="261" max-vertical-offset="1740">
           <caret line="42" column="33" selection-start-line="42" selection-start-column="22" selection-end-line="42" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index_version_2.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.0" vertical-offset="30" max-vertical-offset="4950">
-          <caret line="26" column="16" selection-start-line="26" selection-start-column="9" selection-end-line="26" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -934,7 +906,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.34334764" vertical-offset="510" max-vertical-offset="1230">
           <caret line="18" column="16" selection-start-line="18" selection-start-column="16" selection-end-line="18" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -942,7 +913,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="1260">
           <caret line="15" column="26" selection-start-line="15" selection-start-column="23" selection-end-line="15" selection-end-column="26" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -978,35 +948,32 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-21.0" vertical-offset="3903" max-vertical-offset="4935">
-          <caret line="298" column="1" selection-start-line="298" selection-start-column="1" selection-end-line="298" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/data/ChainManager.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.10787172" vertical-offset="4081" max-vertical-offset="7080">
           <caret line="277" column="16" selection-start-line="277" selection-start-column="16" selection-end-line="280" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index_version_2.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-15.625" vertical-offset="255" max-vertical-offset="4950">
+          <caret line="42" column="18" selection-start-line="42" selection-start-column="9" selection-end-line="42" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiLineChart.js">
+    <entry file="file://$PROJECT_DIR$/scripts2/css/main.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="765" max-vertical-offset="3960">
-          <caret line="92" column="34" selection-start-line="92" selection-start-column="34" selection-end-line="92" selection-end-column="34" />
-          <folding>
-            <element signature="n#!!doc;n#UiLineChart#0" expanded="false" />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="3993" max-vertical-offset="5010">
+          <caret line="302" column="20" selection-start-line="302" selection-start-column="20" selection-end-line="302" selection-end-column="20" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-16.074074" vertical-offset="12076" max-vertical-offset="15720">
+        <state vertical-scroll-proportion="0.0" vertical-offset="12076" max-vertical-offset="15720">
           <caret line="834" column="49" selection-start-line="834" selection-start-column="49" selection-end-line="834" selection-end-column="49" />
           <folding />
         </state>
@@ -1014,16 +981,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiSliderBar.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.888889" vertical-offset="1773" max-vertical-offset="2655">
-          <caret line="127" column="36" selection-start-line="127" selection-start-column="16" selection-end-line="127" selection-end-column="36" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1818" max-vertical-offset="2655">
+          <caret line="154" column="8" selection-start-line="154" selection-start-column="8" selection-end-line="155" selection-end-column="38" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiLineChart.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="4395">
+          <caret line="21" column="8" selection-start-line="21" selection-start-column="8" selection-end-line="21" selection-end-column="8" />
+          <folding>
+            <element signature="n#!!doc;n#UiLineChart#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.62053573" vertical-offset="10263" max-vertical-offset="16110">
-          <caret line="712" column="0" selection-start-line="712" selection-start-column="0" selection-end-line="712" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.24408284" vertical-offset="7560" max-vertical-offset="16485">
+          <caret line="515" column="16" selection-start-line="515" selection-start-column="16" selection-end-line="515" selection-end-column="16" />
           <folding />
         </state>
       </provider>

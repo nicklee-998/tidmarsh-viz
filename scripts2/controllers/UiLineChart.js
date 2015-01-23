@@ -4,7 +4,7 @@
 function UiLineChart()
 {
 	this._width = window.innerWidth;
-	this._height = 200;
+	this._height = 170;
 	this._margin = {left: 30, right: 0, top: 50, bottom: 0};
 
 	this._draggerDown = false;
@@ -19,12 +19,15 @@ function UiLineChart()
 		.attr("height", this._height)
 		.append("g");
 
+	$("#chart_div").css("bottom", -this._height);
+
 	function onDraggerMove(event)
 	{
 		if(self._draggerDown) {
 			//console.log(event);
 			var px = event.clientX;
 			d3.select("#drag_bar").attr("x", px - self._mouseOffsetX);
+			d3.select("#line_chart_dragger_date").attr("x", px - 23);
 		}
 
 		var baroffsetx = d3.select("#drag_bar").attr("x");
@@ -35,6 +38,10 @@ function UiLineChart()
 			jQuery.publish(LINE_CHART_DRAG, precToDate(set_perc));
 			//updateNetworkNode();
 			//updateVGraphBySlider();
+
+			var date = new Date(self._dateScale(set_perc));
+			var cstr = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+			d3.select("#line_chart_dragger_date").text(cstr);
 		} else if(set_perc < 0) {
 			d3.select("#drag_bar").attr("x", self._margin.left);
 			//jQuery.publish(LINE_CHART_DRAG, precToDate(0));
@@ -66,17 +73,18 @@ function UiLineChart()
 		return date;
 	}
 
-	d3.select("#chart_div")
+	var dragger_svg = d3.select("#chart_div")
 		.append("svg")
 		.attr("width", this._width)
 		.attr("height", this._height)
-		.attr("class", "line_chart_svg_dragger")
-		.append("rect")
+		.attr("class", "line_chart_svg_dragger");
+
+	dragger_svg.append("rect")
 		.attr("id", "drag_bar")
 		.attr("x", 50)
-		.attr("y", 0)
-		.attr("width", 30)
-		.attr("height", this._height)
+		.attr("y", this._margin.top)
+		.attr("width", 3)
+		.attr("height", this._height - this._margin.top)
 		.attr("class", "line_chart_dragger")
 		.on("mousedown", function() {
 			self._draggerDown = true;
@@ -92,21 +100,42 @@ function UiLineChart()
 
 				//jQuery.publish(LINE_CHART_DRAG, precToDate(set_perc));
 			}
+		})
+		.on("mouseover", function() {
+			d3.select(this).style("stroke-width", 1);
+			d3.select(this).style("stroke", "#333333");
+		})
+		.on("mouseout", function() {
+			d3.select(this).style("stroke-width", 0);
+			d3.select(this).style("stroke", "#333333");
 		});
+
+	dragger_svg.append("text")
+		.attr("x", 50 - 23)
+		.attr("y", this._margin.top - 3)
+		.attr("id", "line_chart_dragger_date")
+		.attr("class", "line_chart_dragger_date")
+		.text("");
+		//.text("9:37:14");
 
 	var self = this;
 }
 
-//UiLineChart.prototype.updateDragger = function(moffsetX, prec)
-//{
-//	d3.select("#drag_bar").attr("x", self._margin.left);
-//
-//	sliderCurrent = new Date(sliderScale(perc));
-//	slider.style.left = (mousex - bar.offsetLeft - 9) + 'px';
-//	var cstr = sliderCurrent.getHours() + ":" + sliderCurrent.getMinutes() + ":" + sliderCurrent.getSeconds();
-//	slider_curr_date.value = cstr;
-//	slider_curr_date.style.left = (mousex - bar.offsetLeft - 65) + 'px';
-//}
+// ---------------------------------
+//  手动调整dragger的位置
+// ---------------------------------
+UiLineChart.prototype.updateDragger = function(prec)
+{
+	var px = ((this._width - this._margin.left - this._margin.right) * prec) + this._margin.left;
+	d3.select("#drag_bar").attr("x", px);
+	d3.select("#line_chart_dragger_date").attr("x", px - 23);
+
+	var date = new Date(this._dateScale(prec));
+	var cstr = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+	d3.select("#line_chart_dragger_date").text(cstr);
+
+	jQuery.publish(LINE_CHART_DRAG, date);
+}
 
 UiLineChart.prototype.make = function(sid, start, end, dataset)
 {
