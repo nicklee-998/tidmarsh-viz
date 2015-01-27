@@ -9,6 +9,10 @@ function SensorNode(title)
 		new THREE.MeshPhongMaterial({color: 0x666666, shading: THREE.FlatShading})
 	);
 
+	// default style
+	this._normalColor = this._mesh.material.color.getHex();
+	this._originEmissive = this._mesh.material.emissive.getHex();
+
 	this._lastUpdated = null;
 
 	// timer
@@ -74,4 +78,10 @@ SensorNode.prototype.online = function(val)
 		clr = "0x" + clr.substring(1);
 		this._mesh.material.color.setHex(clr);
 	}
+}
+
+SensorNode.prototype.restore = function()
+{
+	this._mesh.material.color.setHex(this._normalColor);
+	this._mesh.material.emissive.setHex(this._originEmissive);
 }

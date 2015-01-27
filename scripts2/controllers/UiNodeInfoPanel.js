@@ -222,7 +222,7 @@ function hideInfoPanel()
 		//$("#info-panel").css('visibility', "hidden");
 		$("#info-panel").animate({
 			opacity: 0
-		}, 700, "easeOutQuart", function() {
+		}, 500, "easeOutQuart", function() {
 			$(this).css('visibility', "hidden");
 			$(this).css('opacity', 1);
 		});
@@ -358,6 +358,8 @@ function openDeviceWebsocket(wsurl)
 
 function closeDeviceWebsocket()
 {
-	infoDeviceWebsocket.close();
-	infoDeviceWebsocket = null;
+	if(infoDeviceWebsocket != null) {
+		infoDeviceWebsocket.close();
+		infoDeviceWebsocket = null;
+	}
 }

@@ -24,6 +24,7 @@ var _counterInterval;
 
 // ui
 var mainmenu = null;
+var mainmenuCurrent = null;
 var intro = null;
 
 // sensor node
@@ -85,6 +86,7 @@ $(document).ready(function() {
 	jQuery.subscribe(MAINMENU_REALTIME, onMainMenuClick);
 	jQuery.subscribe(MAINMENU_HISTORY, onMainMenuClick);
 	mainmenu = new UiMainMenu();
+	mainmenuCurrent = MAINMENU_BEGIN;
 	// INTRO PAGE
 	intro = new UiIntroPage();
 
@@ -394,57 +396,93 @@ function onMainMenuClick(e)
 {
 	//console.log(e.type);
 
+	// -------------------------
+	//  Clear menu first
+	// -------------------------
+	switch(mainmenuCurrent) {
+		case MAINMENU_BEGIN:
+			if(mainmenuCurrent != e.type) {
+				// 隐藏介绍文字
+				intro.hideIntroPage();
+			}
+
+			break;
+		case MAINMENU_NETWORK:
+			// 隐藏信息板
+			hideInfoPanel();
+			if(mainmenuCurrent != e.type) {
+				// 隐藏指示牌
+				hideNodeSign();
+				// weather big
+				showWeatherBig(false);
+			}
+
+			// Unregister mouse event
+			jQuery.unsubscribe(NETWORK_NORMAL_SIGN_CLICK, onNetworkSignClicked);
+			jQuery.unsubscribe(NETWORK_NORMAL_MESH_CLICK, onNetworkMeshClicked);
+
+			break;
+		case MAINMENU_DATA:
+			// CLEAR GRAPH
+			network.closeIncomingMessage();
+			network.clearVoronoi(true);
+			// Hide cal and dragbar
+			showCal(false);
+			showDragBar(false);
+			showLineChart(false);
+
+			// Unregister mouse event
+			jQuery.unsubscribe(NETWORK_VORONOI_MOUSE_OVER, onNetworkVoronoiOver);
+			jQuery.unsubscribe(NETWORK_VORONOI_MOUSE_OUT, onNetworkVoronoiOut);
+			jQuery.unsubscribe(LINE_CHART_DRAG, onLineChartDrag);
+
+			break;
+		case MAINMENU_DEVICE:
+			// Device health
+			hideHealthCalendar();
+			network.clearHealthGraph();
+			network.restoreNodes();
+
+			// Unregister mouse event
+			jQuery.unsubscribe(NETWORK_HEALTH_NODE_SELECTED, onNetworkNodeSelected);
+			jQuery.unsubscribe(NETWORK_HEALTH_NODE_DESELECTED, onNetworkNodeDeselected);
+
+			break;
+		default :
+			break;
+	}
+
+
 	if(e.type == MAINMENU_BEGIN) {
 		// 显示介绍文字
 		intro.showIntroPage();
-		// 隐藏指示牌和信息板
-		hideNodeSign();
-		hideInfoPanel();
 		// 显示动物和植物
 		apManager.showAP();
 		// 显示天气
+		// Todo: Should refresh everytime reshow weather
 		weather.create(weather_today);
-		// weather big
-		showWeatherBig(false);
+		// Show weather bar
 		showWeatherSmall(true);
-		// CLEAR GRAPH
-		network.closeIncomingMessage();
-		network.clearVoronoi(true);
-		// Hide cal and dragbar
-		showCal(false);
-		showDragBar(false);
-		showLineChart(false);
-		// Device health
-		hideHealthCalendar();
-		network.clearHealthGraph();
+
 		// Set 3d scene
 		setScenePerspective(1);
 
 	} else if(e.type == MAINMENU_NETWORK) {
-		// 隐藏介绍文字
-		intro.hideIntroPage();
 		// 显示动物和植物
 		apManager.showAP();
 		// 显示天气
 		weather.create(weather_today);
-		// weather big
+		// Show weather bar
 		showWeatherBig(true);
 		showWeatherSmall(true);
-		// CLEAR GRAPH
-		network.clearVoronoi(true);
+		// Enter normal mode
 		network.enterNormalMode();
-		// Hide cal and dragbar
-		showCal(false);
-		showDragBar(false);
-		showLineChart(false);
-		// Device health
-		hideHealthCalendar();
-		network.clearHealthGraph();
-		// Set 3d scene
-		setScenePerspective(2);
 		// Set default sign
 		var len = network.deviceBoxes.length - 1;
 		showNodeSign(network.deviceBoxes[getRandomInt(0, len)], 0.8);
+
+		// Set 3d scene
+		setScenePerspective(2);
 
 		// Register click event
 		jQuery.subscribe(NETWORK_NORMAL_SIGN_CLICK, onNetworkSignClicked);
@@ -452,28 +490,19 @@ function onMainMenuClick(e)
 
 	} else if(e.type == MAINMENU_DATA) {
 
-		//console.log("Mainmenu Data: " + mainmenu.currSelectSensorIdx + ", " + mainmenu.currSelectRH);
-
-		// 隐藏介绍文字
-		intro.hideIntroPage();
-		// 隐藏指示牌和信息板
-		hideNodeSign();
-		hideInfoPanel();
+		console.log("Mainmenu Data: " + mainmenu.currSelectSensorIdx + ", " + mainmenu.currSelectRH);
 		// 隐藏动物和植物
 		apManager.hideAP();
 		// 切换天气
 		weather.create("VORONOI");
-		// weather big
-		showWeatherBig(false);
+		// Hide weather bar
 		showWeatherSmall(false);
+		// Hide line chart
 		showLineChart(false);
 		// CLEAR GRAPH
 		network.clearVoronoi(true);
 		// Choose Sensor
 		selectSensor = sensorTable[mainmenu.currSelectSensorIdx];
-		// Device health
-		hideHealthCalendar();
-		network.clearHealthGraph();
 		// Set 3d scene
 		setScenePerspective(3);
 
@@ -523,11 +552,6 @@ function onMainMenuClick(e)
 
 	} else if(e.type == MAINMENU_DEVICE) {
 
-		// 隐藏介绍文字
-		intro.hideIntroPage();
-		// 隐藏指示牌和信息板
-		hideNodeSign();
-		hideInfoPanel();
 		// 隐藏动物和植物
 		apManager.hideAP();
 		// 关闭天气
@@ -552,6 +576,8 @@ function onMainMenuClick(e)
 		var cfile = "./res/data_2014/2014_all.csv"
 		network.createHealthGraph(cfile);
 	}
+
+	mainmenuCurrent = e.type;
 }
 
 /////////////////////////////////////////////
@@ -871,6 +897,7 @@ function getDevicesDataBySensorMenu()
 	}
 
 	jQuery.subscribe(SERVER_DEVICE_LIST_START, onDeviceData);
+	jQuery.subscribe(SERVER_DEVICE_DATA_COMPLETE, onDeviceData);
 	jQuery.subscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
 	chainManager.fetchMultiDevicesByDate(arr, [selectSensor],
 		{year:sliderYear, month:sliderMonth, day:sliderDay, hour:0, minu:0, sec:0},
@@ -884,19 +911,22 @@ function onDeviceData(e, i)
 		jQuery.unsubscribe(SERVER_DEVICE_LIST_START, onDeviceData);
 		console.log("开始载入数据集!");
 
-		// 隐藏菜单
-		//if($('#bar').css('visibility') != 'hidden') {
-		//	$('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
-		//		$('#bar').css('visibility', 'hidden');
-		//	});
-		//}
 		// 隐藏日历
 		showCal(false);
 		showLineChart(false);
 		//showUIMenu(false);
-		//showLoading(true);
+
+		// 显示loader
+		loader2start();
+	} else if(e.type == SERVER_DEVICE_DATA_COMPLETE) {
+
+		//console.log(i);
+		$(".loading-text").text("loading " + i.title + "...");
+
 	} else if(e.type == SERVER_DEVICE_LIST_COMPLETE) {
+		jQuery.unsubscribe(SERVER_DEVICE_DATA_COMPLETE, onDeviceData);
 		jQuery.unsubscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
+
 		console.log("数据集载入完毕!");
 
 		// 显示菜单, 默认载入中午
@@ -908,7 +938,9 @@ function onDeviceData(e, i)
 		showLineChart(true);
 		//showDragBar(true);
 		//showUIMenu(true);
-		//showLoading(false);
+
+		// 隐藏loader
+		loader2end();
 
 		// Draw line graph
 		var start = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);

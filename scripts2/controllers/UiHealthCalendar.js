@@ -323,22 +323,20 @@ function showChart(flag)
 	if(flag) {
 		//if(_barIsHide) {
 		$("#health_sensor").clearQueue();
-			$("#health_sensor").animate({
-				"top": _barGoY
-			}, 500, "easeOutQuint", function() {
-				_barIsHide = false;
-			});
+		$("#health_sensor").animate({
+			"top": _barGoY
+		}, 500, "easeOutQuint", function() {
+			_barIsHide = false;
+		});
 		//}
 	} else {
 		// hide
-		if(!_barIsHide) {
-			var py = -_barHeight;
-			$("#health_sensor").animate({
-				"top": py
-			}, 500, "easeOutQuint", function() {
-				_barIsHide = true;
-			});
-		}
+		var py = -_barHeight;
+		$("#health_sensor").stop().animate({
+			"top": py
+		}, 500, "easeOutQuint", function() {
+			_barIsHide = true;
+		});
 	}
 }
 

@@ -6,9 +6,9 @@ function NodeNetwork()
 	// Mode
 	this.NETWORK_MODE_NONE = "network_mode_none";
 	this.NETWORK_MODE_NORMAL = "network_mode_normal";
-	this.NETWORK_MODE_HEALTH = "network_mode_health";
 	this.NETWORK_MODE_VORONOI_REALTIME = "network_mode_voronoi_realtime";
 	this.NETWORK_MODE_VORONOI_HISTORY = "network_mode_voronoi_history";
+	this.NETWORK_MODE_HEALTH = "network_mode_health";
 
 	this._mode = this.NETWORK_MODE_NONE;
 
@@ -20,6 +20,8 @@ function NodeNetwork()
 	// Voronoi
 	this.vertices;
 	this._voronoiContainer;
+	this._voronoiSign;
+	this._voronoiSignTitle;
 
 	// Health Graph
 	this._healthDateLayers = null;
@@ -59,7 +61,6 @@ function NodeNetwork()
 	document.addEventListener( 'mouseup', function() {
 
 		if(self._intersected) {
-
 			// Health mode click
 			if(self._mode == self.NETWORK_MODE_HEALTH) {
 
@@ -87,6 +88,7 @@ function NodeNetwork()
 					// ------------------------
 					jQuery.publish(NETWORK_HEALTH_NODE_SELECTED, self._intersected.name);
 				}
+
 			} else if(self._mode == self.NETWORK_MODE_NORMAL) {
 
 				if(self._intersected) {
@@ -230,6 +232,16 @@ NodeNetwork.prototype.updateNode = function(did, date)
 		if(device.id == did) {
 			device.node.isOnline(date);
 			break;
+		}
+	}
+}
+
+NodeNetwork.prototype.restoreNodes = function()
+{
+	for(var i = 0; i < this.devices.length; i++) {
+		var device = this.devices[i];
+		if(device.type != "blank") {
+			device.node.restore();
 		}
 	}
 }
@@ -607,6 +619,40 @@ NodeNetwork.prototype.processMessage = function(did, sid, value)
 NodeNetwork.prototype.createVoronoi = function()
 {
 	// -----------------------------
+	//  voronoi info sign
+	// -----------------------------
+	var texture = THREE.ImageUtils.loadTexture("./res/textures/voronoi_sign.png");
+	this._voronoiSign = new THREE.Mesh(
+		new THREE.PlaneBufferGeometry(150, 68, 40, 40),
+		new THREE.MeshPhongMaterial({map: texture, shading: THREE.SmoothShading, transparent: true, side: THREE.DoubleSide})
+	);
+	this._voronoiSign.position.z = groundZero + 600;
+	this._voronoiSign.name = "voronoi_sign_plane";
+	this._voronoiSign.visible = true;
+	this._voronoiSign.rotation.x = Math.PI / 2;
+	ground.add(this._voronoiSign);
+
+	// Device title
+	_voronoiSignTitle = document.createElement( "canvas" );
+	_voronoiSignTitle.width = 150;
+	_voronoiSignTitle.height = 60;
+	var context = _voronoiSignTitle.getContext( "2d" );
+	//context.shadowColor = "#000";
+	//context.shadowBlur = 7;
+	context.fillStyle = "black";
+	context.font = "16pt arial bold";
+	context.fillText( "0x0000", 30, 55 );
+
+	var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(_voronoiSignTitle), transparent: true});
+	xm.map.needsUpdate = true;
+
+	var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
+	mesh.position.y = 30;
+	mesh.position.z = 5;
+	mesh.name = "voronoisignmesh";
+	this._voronoiSign.add(mesh);
+
+	// -----------------------------
 	//  for voronoi graph
 	// -----------------------------
 	this.vertices = new Array();
@@ -779,6 +825,34 @@ NodeNetwork.prototype.onVoronoiMouseOut = function(name)
 	jQuery.publish(NETWORK_VORONOI_MOUSE_OUT, did);
 }
 
+NodeNetwork.prototype.showVoronoiSign = function(node)
+{
+	var context = this._voronoiSignTitle.getContext( "2d" );
+	context.clearRect(0, 0, 150, 60);
+	context.fillText( node.name, 25, 60 );
+
+	var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(this._voronoiSignTitle), transparent: true});
+	xm.map.needsUpdate = true;
+	infoSignPlane.getObjectByName("voronoisignmesh").material = xm;
+
+	// Show the device information
+	//infoSignPlane.position.x = node.position.x - 2;
+	//infoSignPlane.position.y = node.position.y;
+	//infoSignPlane.position.z = - 100;
+	//infoSignPlane.userData = {title:node.name};
+	//
+	//TweenMax.to(infoSignPlane.position, 0.7, {z:43, delay:delay, ease:Elastic.easeOut, onStart: function() {
+	//	infoSignPlane.visible = true;
+	//}});
+}
+
+NodeNetwork.prototype.showVoronoiSign = function()
+{
+	//TweenMax.to(infoSignPlane.position, 0.4, {z: -80, ease:Cubic.easeOut, onComplete: function() {
+	//	infoSignPlane.visible = false;
+	//}});
+}
+
 NodeNetwork.prototype.getDeviceByPoint = function(point)
 {
 	for(var i = 0; i < this.devices.length; i++) {
@@ -810,7 +884,6 @@ NodeNetwork.prototype.render = function(mx, my)
 	var intersects = this._raycaster.intersectObjects(ground.children, true);
 
 	if(intersects.length > 0) {
-
 		if(this.getDeviceById(intersects[0].object.name) != null) {
 
 			if(this._intersected != intersects[0].object) {
@@ -930,7 +1003,7 @@ NodeNetwork.prototype.render = function(mx, my)
 				}
 			} else {
 				if (this._intersectedVor) {
-					// mouse out in health mode
+					// mouse out in voronoi history mode
 					if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
 						this._intersectedVor.material.emissive.setHex( this._intersectedVor.currentHex );
 						this.onVoronoiMouseOut(this._intersectedVor.name);
@@ -940,7 +1013,7 @@ NodeNetwork.prototype.render = function(mx, my)
 			}
 		} else {
 			if (this._intersectedVor) {
-				// mouse out in health mode
+				// mouse out in voronoi history mode
 				if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
 					this._intersectedVor.material.emissive.setHex( this._intersectedVor.currentHex );
 					this.onVoronoiMouseOut(this._intersectedVor.name);
