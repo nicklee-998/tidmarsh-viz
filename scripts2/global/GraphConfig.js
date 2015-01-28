@@ -28,6 +28,7 @@ function getConfigBySensor(sname)
 	{
 		case "sht_temperature":
 			config.sensor = "sht_temperature";
+			config.title = "temperature";
 			config.min = -30;
 			config.max = 50;
 			config.avg = 20;
@@ -42,6 +43,7 @@ function getConfigBySensor(sname)
 			break;
 		case "illuminance":
 			config.sensor = "illuminance";
+			config.title = "illuminance";
 			config.min = 0;
 			config.max = 30000;
 			config.avg = 5000;
@@ -56,6 +58,7 @@ function getConfigBySensor(sname)
 			break;
 		case "bmp_pressure":	// 气压
 			config.sensor = "bmp_pressure";
+			config.title = "pressure";
 			config.min = 800;
 			config.max = 1200;
 			config.avg = 1000;
@@ -70,6 +73,7 @@ function getConfigBySensor(sname)
 			break;
 		case "sht_humidity":	// 湿度
 			config.sensor = "sht_humidity";
+			config.title = "humidity";
 			config.min = 0;
 			config.max = 120;
 			config.avg = 80;
@@ -84,6 +88,7 @@ function getConfigBySensor(sname)
 			break;
 		case "battery_voltage":
 			config.sensor = "battery_voltage";
+			config.title = "voltage";
 			config.min = 3;
 			config.max = 8;
 			config.avg = 5;

@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7d4f2cda-708d-45cd-96e4-586ac0f7b141" name="Default" comment="1. Adjust again the color of different sensors&#10;2. Fix the mouse drag &amp; click bugs&#10;3. Fix the problem of bad incoming data&#10;4. Add radio bar for select incoming sensor type&#10;5. Add loading animation&#10;6. Remove the color of package in sensor mode&#10;7. Add clock ticks to wind history graph&#10;">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts2/controllers/UiLoader2.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts2/css/loader2.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/Main.js" afterPath="$PROJECT_DIR$/scripts2/view/Main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" afterPath="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/SensorNode.js" afterPath="$PROJECT_DIR$/scripts2/view/SensorNode.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/controllers/UiHealthCalendar.js" afterPath="$PROJECT_DIR$/scripts2/controllers/UiHealthCalendar.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/controllers/UiNodeInfoPanel.js" afterPath="$PROJECT_DIR$/scripts2/controllers/UiNodeInfoPanel.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index_version_2.html" afterPath="$PROJECT_DIR$/index_version_2.html" />
+    <list default="true" id="7d4f2cda-708d-45cd-96e4-586ac0f7b141" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="tidmarsh-viz.iws" />
@@ -40,8 +32,18 @@
       <file leaf-file-name="index_version_2.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index_version_2.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.254902" vertical-offset="473" max-vertical-offset="5250">
-              <caret line="63" column="6" selection-start-line="63" selection-start-column="6" selection-end-line="63" selection-end-column="6" />
+            <state vertical-scroll-proportion="-7.7647057" vertical-offset="264" max-vertical-offset="5325">
+              <caret line="44" column="33" selection-start-line="44" selection-start-column="17" selection-end-line="44" selection-end-column="33" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="main.css" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/scripts2/css/main.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.9025522" vertical-offset="4741" max-vertical-offset="5640">
+              <caret line="342" column="24" selection-start-line="342" selection-start-column="1" selection-end-line="342" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -50,68 +52,8 @@
       <file leaf-file-name="Main.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.185185" vertical-offset="13726" max-vertical-offset="16965">
-              <caret line="928" column="0" selection-start-line="928" selection-start-column="0" selection-end-line="928" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ChainManager.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/data/ChainManager.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.185185" vertical-offset="4129" max-vertical-offset="7305">
-              <caret line="290" column="74" selection-start-line="290" selection-start-column="74" selection-end-line="290" selection-end-column="74" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="UiMainMenu.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiMainMenu.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2970" max-vertical-offset="4905">
-              <caret line="168" column="78" selection-start-line="168" selection-start-column="72" selection-end-line="168" selection-end-column="78" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="UiNodeInfoPanel.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiNodeInfoPanel.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.333333" vertical-offset="2220" max-vertical-offset="5550">
-              <caret line="163" column="8" selection-start-line="163" selection-start-column="8" selection-end-line="165" selection-end-column="64" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NodeNetwork.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.26244345" vertical-offset="12141" max-vertical-offset="16875">
-              <caret line="821" column="43" selection-start-line="821" selection-start-column="43" selection-end-line="821" selection-end-column="43" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SensorNode.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/view/SensorNode.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="677" max-vertical-offset="1380">
-              <caret line="66" column="62" selection-start-line="66" selection-start-column="62" selection-end-line="66" selection-end-column="62" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CustomEvent.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="141" max-vertical-offset="990">
-              <caret line="44" column="31" selection-start-line="44" selection-start-column="4" selection-end-line="44" selection-end-column="31" />
+            <state vertical-scroll-proportion="-18.222221" vertical-offset="7578" max-vertical-offset="17115">
+              <caret line="538" column="26" selection-start-line="538" selection-start-column="26" selection-end-line="538" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -139,7 +81,6 @@
         <option value="$PROJECT_DIR$/demo/demo_3d_scene_02.html" />
         <option value="$PROJECT_DIR$/scripts2/view/MainScene3D.js" />
         <option value="$PROJECT_DIR$/scripts2/utils/Utils.js" />
-        <option value="$PROJECT_DIR$/scripts2/global/GraphConfig.js" />
         <option value="$PROJECT_DIR$/scripts/ui_slider_bar.js" />
         <option value="$PROJECT_DIR$/scripts2/global/SiteConfig.js" />
         <option value="$PROJECT_DIR$/scripts2/data/DataFactory.js" />
@@ -168,19 +109,20 @@
         <option value="$PROJECT_DIR$/demo/demo_3d_buffergeometry.html" />
         <option value="$PROJECT_DIR$/scripts2/view/WeatherEffect.js" />
         <option value="$PROJECT_DIR$/demo_loader.html" />
-        <option value="$PROJECT_DIR$/scripts2/css/main.css" />
         <option value="$PROJECT_DIR$/scripts2/data/APManager.js" />
-        <option value="$PROJECT_DIR$/scripts2/controllers/UiLineChart.js" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiHealthCalendar.js" />
         <option value="$PROJECT_DIR$/scripts2/view/SensorNode.js" />
         <option value="$PROJECT_DIR$/scripts2/data/ChainManager.js" />
         <option value="$PROJECT_DIR$/scripts2/global/CustomEvent.js" />
-        <option value="$PROJECT_DIR$/index_version_2.html" />
         <option value="$PROJECT_DIR$/scripts2/css/loader2.css" />
-        <option value="$PROJECT_DIR$/scripts2/view/Main.js" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiLoader2.js" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiNodeInfoPanel.js" />
+        <option value="$PROJECT_DIR$/index_version_2.html" />
+        <option value="$PROJECT_DIR$/scripts2/global/GraphConfig.js" />
         <option value="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" />
+        <option value="$PROJECT_DIR$/scripts2/controllers/UiLineChart.js" />
+        <option value="$PROJECT_DIR$/scripts2/css/main.css" />
+        <option value="$PROJECT_DIR$/scripts2/view/Main.js" />
       </list>
     </option>
   </component>
@@ -192,10 +134,9 @@
     <detection-done>true</detection-done>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1" />
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="821" />
+    <option name="height" value="817" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -565,7 +506,13 @@
       <option name="project" value="LOCAL" />
       <updated>1412628964070</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="1. Added tooltip in data history mode&#10;2. Adjusted some effect of data history graph">
+      <created>1422480293250</created>
+      <option name="number" value="00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1422480293250</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -589,9 +536,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1" y="23" width="1440" height="821" extended-state="6" />
-    <editor active="true" />
+    <frame x="0" y="23" width="1440" height="817" extended-state="6" />
+    <editor active="false" />
     <layout>
+      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32965517" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3255814" sideWeight="0.49964765" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32825485" sideWeight="0.49964765" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32737276" sideWeight="0.49964765" order="7" side_tool="false" content_ui="tabs" />
@@ -607,7 +555,6 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27247956" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -629,7 +576,8 @@
       <TodoPanelSettings />
     </option>
     <MESSAGE value="1. Adjust again the color of different sensors&#10;2. Fix the mouse drag &amp; click bugs&#10;3. Fix the problem of bad incoming data&#10;4. Add radio bar for select incoming sensor type&#10;5. Add loading animation&#10;6. Remove the color of package in sensor mode&#10;7. Add clock ticks to wind history graph&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="1. Adjust again the color of different sensors&#10;2. Fix the mouse drag &amp; click bugs&#10;3. Fix the problem of bad incoming data&#10;4. Add radio bar for select incoming sensor type&#10;5. Add loading animation&#10;6. Remove the color of package in sensor mode&#10;7. Add clock ticks to wind history graph&#10;" />
+    <MESSAGE value="1. Added tooltip in data history mode&#10;2. Adjusted some effect of data history graph" />
+    <option name="LAST_COMMIT_MESSAGE" value="1. Added tooltip in data history mode&#10;2. Adjusted some effect of data history graph" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -656,13 +604,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2685">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/css/slider_bar_date.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1875">
-          <caret line="10" column="23" selection-start-line="10" selection-start-column="23" selection-end-line="10" selection-end-column="23" />
         </state>
       </provider>
     </entry>
@@ -856,13 +797,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/global/GraphConfig.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="261" max-vertical-offset="1740">
-          <caret line="42" column="33" selection-start-line="42" selection-start-column="22" selection-end-line="42" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/data/DataFactory.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="1260">
@@ -888,7 +822,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1818" max-vertical-offset="2655">
           <caret line="154" column="8" selection-start-line="154" selection-start-column="8" selection-end-line="155" selection-end-column="38" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -896,25 +829,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="304" max-vertical-offset="4440">
           <caret line="32" column="33" selection-start-line="32" selection-start-column="33" selection-end-line="32" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3993" max-vertical-offset="5010">
-          <caret line="292" column="18" selection-start-line="292" selection-start-column="4" selection-end-line="292" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiLineChart.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3779" max-vertical-offset="4470">
-          <caret line="287" column="75" selection-start-line="287" selection-start-column="75" selection-end-line="287" selection-end-column="75" />
-          <folding>
-            <element signature="n#!!doc;n#UiLineChart#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -922,7 +836,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-18.333334" vertical-offset="4575" max-vertical-offset="8550">
           <caret line="338" column="19" selection-start-line="338" selection-start-column="19" selection-end-line="338" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -930,15 +843,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.042674255" vertical-offset="0" max-vertical-offset="703">
           <caret line="2" column="3" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="47" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/SensorNode.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="677" max-vertical-offset="1380">
-          <caret line="66" column="62" selection-start-line="66" selection-start-column="62" selection-end-line="66" selection-end-column="62" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -946,31 +850,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.91749644" vertical-offset="0" max-vertical-offset="2670">
           <caret line="43" column="17" selection-start-line="43" selection-start-column="17" selection-end-line="43" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="141" max-vertical-offset="990">
-          <caret line="44" column="31" selection-start-line="44" selection-start-column="4" selection-end-line="44" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/data/ChainManager.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.185185" vertical-offset="4129" max-vertical-offset="7305">
-          <caret line="290" column="74" selection-start-line="290" selection-start-column="74" selection-end-line="290" selection-end-column="74" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index_version_2.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.254902" vertical-offset="473" max-vertical-offset="5250">
-          <caret line="63" column="6" selection-start-line="63" selection-start-column="6" selection-end-line="63" selection-end-column="6" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -978,7 +857,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.38406828" vertical-offset="0" max-vertical-offset="703">
           <caret line="18" column="11" selection-start-line="18" selection-start-column="11" selection-end-line="18" selection-end-column="11" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -986,14 +864,21 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="150" max-vertical-offset="930">
           <caret line="26" column="39" selection-start-line="26" selection-start-column="39" selection-end-line="26" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/SensorNode.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44778255" vertical-offset="677" max-vertical-offset="1380">
+          <caret line="66" column="62" selection-start-line="66" selection-start-column="62" selection-end-line="66" selection-end-column="62" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
+    <entry file="file://$PROJECT_DIR$/scripts2/data/ChainManager.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.185185" vertical-offset="13726" max-vertical-offset="16965">
-          <caret line="928" column="0" selection-start-line="928" selection-start-column="0" selection-end-line="928" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="4129" max-vertical-offset="7305">
+          <caret line="290" column="74" selection-start-line="290" selection-start-column="74" selection-end-line="290" selection-end-column="74" />
           <folding />
         </state>
       </provider>
@@ -1008,16 +893,72 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiNodeInfoPanel.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.333333" vertical-offset="2220" max-vertical-offset="5550">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2220" max-vertical-offset="5550">
           <caret line="163" column="8" selection-start-line="163" selection-start-column="8" selection-end-line="165" selection-end-column="64" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.90128756" vertical-offset="0" max-vertical-offset="990">
+          <caret line="44" column="31" selection-start-line="44" selection-start-column="4" selection-end-line="44" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index_version_2.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.7647057" vertical-offset="264" max-vertical-offset="5325">
+          <caret line="44" column="33" selection-start-line="44" selection-start-column="17" selection-end-line="44" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/css/slider_bar_date.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.16071428" vertical-offset="192" max-vertical-offset="1875">
+          <caret line="20" column="23" selection-start-line="20" selection-start-column="23" selection-end-line="20" selection-end-column="23" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.26244345" vertical-offset="12141" max-vertical-offset="16875">
-          <caret line="821" column="43" selection-start-line="821" selection-start-column="43" selection-end-line="821" selection-end-column="43" />
+        <state vertical-scroll-proportion="-7.0" vertical-offset="11571" max-vertical-offset="16170">
+          <caret line="784" column="70" selection-start-line="784" selection-start-column="70" selection-end-line="784" selection-end-column="70" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiLineChart.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-16.62963" vertical-offset="1171" max-vertical-offset="4515">
+          <caret line="108" column="24" selection-start-line="108" selection-start-column="24" selection-end-line="109" selection-end-column="67" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-18.222221" vertical-offset="7578" max-vertical-offset="17115">
+          <caret line="538" column="26" selection-start-line="538" selection-start-column="26" selection-end-line="538" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/global/GraphConfig.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.527897" vertical-offset="981" max-vertical-offset="1815">
+          <caret line="90" column="47" selection-start-line="90" selection-start-column="47" selection-end-line="90" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/css/main.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.9025522" vertical-offset="4741" max-vertical-offset="5640">
+          <caret line="342" column="24" selection-start-line="342" selection-start-column="1" selection-end-line="342" selection-end-column="24" />
           <folding />
         </state>
       </provider>

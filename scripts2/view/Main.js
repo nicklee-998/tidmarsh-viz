@@ -508,29 +508,39 @@ function onMainMenuClick(e)
 
 		if(mainmenu.currSelectSensorIdx == 0) {
 			// Recolor dragbar and cal
-			recolorDragbar("#E77227");
+			//recolorDragbar("#E77227");
 			$(".ui-state-active").css("background", "#E77227");
 			$("#mainmenu_selector").css("background", "#E77227");
+			$(".line_chart_dragger").css("fill", "#E77227");
+			//$(".line_chart_dragger_date").css("fill", "#E77227");
 		} else if(mainmenu.currSelectSensorIdx == 1) {
 			// Recolor dragbar
-			recolorDragbar("#D81E00");
+			//recolorDragbar("#D81E00");
 			$(".ui-state-active").css("background", "#D81E00");
 			$("#mainmenu_selector").css("background", "#D81E00");
+			$(".line_chart_dragger").css("fill", "#D81E00");
+			//$(".line_chart_dragger_date").css("fill", "#D81E00");
 		} else if(mainmenu.currSelectSensorIdx == 2) {
 			// Recolor dragbar
-			recolorDragbar("#E445BA");
+			//recolorDragbar("#E445BA");
 			$(".ui-state-active").css("background", "#E445BA");
 			$("#mainmenu_selector").css("background", "#E445BA");
+			$(".line_chart_dragger").css("fill", "#E445BA");
+			//$(".line_chart_dragger_date").css("fill", "#E445BA");
 		} else if(mainmenu.currSelectSensorIdx == 3) {
 			// Recolor dragbar
-			recolorDragbar("#3242DF");
+			//recolorDragbar("#3242DF");
 			$(".ui-state-active").css("background", "#3242DF");
 			$("#mainmenu_selector").css("background", "#3242DF");
+			$(".line_chart_dragger").css("fill", "#3242DF");
+			//$(".line_chart_dragger_date").css("fill", "#3242DF");
 		} else if(mainmenu.currSelectSensorIdx == 4) {
 			// Recolor dragbar
-			recolorDragbar("#57C66C");
+			//recolorDragbar("#57C66C");
 			$(".ui-state-active").css("background", "#57C66C");
 			$("#mainmenu_selector").css("background", "#57C66C");
+			$(".line_chart_dragger").css("fill", "#57C66C");
+			//$(".line_chart_dragger_date").css("fill", "#57C66C");
 		}
 
 		if(mainmenu.currSelectRH == 0) {
@@ -957,7 +967,7 @@ function updateNetworkNode(date)
 	{
 		var dat = chainManager.fetchData(chainManager.devices[i].title, selectSensor, date);
 		if(dat != null) {
-			network.updateVoronoi(dat.did, dat.sid, dat.value);
+			network.updateVoronoi(dat.did, dat.sid, dat.value, date);
 		}
 	}
 }
@@ -1117,7 +1127,7 @@ function simulateIncomingData()
 	var now = new Date();
 	network.updateNode(devtitle, now);
 
-	//processMessage(devtitle, sid, v);
+	//processMessage(devtitle, sid, v, new Date());
 
 	_sensorIdx++;
 	if(_sensorIdx == sarr.length) {

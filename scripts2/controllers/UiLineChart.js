@@ -83,7 +83,7 @@ function UiLineChart()
 		.attr("id", "drag_bar")
 		.attr("x", 50)
 		.attr("y", this._margin.top)
-		.attr("width", 3)
+		.attr("width", 5)
 		.attr("height", this._height - this._margin.top)
 		.attr("class", "line_chart_dragger")
 		.on("mousedown", function() {
@@ -102,12 +102,12 @@ function UiLineChart()
 			}
 		})
 		.on("mouseover", function() {
-			d3.select(this).style("stroke-width", 1);
-			d3.select(this).style("stroke", "#333333");
+			d3.select(this).style("stroke-width", 3);
+			d3.select(this).style("stroke", "#111111");
 		})
 		.on("mouseout", function() {
-			d3.select(this).style("stroke-width", 0);
-			d3.select(this).style("stroke", "#333333");
+			d3.select(this).style("stroke-width", 2);
+			d3.select(this).style("stroke", "#111111");
 		});
 
 	dragger_svg.append("text")
@@ -181,9 +181,12 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 			if (values[j].value == -999) {
 				currData.push({x: date, y: iobj.min});
 			} else {
+				// Todo: 做这样的处理好吗？
+				if(values[j].value > iobj.max) {
+					values[j].value = iobj.max;
+				}
 				currData.push({x: date, y: values[j].value});
 			}
-
 
 			//if (!started) {
 			//	startEnd[countries[i][1]] = { 'startYear':years[j], 'startVal':values[j] };
@@ -268,8 +271,6 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 
 UiLineChart.prototype.highlight = function(did)
 {
-	var self = this;
-
 	if(did == null) {
 		this._viz.selectAll("path")
 			.style("stroke", "#ffffff")

@@ -20,8 +20,6 @@ function NodeNetwork()
 	// Voronoi
 	this.vertices;
 	this._voronoiContainer;
-	this._voronoiSign;
-	this._voronoiSignTitle;
 
 	// Health Graph
 	this._healthDateLayers = null;
@@ -608,9 +606,9 @@ NodeNetwork.prototype.closeIncomingMessage = function()
 	}
 }
 
-NodeNetwork.prototype.processMessage = function(did, sid, value)
+NodeNetwork.prototype.processMessage = function(did, sid, value, date)
 {
-	this.updateVoronoi(did, sid, value);
+	this.updateVoronoi(did, sid, value, date);
 }
 
 // -------------------------------------------------------
@@ -618,40 +616,6 @@ NodeNetwork.prototype.processMessage = function(did, sid, value)
 // -------------------------------------------------------
 NodeNetwork.prototype.createVoronoi = function()
 {
-	// -----------------------------
-	//  voronoi info sign
-	// -----------------------------
-	var texture = THREE.ImageUtils.loadTexture("./res/textures/voronoi_sign.png");
-	this._voronoiSign = new THREE.Mesh(
-		new THREE.PlaneBufferGeometry(150, 68, 40, 40),
-		new THREE.MeshPhongMaterial({map: texture, shading: THREE.SmoothShading, transparent: true, side: THREE.DoubleSide})
-	);
-	this._voronoiSign.position.z = groundZero + 600;
-	this._voronoiSign.name = "voronoi_sign_plane";
-	this._voronoiSign.visible = true;
-	this._voronoiSign.rotation.x = Math.PI / 2;
-	ground.add(this._voronoiSign);
-
-	// Device title
-	_voronoiSignTitle = document.createElement( "canvas" );
-	_voronoiSignTitle.width = 150;
-	_voronoiSignTitle.height = 60;
-	var context = _voronoiSignTitle.getContext( "2d" );
-	//context.shadowColor = "#000";
-	//context.shadowBlur = 7;
-	context.fillStyle = "black";
-	context.font = "16pt arial bold";
-	context.fillText( "0x0000", 30, 55 );
-
-	var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(_voronoiSignTitle), transparent: true});
-	xm.map.needsUpdate = true;
-
-	var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
-	mesh.position.y = 30;
-	mesh.position.z = 5;
-	mesh.name = "voronoisignmesh";
-	this._voronoiSign.add(mesh);
-
 	// -----------------------------
 	//  for voronoi graph
 	// -----------------------------
@@ -761,7 +725,7 @@ NodeNetwork.prototype.enterVoronoi = function(mode)
 	}
 }
 
-NodeNetwork.prototype.updateVoronoi = function(did, sid, value)
+NodeNetwork.prototype.updateVoronoi = function(did, sid, value, date)
 {
 	var device = this.getDeviceById(did);
 	if(device != null && device.id != "blank" && device.cell) {
@@ -773,6 +737,13 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value)
 			device.cell.material.color.setHex(clr);
 			device.cell.material.ambient.setHex(clr);
 			device.cell.material.emissive.setHex(clr);
+			if(!device.cell.userData) {
+				device.cell.userData = {value: -998, unit: "", date:null, title: ""};
+			}
+			device.cell.userData.value = value;
+			device.cell.userData.unit = mobj.unit;
+			device.cell.userData.date = date;
+			device.cell.userData.title = mobj.title.toUpperCase();
 
 			// change height
 			//device.cell.scale.z = mobj.height;
@@ -809,6 +780,15 @@ NodeNetwork.prototype.onVoronoiMouseOver = function(name)
 {
 	var did = name.substring(name.indexOf("_") + 1);
 
+	var device = this.getDeviceById(did);
+	$("#h_tooltip_did").text(did);
+	$("#h_tooltip_result").text(device.cell.userData.title + ": " + device.cell.userData.value.toFixed(2) + " " + device.cell.userData.unit);
+	$("#h_tooltip_time").text(device.cell.userData.date.toLocaleString());
+
+	$("#history_tooltip").css("visibility", "visible");
+	$("#history_tooltip").css("left", this._mouseX + 17);
+	$("#history_tooltip").css("top", this._mouseY - 15);
+
 	// --------------------------------
 	// Send voronoi mouseover event
 	// --------------------------------
@@ -817,40 +797,13 @@ NodeNetwork.prototype.onVoronoiMouseOver = function(name)
 
 NodeNetwork.prototype.onVoronoiMouseOut = function(name)
 {
-	var did = name.substring(name.indexOf("_") + 1);
+	$("#history_tooltip").css("visibility", "hidden");
 
 	// --------------------------------
 	// Send voronoi mouseout event
 	// --------------------------------
+	var did = name.substring(name.indexOf("_") + 1);
 	jQuery.publish(NETWORK_VORONOI_MOUSE_OUT, did);
-}
-
-NodeNetwork.prototype.showVoronoiSign = function(node)
-{
-	var context = this._voronoiSignTitle.getContext( "2d" );
-	context.clearRect(0, 0, 150, 60);
-	context.fillText( node.name, 25, 60 );
-
-	var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(this._voronoiSignTitle), transparent: true});
-	xm.map.needsUpdate = true;
-	infoSignPlane.getObjectByName("voronoisignmesh").material = xm;
-
-	// Show the device information
-	//infoSignPlane.position.x = node.position.x - 2;
-	//infoSignPlane.position.y = node.position.y;
-	//infoSignPlane.position.z = - 100;
-	//infoSignPlane.userData = {title:node.name};
-	//
-	//TweenMax.to(infoSignPlane.position, 0.7, {z:43, delay:delay, ease:Elastic.easeOut, onStart: function() {
-	//	infoSignPlane.visible = true;
-	//}});
-}
-
-NodeNetwork.prototype.showVoronoiSign = function()
-{
-	//TweenMax.to(infoSignPlane.position, 0.4, {z: -80, ease:Cubic.easeOut, onComplete: function() {
-	//	infoSignPlane.visible = false;
-	//}});
 }
 
 NodeNetwork.prototype.getDeviceByPoint = function(point)
@@ -1114,7 +1067,7 @@ NodeNetwork.prototype.getMeshConf = function(sensorid, value)
 		.domain([conf.min, conf.max])
 		.range([0, 100]);
 
-	var obj = {color: valueToColorScale(value), height: valueScale(value)};
+	var obj = {color: valueToColorScale(value), height: valueScale(value), unit: conf.unit, title: conf.title};
 
 	return obj;
 }
