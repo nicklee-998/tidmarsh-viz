@@ -24,7 +24,10 @@
 	<div id="slider_right_frame"></div>
 	<div id='slider'></div>
 </div>
-<div id="datepicker"></div>
+<div id="datepicker_cover"></div>
+<div id="datepicker">
+	<div id="datepicker_tip">Please pick up a date to explore.</div>
+</div>
 <div id="weather">
 	<div id="forecast">getting weather...</div>
 	<div id="sunrise_sunset"></div>
@@ -44,6 +47,11 @@
 	<div id="h_tooltip_did">0x0811</div>
 	<div id="h_tooltip_result">illuminance: 42.12 lux</div>
 	<div id="h_tooltip_time">2015/1/28 下午2:48:16</div>
+</div>
+<div id="history_date_panel">
+	<div id="history_date_title">year month day</div>
+	<div id="history_date">2015.01.29</div>
+	<div id="history_date_tip">Click date to choose another one.</div>
 </div>
 <!-- main menu -->
 <div id="state"></div>
@@ -67,7 +75,7 @@
 	<div class="loading-bar"></div>
 	<div class="loading-text">loading...</div>
 </div>
-<div id="opening_loader" class='wrapper'><div id="a" /></div>
+<div id="opening_loader" class='wrapper'><div id="a"/></div>
 
 <script src="./libs/three.min.js"></script>
 <script src="./libs/d3.js"></script>
@@ -103,6 +111,7 @@
 <script src="./scripts2/controllers/UiHealthCalendar.js"></script>
 <script src="./scripts2/controllers/UiLineChart.js"></script>
 <script src="./scripts2/controllers/UiLoader2.js"></script>
+<script src="./scripts2/controllers/UiDataHistoryMenu.js"></script>
 <script src="./scripts/opening_loader.js"></script>
 
 <script>

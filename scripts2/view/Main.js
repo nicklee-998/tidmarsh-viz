@@ -47,8 +47,11 @@ var selectSensor;
 var sensorTable = ["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage"];
 var sensorColorTable = ["#E77227", "#D81E00", "#E445BA", "#3242DF", "#57C66C"];
 
-// line chart of sensors
-var lineChart;
+// --------------------------
+//  Birds
+// --------------------------
+var lineChart;          // line chart of sensors
+var menuDataHistory     // menu of data history
 
 // --------------------------
 //  Birds
@@ -72,6 +75,7 @@ $(document).ready(function() {
 	initSliderBar();
 	initHealthCalendar();
 	lineChart = new UiLineChart();
+	menuDataHistory = new UiDataHistoryMenu();
 
 	// MAIN MENU
 	jQuery.subscribe(MAINMENU_BEGIN, onMainMenuClick);
@@ -490,15 +494,15 @@ function onMainMenuClick(e)
 
 		if(mainmenu.currSelectRH == 0) {
 			// Hide cal and dragbar
-			showCal(false);
+			menuDataHistory.hideMe();
 			showDragBar(false);
 			// realtime
 			network.enterVoronoi("REALTIME");
 		} else {
-			// realtime
-			network.enterVoronoi("HISTORY");
+			// menu
+			menuDataHistory.showMe("date_picker");
 			// history
-			getDevicesDataBySensorMenu();
+			network.enterVoronoi("HISTORY");
 
 			jQuery.subscribe(NETWORK_VORONOI_MOUSE_OVER, onNetworkVoronoiOver);
 			jQuery.subscribe(NETWORK_VORONOI_MOUSE_OUT, onNetworkVoronoiOut);
@@ -517,9 +521,6 @@ function onMainMenuClick(e)
 		// CLEAR GRAPH
 		network.closeIncomingMessage();
 		network.clearVoronoi(true);
-		// close some ui
-		showCal(false);
-		showLineChart(false);
 
 		if(mainmenu.currSelectDeviceMenuIdx == 0) {
 			// Device health
@@ -574,7 +575,7 @@ function onMainMenuChange(e)
 			network.closeIncomingMessage();
 			network.clearVoronoi(true);
 			// Hide cal and dragbar
-			showCal(false);
+			menuDataHistory.hideMe();
 			showDragBar(false);
 			showLineChart(false);
 			// Restore to realtime mode
@@ -829,23 +830,6 @@ function clearLoadingScreen()
 /////////////////////////////////////////////
 // USER INTERFACE
 /////////////////////////////////////////////
-function showCal(flg)
-{
-	if(flg) {
-		var dwid = parseInt($('#datepicker').css('width'));
-		$('#datepicker').css('visibility', 'visible');
-		$('#datepicker').css('left', '-'+dwid + 'px');
-		$('#datepicker').animate({left:'0px'}, 500, 'easeOutQuint');
-	} else {
-		var dwid = parseInt($('#datepicker').css('width')) + 35;
-		if($('#datepicker').css('visibility') != 'hidden') {
-			$('#datepicker').animate({left:'-' + dwid + 'px'}, 500, 'easeOutQuint', function() {
-				$('#datepicker').css('visibility', 'hidden');
-			});
-		}
-	}
-}
-
 function showDragBar(flg)
 {
 	if(flg) {
@@ -910,7 +894,7 @@ function showLineChart(flg)
 function getDevicesDataBySensorMenu()
 {
 	// Hide cal and dragbar
-	showCal(false);
+	menuDataHistory.hideMe();
 	showDragBar(false);
 
 	var arr = new Array();
@@ -934,7 +918,7 @@ function onDeviceData(e, i)
 		console.log("开始载入数据集!");
 
 		// 隐藏日历
-		showCal(false);
+		menuDataHistory.hideMe();
 		showLineChart(false);
 		//showUIMenu(false);
 
@@ -956,13 +940,17 @@ function onDeviceData(e, i)
 		//updateNetworkNode();
 
 		// 显示日历和拖动条
-		showCal(true);
+		menuDataHistory.showMe("operate_tools");
 		showLineChart(true);
 		//showDragBar(true);
 		//showUIMenu(true);
 
 		// 隐藏loader
 		loader2end();
+
+		// 显示当前时间
+		var datestr = sliderYear + "." + (sliderMonth + 1) + "." + sliderDay;
+		$("#history_date").text(datestr);
 
 		// Draw line graph
 		var start = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);

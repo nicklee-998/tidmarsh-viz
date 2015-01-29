@@ -193,6 +193,41 @@ html, body {
 }
 
 /***********************************************
+ * History date
+ ***********************************************/
+#history_date_panel {
+	position: absolute;
+	top: 170px;
+	left: 50px;
+	width: 300px;
+	visibility: hidden;
+}
+
+#history_date_title {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	color: rgba(135, 135, 135, 0.85);
+	font-size: 15px;
+}
+
+#history_date {
+	position: absolute;
+	left: 0px;
+	top: 30px;
+	color: rgba(255, 255, 255, 0.70);
+	font-size: 50px;
+}
+
+#history_date_tip {
+	position: absolute;
+	left: 0px;
+	top: 80px;
+	color: rgba(135, 135, 135, 0.80);
+	font-size: 10px;
+}
+
+/***********************************************
  * Weather
  ***********************************************/
 #weather {
@@ -363,9 +398,21 @@ html, body {
 /***********************************************
  * Date Picker
  ***********************************************/
+#datepicker_cover {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	background-color: rgba(37, 37, 37, 0.56);
+	visibility: hidden;
+}
+
 #datepicker {
 	position: absolute;
-	left: 0px;
-	top: 110px;
 	visibility: hidden;
+}
+
+#datepicker_tip {
+	position: absolute;
+	color: rgba(255, 255, 255, 0.90);
+	font-size: 30px;
 }
