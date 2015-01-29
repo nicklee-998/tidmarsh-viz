@@ -53,6 +53,12 @@ var MAINMENU_NETWORK = "main_menu_network";
 var MAINMENU_DATA = "main_menu_data";
 var MAINMENU_DEVICE = "main_menu_device";
 
+// 表示主菜单切换事件，只发生在主菜单变化时
+var MAINMENU_BEGIN_LEAVE = "main_menu_begin_leave";
+var MAINMENU_NETWORK_LEAVE = "main_menu_network_leave";
+var MAINMENU_DATA_LEAVE = "main_menu_data_leave";
+var MAINMENU_DEVICE_LEAVE = "main_menu_device_leave";
+
 var MAINMENU_DATA_TEMPRATURE = "main_menu_data_temprature";
 var MAINMENU_DATA_ILLUMINANCE = "main_menu_data_illminance";
 var MAINMENU_DATA_PRESSURE = "main_menu_data_pressure";

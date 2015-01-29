@@ -25,6 +25,7 @@ function NodeNetwork()
 	this._healthDateLayers = null;
 	this._healthSelectedNode = null;
 	this._healthTimeline = null;
+	this._isHealthAnalysis = false;
 
 	// Poisson disc
 	this._k = 30;
@@ -164,6 +165,12 @@ function NodeNetwork()
 // -------------------------------------------------------
 NodeNetwork.prototype.createDevice = function(dInfo)
 {
+	// 如果没有经纬度，不加入地图
+	if(dInfo.lat == 0 && dInfo.lng == 0) {
+		return;
+	}
+
+	// 创建设备
 	var node = new SensorNode(dInfo.title);
 	var box = node._mesh;
 	var pnt = this.latLngToCube(dInfo.lat, dInfo.lng);
@@ -312,18 +319,30 @@ NodeNetwork.prototype.createHealthGraph = function(csvfile)
 		function startQueue() {
 
 			if(queueIdx >= d.length) {
+				stopQueue();
 				return;
 			}
 
 			// Find the device
+			var isfind = false;
 			if(did != d[queueIdx]["did"]) {
-				for(var j = 0; j < self.devices.length; j++) {
-					if(self.devices[j].id == d[queueIdx]["did"]) {
-						device = self.devices[j];
+
+				for(var i = queueIdx; i < d.length; i++) {
+					device = self.getDeviceById(d[queueIdx]["did"]);
+					if(device != null) {
 						did = d[queueIdx]["did"];
 						zidx = 0;
+						isfind = true;
 						break;
+					} else {
+						queueIdx++;
 					}
+				}
+
+				// 如果整个csv文件中都没有有效的设备，循环结束
+				if(!isfind) {
+					stopQueue();
+					return;
 				}
 			}
 
@@ -358,6 +377,69 @@ NodeNetwork.prototype.createHealthGraph = function(csvfile)
 			createBlock(health);
 		}
 
+		function stopQueue()
+		{
+			// 全部结束，显示时间轴
+			// health timeline
+			if(self._healthTimeline == null) {
+				var timelineWid = 4;
+				var timelineHei = 365 * 2;
+				self._healthTimeline = new THREE.Mesh(
+					new THREE.PlaneBufferGeometry(timelineWid, timelineHei, 20, 20),
+					new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true, side:THREE.DoubleSide})
+				);
+				self._healthTimeline.material.opacity = 0.7;
+				self._healthTimeline.position.x = -groundWid / 2 - (timelineWid / 2) / 1.414;
+				self._healthTimeline.position.y = -groundHei / 2 - (timelineWid / 2) / 1.414;
+				self._healthTimeline.position.z = timelineHei / 2;
+				self._healthTimeline.rotation.x = Math.PI / 2;
+				self._healthTimeline.rotation.y = Math.PI / 4;
+
+				// start title
+				var startTitle = document.createElement( "canvas" );
+				startTitle.width = 150;
+				startTitle.height = 60;
+				var context = startTitle.getContext( "2d" );
+				context.fillStyle = "white";
+				context.font = "18pt arial";
+				context.fillText( "2014/1/1", 25, 60 );
+
+				var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(startTitle), transparent: true, side:THREE.DoubleSide});
+				xm.map.needsUpdate = true;
+				var startmesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
+				startmesh.position.x = -50;
+				startmesh.position.y = -(timelineHei / 2) + 30;
+				startmesh.position.z = -2;
+				self._healthTimeline.add(startmesh);
+
+				// end title
+				var endTitle = document.createElement( "canvas" );
+				endTitle.width = 150;
+				endTitle.height = 60;
+				var context = endTitle.getContext( "2d" );
+				context.fillStyle = "white";
+				context.font = "18pt arial";
+				context.fillText( "2014/12/31", 25, 60 );
+
+				var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(endTitle), transparent: true, side:THREE.DoubleSide});
+				xm.map.needsUpdate = true;
+				var endmesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
+				endmesh.position.x = -70;
+				endmesh.position.y = (timelineHei / 2) + 15;
+				endmesh.position.z = -2;
+				self._healthTimeline.add(endmesh);
+			}
+			ground.add(self._healthTimeline);
+			TweenMax.from(self._healthTimeline.material, 0.8, {opacity:0, ease:Expo.easeOut});
+
+
+			// Remove loading
+			loader2end();
+			self._isHealthAnalysis = false;
+
+			console.log("All finish");
+		}
+
 		function createBlock(health) {
 
 			if(health != 0) {
@@ -386,66 +468,7 @@ NodeNetwork.prototype.createHealthGraph = function(csvfile)
 			queueIdx++;
 
 			if(queueIdx == d.length) {
-				// 全部结束，显示时间轴
-				// health timeline
-				if(self._healthTimeline == null) {
-					var timelineWid = 4;
-					var timelineHei = 365 * 2;
-					self._healthTimeline = new THREE.Mesh(
-						new THREE.PlaneBufferGeometry(timelineWid, timelineHei, 20, 20),
-						new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true, side:THREE.DoubleSide})
-					);
-					self._healthTimeline.material.opacity = 0.7;
-					self._healthTimeline.position.x = -groundWid / 2 - (timelineWid / 2) / 1.414;
-					self._healthTimeline.position.y = -groundHei / 2 - (timelineWid / 2) / 1.414;
-					self._healthTimeline.position.z = timelineHei / 2;
-					self._healthTimeline.rotation.x = Math.PI / 2;
-					self._healthTimeline.rotation.y = Math.PI / 4;
-
-					// start title
-					var startTitle = document.createElement( "canvas" );
-					startTitle.width = 150;
-					startTitle.height = 60;
-					var context = startTitle.getContext( "2d" );
-					context.fillStyle = "white";
-					context.font = "18pt arial";
-					context.fillText( "2014/1/1", 25, 60 );
-
-					var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(startTitle), transparent: true, side:THREE.DoubleSide});
-					xm.map.needsUpdate = true;
-					var startmesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
-					startmesh.position.x = -50;
-					startmesh.position.y = -(timelineHei / 2) + 30;
-					startmesh.position.z = -2;
-					self._healthTimeline.add(startmesh);
-
-					// end title
-					var endTitle = document.createElement( "canvas" );
-					endTitle.width = 150;
-					endTitle.height = 60;
-					var context = endTitle.getContext( "2d" );
-					context.fillStyle = "white";
-					context.font = "18pt arial";
-					context.fillText( "2014/12/31", 25, 60 );
-
-					var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(endTitle), transparent: true, side:THREE.DoubleSide});
-					xm.map.needsUpdate = true;
-					var endmesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
-					endmesh.position.x = -70;
-					endmesh.position.y = (timelineHei / 2) + 15;
-					endmesh.position.z = -2;
-					self._healthTimeline.add(endmesh);
-				}
-				ground.add(self._healthTimeline);
-				TweenMax.from(self._healthTimeline.material, 0.8, {opacity:0, ease:Expo.easeOut});
-
-
-				// Remove loading
-				loader2end();
-
-				console.log("All finish");
-
-				return;
+				stopQueue();
 			}
 
 			// Find device will change, do animation, then go to next device
@@ -476,6 +499,7 @@ NodeNetwork.prototype.createHealthGraph = function(csvfile)
 		// open loader
 		$(".loading-text").text("Analysising Data...");
 		loader2start();
+		self._isHealthAnalysis = true;
 
 		//for(var i = 0; i < d.length; i++) {
 		//
@@ -1011,7 +1035,7 @@ NodeNetwork.prototype.render = function(mx, my)
 	var intersects = this._raycaster.intersectObjects(ground.children, true);
 
 	if(intersects.length > 0) {
-		if(this.getDeviceById(intersects[0].object.name) != null) {
+		if(this.getDeviceById(intersects[0].object.name) != null && !this._isHealthAnalysis) {
 
 			if(this._intersected != intersects[0].object) {
 				if(this._intersected) {

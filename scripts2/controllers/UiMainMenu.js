@@ -24,59 +24,100 @@ function UiMainMenu()
 
 		var btnname = $(this).attr("id");
 		var toleft = $(this).css("left");
+		var idx = -1;
 		//console.log(this);
 		//console.log(btnname);
 
-		if(btnname == "mainmenu_btn_begin") {
-			self.currSelectIdx = 1;
-			self.hideDeviceButtons();
-			self.hideSensorButtons();
-			self.hideRHButtons();
-
-			// ------------------------------
-			// Send main menu event
-			// ------------------------------
-			jQuery.publish(MAINMENU_BEGIN);
-
-		} else if(btnname == "mainmenu_btn_network") {
-			self.currSelectIdx = 2;
-			self.hideDeviceButtons();
-			self.hideSensorButtons();
-			self.hideRHButtons();
-
-			// ------------------------------
-			// Send main menu event
-			// ------------------------------
-			jQuery.publish(MAINMENU_NETWORK);
-
-		} else if(btnname == "mainmenu_btn_data") {
-			self.currSelectIdx = 3;
-			self.hideDeviceButtons();
-			self.showSubButtons();
-			self.arrangeSensorButtons();
-			self.arrangeRHButtons();
-
-			// ------------------------------
-			// Send main menu event
-			// ------------------------------
-			jQuery.publish(MAINMENU_DATA);
-
-		} else if(btnname == "mainmenu_btn_device") {
-			self.currSelectIdx = 4;
-			self.hideSensorButtons();
-			self.hideRHButtons();
-			self.showDeviceSubButtons();
-			self.arrangeDeviceButtons();
-
-			// ------------------------------
-			// Send main menu event
-			// ------------------------------
-			jQuery.publish(MAINMENU_DEVICE);
+		switch(btnname)
+		{
+			case "mainmenu_btn_begin":
+				idx = 1;
+				break;
+			case "mainmenu_btn_network":
+				idx = 2;
+				break;
+			case "mainmenu_btn_data":
+				idx = 3;
+				break;
+			case "mainmenu_btn_device":
+				idx = 4;
+				break;
 		}
 
-		$("#mainmenu_selector").animate({
-			left: toleft
-		}, 300);
+		if(idx != -1) {
+
+			// ------------------------------
+			//  Send main menu LEAVE event
+			// ------------------------------
+			if(self.currSelectIdx != idx) {
+				switch(self.currSelectIdx)
+				{
+					case 1:
+						jQuery.publish(MAINMENU_BEGIN_LEAVE);
+						break;
+					case 2:
+						jQuery.publish(MAINMENU_NETWORK_LEAVE);
+						break;
+					case 3:
+						jQuery.publish(MAINMENU_DATA_LEAVE);
+						break;
+					case 4:
+						jQuery.publish(MAINMENU_DEVICE_LEAVE);
+						break;
+				}
+				self.currSelectIdx = idx;
+
+				switch(self.currSelectIdx)
+				{
+					case 1:
+						self.hideDeviceButtons();
+						self.hideSensorButtons();
+						self.hideRHButtons();
+
+						// ------------------------------
+						// Send main menu event
+						// ------------------------------
+						jQuery.publish(MAINMENU_BEGIN);
+						break;
+					case 2:
+						self.hideDeviceButtons();
+						self.hideSensorButtons();
+						self.hideRHButtons();
+
+						// ------------------------------
+						// Send main menu event
+						// ------------------------------
+						jQuery.publish(MAINMENU_NETWORK);
+						break;
+					case 3:
+						self.hideDeviceButtons();
+						self.showSubButtons();
+						self.arrangeSensorButtons();
+						self.arrangeRHButtons();
+
+						// ------------------------------
+						// Send main menu event
+						// ------------------------------
+						jQuery.publish(MAINMENU_DATA);
+						break;
+					case 4:
+						self.hideSensorButtons();
+						self.hideRHButtons();
+						self.showDeviceSubButtons();
+						self.arrangeDeviceButtons();
+
+						// ------------------------------
+						// Send main menu event
+						// ------------------------------
+						jQuery.publish(MAINMENU_DEVICE);
+						break;
+				}
+
+				$("#mainmenu_selector").animate({
+					left: toleft
+				}, 300);
+			}
+		}
 	}
 
 

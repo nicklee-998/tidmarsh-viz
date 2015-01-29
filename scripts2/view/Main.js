@@ -78,6 +78,10 @@ $(document).ready(function() {
 	jQuery.subscribe(MAINMENU_NETWORK, onMainMenuClick);
 	jQuery.subscribe(MAINMENU_DATA, onMainMenuClick);
 	jQuery.subscribe(MAINMENU_DEVICE, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_BEGIN_LEAVE, onMainMenuChange);
+	jQuery.subscribe(MAINMENU_NETWORK_LEAVE, onMainMenuChange);
+	jQuery.subscribe(MAINMENU_DATA_LEAVE, onMainMenuChange);
+	jQuery.subscribe(MAINMENU_DEVICE_LEAVE, onMainMenuChange);
 	jQuery.subscribe(MAINMENU_DATA_TEMPRATURE, onMainMenuClick);
 	jQuery.subscribe(MAINMENU_DATA_ILLUMINANCE, onMainMenuClick);
 	jQuery.subscribe(MAINMENU_DATA_PRESSURE, onMainMenuClick);
@@ -394,65 +398,6 @@ function render()
 /////////////////////////////////////////////
 function onMainMenuClick(e)
 {
-	//console.log(e.type);
-
-	// -------------------------
-	//  Clear menu first
-	// -------------------------
-	switch(mainmenuCurrent) {
-		case MAINMENU_BEGIN:
-			if(mainmenuCurrent != e.type) {
-				// 隐藏介绍文字
-				intro.hideIntroPage();
-			}
-
-			break;
-		case MAINMENU_NETWORK:
-			// 隐藏信息板
-			hideInfoPanel();
-			if(mainmenuCurrent != e.type) {
-				// 隐藏指示牌
-				hideNodeSign();
-				// weather big
-				showWeatherBig(false);
-			}
-
-			// Unregister mouse event
-			jQuery.unsubscribe(NETWORK_NORMAL_SIGN_CLICK, onNetworkSignClicked);
-			jQuery.unsubscribe(NETWORK_NORMAL_MESH_CLICK, onNetworkMeshClicked);
-
-			break;
-		case MAINMENU_DATA:
-			// CLEAR GRAPH
-			network.closeIncomingMessage();
-			network.clearVoronoi(true);
-			// Hide cal and dragbar
-			showCal(false);
-			showDragBar(false);
-			showLineChart(false);
-
-			// Unregister mouse event
-			jQuery.unsubscribe(NETWORK_VORONOI_MOUSE_OVER, onNetworkVoronoiOver);
-			jQuery.unsubscribe(NETWORK_VORONOI_MOUSE_OUT, onNetworkVoronoiOut);
-			jQuery.unsubscribe(LINE_CHART_DRAG, onLineChartDrag);
-
-			break;
-		case MAINMENU_DEVICE:
-			// Device health
-			hideHealthCalendar();
-			network.clearHealthGraph();
-			network.restoreNodes();
-
-			// Unregister mouse event
-			jQuery.unsubscribe(NETWORK_HEALTH_NODE_SELECTED, onNetworkNodeSelected);
-			jQuery.unsubscribe(NETWORK_HEALTH_NODE_DESELECTED, onNetworkNodeDeselected);
-
-			break;
-		default :
-			break;
-	}
-
-
 	if(e.type == MAINMENU_BEGIN) {
 		// 显示介绍文字
 		intro.showIntroPage();
@@ -594,6 +539,67 @@ function onMainMenuClick(e)
 	}
 
 	mainmenuCurrent = e.type;
+}
+
+function onMainMenuChange(e)
+{
+	// -------------------------
+	//  Clear menu first
+	// -------------------------
+	switch(e.type) {
+		case MAINMENU_BEGIN_LEAVE:
+			if(mainmenuCurrent != e.type) {
+				// 隐藏介绍文字
+				intro.hideIntroPage();
+			}
+
+			break;
+		case MAINMENU_NETWORK_LEAVE:
+			// 隐藏信息板
+			hideInfoPanel();
+			if(mainmenuCurrent != e.type) {
+				// 隐藏指示牌
+				hideNodeSign();
+				// weather big
+				showWeatherBig(false);
+			}
+
+			// Unregister mouse event
+			jQuery.unsubscribe(NETWORK_NORMAL_SIGN_CLICK, onNetworkSignClicked);
+			jQuery.unsubscribe(NETWORK_NORMAL_MESH_CLICK, onNetworkMeshClicked);
+
+			break;
+		case MAINMENU_DATA_LEAVE:
+			// CLEAR GRAPH
+			network.closeIncomingMessage();
+			network.clearVoronoi(true);
+			// Hide cal and dragbar
+			showCal(false);
+			showDragBar(false);
+			showLineChart(false);
+			// Restore to realtime mode
+			mainmenu.currSelectRH = 0;
+
+			// Unregister mouse event
+			jQuery.unsubscribe(NETWORK_VORONOI_MOUSE_OVER, onNetworkVoronoiOver);
+			jQuery.unsubscribe(NETWORK_VORONOI_MOUSE_OUT, onNetworkVoronoiOut);
+			jQuery.unsubscribe(LINE_CHART_DRAG, onLineChartDrag);
+
+			break;
+		case MAINMENU_DEVICE_LEAVE:
+			// Device health
+			hideHealthCalendar();
+			network.clearHealthGraph();
+			network.restoreNodes();
+
+			// Unregister mouse event
+			jQuery.unsubscribe(NETWORK_HEALTH_NODE_SELECTED, onNetworkNodeSelected);
+			jQuery.unsubscribe(NETWORK_HEALTH_NODE_DESELECTED, onNetworkNodeDeselected);
+
+			break;
+		default :
+			break;
+	}
 }
 
 /////////////////////////////////////////////
