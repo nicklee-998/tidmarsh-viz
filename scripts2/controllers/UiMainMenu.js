@@ -29,6 +29,7 @@ function UiMainMenu()
 
 		if(btnname == "mainmenu_btn_begin") {
 			self.currSelectIdx = 1;
+			self.hideDeviceButtons();
 			self.hideSensorButtons();
 			self.hideRHButtons();
 
@@ -39,6 +40,7 @@ function UiMainMenu()
 
 		} else if(btnname == "mainmenu_btn_network") {
 			self.currSelectIdx = 2;
+			self.hideDeviceButtons();
 			self.hideSensorButtons();
 			self.hideRHButtons();
 
@@ -49,6 +51,7 @@ function UiMainMenu()
 
 		} else if(btnname == "mainmenu_btn_data") {
 			self.currSelectIdx = 3;
+			self.hideDeviceButtons();
 			self.showSubButtons();
 			self.arrangeSensorButtons();
 			self.arrangeRHButtons();
@@ -62,6 +65,8 @@ function UiMainMenu()
 			self.currSelectIdx = 4;
 			self.hideSensorButtons();
 			self.hideRHButtons();
+			self.showDeviceSubButtons();
+			self.arrangeDeviceButtons();
 
 			// ------------------------------
 			// Send main menu event
@@ -74,7 +79,52 @@ function UiMainMenu()
 		}, 300);
 	}
 
-	// second level buttons
+
+	// ----------------------------------
+	//  Device sub menu buttons
+	// ----------------------------------
+	this.currSelectDeviceMenuIdx = 0;
+
+	$("#mainmenu").append("<div id='mainmenu_sbtn_health' class='mainmenu_button_second'></div>");
+	$("#mainmenu_sbtn_health").append("<img src='./images/mainmenu_sbtn_health.png' />");
+	$("#mainmenu").append("<div id='mainmenu_sbtn_power' class='mainmenu_button_second'></div>");
+	$("#mainmenu_sbtn_power").append("<img src='./images/mainmenu_sbtn_power.png' />");
+
+	$("#mainmenu_sbtn_health").click(onDeviceClick);
+	$("#mainmenu_sbtn_power").click(onDeviceClick);
+
+	function onDeviceClick() {
+		var btnname = $(this).attr("id");
+		console.log(btnname);
+
+		if(btnname == "mainmenu_sbtn_health") {
+			self.currSelectDeviceMenuIdx = 0;
+			// ------------------------------
+			// Send main menu event
+			// ------------------------------
+			jQuery.publish(MAINMENU_DEVICE);
+		} else if(btnname == "mainmenu_sbtn_power") {
+			self.currSelectDeviceMenuIdx = 1;
+			// ------------------------------
+			// Send main menu event
+			// ------------------------------
+			jQuery.publish(MAINMENU_DEVICE);
+		}
+
+		self.arrangeDeviceButtons();
+	}
+
+	this.dButtons = [$("#mainmenu_sbtn_health"), $("#mainmenu_sbtn_power")];
+	this.btnColors2 = ["#027b08", "#9a0101"];
+	this.arrangeDeviceButtons();
+
+	for(var i = 0; i < this.dButtons.length; i++) {
+		this.dButtons[i].css("visibility", "hidden");
+	}
+
+	// ----------------------------------
+	//  Data sub menu buttons
+	// ----------------------------------
 	$("#mainmenu").append("<div id='mainmenu_sbtn_t' class='mainmenu_button_second'></div>");
 	$("#mainmenu_sbtn_t").append("<img src='./images/mainmenu_sbtn_T.png' />");
 	$("#mainmenu").append("<div id='mainmenu_sbtn_i' class='mainmenu_button_second'></div>");
@@ -214,6 +264,7 @@ UiMainMenu.prototype.rearrange = function()
 
 	this.arrangeSensorButtons();
 	this.arrangeRHButtons();
+	this.arrangeDeviceButtons();
 
 	if(this.currSelectIdx != 3) {
 		for(var i = 0; i < this.sButtons.length; i++) {
@@ -221,6 +272,9 @@ UiMainMenu.prototype.rearrange = function()
 		}
 		for(var i = 0; i < this.rButtons.length; i++) {
 			this.rButtons[i].css("visibility", "hidden");
+		}
+		for(var i = 0; i < this.dButtons.length; i++) {
+			this.dButtons[i].css("visibility", "hidden");
 		}
 	}
 }
@@ -244,6 +298,19 @@ UiMainMenu.prototype.showSubButtons = function()
 		//this.rButtons[i].css("top", 0);
 		this.rButtons[i].css("opacity", 0);
 		this.rButtons[i].delay(400).animate({
+			opacity: 1
+		}, 300);
+	}
+}
+
+UiMainMenu.prototype.showDeviceSubButtons = function()
+{
+	// device buttons
+	for(var i = 0; i < this.dButtons.length; i++) {
+		this.dButtons[i].css("visibility", "visible");
+		//this.sButtons[i].css("top", 0);
+		this.dButtons[i].css("opacity", 0);
+		this.dButtons[i].delay(200).animate({
 			opacity: 1
 		}, 300);
 	}
@@ -278,6 +345,41 @@ UiMainMenu.prototype.hideSensorButtons = function()
 	for(var i = 0; i < this.sButtons.length; i++) {
 		//this.sButtons[i].css("visibility", "hidden");
 		this.sButtons[i].delay(300).animate({
+			opacity: 0
+		}, 200, function() {
+			$(this).css("visibility", "hidden");
+		});
+	}
+}
+
+UiMainMenu.prototype.arrangeDeviceButtons = function()
+{
+	var widBtn = 105;
+	var gap = 3;
+	var toleft = parseInt($("#mainmenu_btn_device").css("left")) - (widBtn + gap) * this.currSelectDeviceMenuIdx;
+
+	// device buttons
+	for(var i = 0; i < this.dButtons.length; i++) {
+		this.dButtons[i].css("visibility", "visible");
+
+		this.dButtons[i].animate({
+			left: toleft + (widBtn + gap) * i
+		}, 200);
+
+		// color
+		if(this.currSelectDeviceMenuIdx == i) {
+			this.dButtons[i].css("background-color", this.btnColors2[this.currSelectDeviceMenuIdx]);
+		} else {
+			this.dButtons[i].css("background-color", "#a6aaa9");
+		}
+	}
+}
+
+UiMainMenu.prototype.hideDeviceButtons = function()
+{
+	for(var i = 0; i < this.dButtons.length; i++) {
+		//this.sButtons[i].css("visibility", "hidden");
+		this.dButtons[i].delay(300).animate({
 			opacity: 0
 		}, 200, function() {
 			$(this).css("visibility", "hidden");

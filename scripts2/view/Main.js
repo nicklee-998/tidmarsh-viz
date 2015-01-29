@@ -490,7 +490,7 @@ function onMainMenuClick(e)
 
 	} else if(e.type == MAINMENU_DATA) {
 
-		console.log("Mainmenu Data: " + mainmenu.currSelectSensorIdx + ", " + mainmenu.currSelectRH);
+		//console.log("Mainmenu Data: " + mainmenu.currSelectSensorIdx + ", " + mainmenu.currSelectRH);
 		// 隐藏动物和植物
 		apManager.hideAP();
 		// 切换天气
@@ -575,16 +575,22 @@ function onMainMenuClick(e)
 		// close some ui
 		showCal(false);
 		showLineChart(false);
-		// Device health
-		hideHealthCalendar();
-		// Set 3d scene
-		setScenePerspective(4);
-		// enter health mode
-		jQuery.subscribe(NETWORK_HEALTH_NODE_SELECTED, onNetworkNodeSelected);
-		jQuery.subscribe(NETWORK_HEALTH_NODE_DESELECTED, onNetworkNodeDeselected);
 
-		var cfile = "./res/data_2014/2014_all.csv"
-		network.createHealthGraph(cfile);
+		if(mainmenu.currSelectDeviceMenuIdx == 0) {
+			// Device health
+			hideHealthCalendar();
+			// Set 3d scene
+			setScenePerspective(4);
+			// enter health mode
+			jQuery.subscribe(NETWORK_HEALTH_NODE_SELECTED, onNetworkNodeSelected);
+			jQuery.subscribe(NETWORK_HEALTH_NODE_DESELECTED, onNetworkNodeDeselected);
+
+			var cfile = "./res/data_2014/2014_all.csv"
+			network.createHealthGraph(cfile);
+
+		} else if(mainmenu.currSelectDeviceMenuIdx == 1) {
+
+		}
 	}
 
 	mainmenuCurrent = e.type;
@@ -667,7 +673,7 @@ function setScenePerspective(idx)
 	} else if(idx == 4) {
 
 		TweenMax.to(ground.position, 1, {y:-430, ease:Quint.easeOut});
-		TweenMax.to(camera.position, 1.2, {x:7, y:-173, z:1556, ease:Quart.easeOut});
+		TweenMax.to(camera.position, 1.2, {x:365, y:624, z:1388, ease:Quart.easeOut});
 		// Hide sensor node
 		if(sensornode.visible) {
 			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
