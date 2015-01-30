@@ -1302,9 +1302,11 @@ NodeNetwork.prototype.getMeshConf = function(sensorid, value)
 		.domain([conf.min, conf.max])
 		.range([c1, c2])
 		.interpolate(d3.interpolateHsl);
+
+	// Can't set the range minum to 0, cause some bug
 	var valueScale = d3.scale.linear()
 		.domain([conf.min, conf.max])
-		.range([0, 100]);
+		.range([0.1, 100]);
 
 	var obj = {color: valueToColorScale(value), height: valueScale(value), unit: conf.unit, title: conf.title};
 

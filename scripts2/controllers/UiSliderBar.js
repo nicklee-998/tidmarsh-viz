@@ -1,7 +1,7 @@
 // JavaScript Document
 var bar, bar_line, slider, slider_curr_date, slider_left_frame, slider_right_frame, slider_left_date, slider_right_date;
 var sliderClick;
-var sliderYear, sliderMonth, sliderDay;
+var sliderYear = null, sliderMonth = null, sliderDay = null;
 var sliderStart, sliderEnd, sliderCurrent;	// Date
 var sliderScale;
 
@@ -20,7 +20,7 @@ function initSliderBar()
 	sliderMonth = d.getMonth();
 	sliderDay = d.getDate();
 	slider_curr_date.value = d.toDateString();
-	
+
 	sliderStart = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);
 	sliderEnd = new Date(sliderYear, sliderMonth, sliderDay, 23, 59, 59);
 	sliderScale = d3.scale.linear().domain([0, 1]).range([sliderStart.getTime(), sliderEnd.getTime()]);

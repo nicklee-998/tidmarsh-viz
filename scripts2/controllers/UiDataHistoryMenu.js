@@ -5,29 +5,25 @@ function UiDataHistoryMenu()
 {
 	this.visible = false;
 
-	var dpWid = 224;
-	this.dpLeft = window.innerWidth / 2 - dpWid / 2;
-	this.dpTop = window.innerHeight / 2 - 60;
+	this.dpLeft = 50;
+	this.dpTop = 280;
 
 	$("#datepicker").css("left", this.dpLeft);
 	$("#datepicker").css("top", this.dpTop);
 	$("#datepicker_tip").css("left", 0);
 	$("#datepicker_tip").css("top", -125);
+	$("#datepicker_cover").css('width', '100%');
+	$("#datepicker_cover").css('height', '100%');
 
 	$("#history_date").click(function() {
 
-		console.log("click date");
 		// Click date, show calendar to select the date
+		self._showDate(false);
 		self._showCal(true);
 	});
 
 	$("#datepicker_cover").click(function() {
 		self._showCal(false);
-	});
-
-	$(window).resize(function() {
-		self.dpLeft = window.innerWidth / 2 - dpWid / 2;
-		self.dpTop = window.innerHeight / 2 - dpWid / 2;
 	});
 
 	var self = this;
@@ -77,8 +73,6 @@ UiDataHistoryMenu.prototype._showCal = function(flg)
 	if(flg) {
 		// cover
 		$("#datepicker_cover").css('visibility', 'visible');
-		$("#datepicker_cover").css('width', innerWidth);
-		$("#datepicker_cover").css('height', innerHeight);
 		$("#datepicker_cover").css('opacity', 0);
 		$('#datepicker_cover').animate({
 			opacity: 1

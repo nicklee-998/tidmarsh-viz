@@ -1,19 +1,28 @@
 $(document).ready(function() {
 
-	$("#ajax-load").css("left", window.innerWidth / 2 - 140 / 2);
-	$("#ajax-load").css("top", window.innerHeight / 2 - 40 / 2);
+	var l2Wid = 140;
+	var l2Hei = 40;
+	$("#ajax-load").css("left", window.innerWidth / 2 - l2Wid / 2);
+	$("#ajax-load").css("top", window.innerHeight / 2 - l2Hei / 2);
 	$("#ajax-load").css("visibility", "hidden");
+	$(".ajax-load-cover").css("width", '100%');
+	$(".ajax-load-cover").css("height", '100%');
+	$(".ajax-load-cover").css("visibility", "hidden");
 
 	$('#ajax-load .loading-bar').each(function(i) {
 		var that = this;
 		$(that).css("left", i * 10);
 	});
+
+
+	$(window).resize(function() {
+		$("#ajax-load").css("left", window.innerWidth / 2 - l2Wid / 2);
+		$("#ajax-load").css("top", window.innerHeight / 2 - l2Hei / 2);
+	});
 });
 
 function loader2start()
 {
-	$(".ajax-load-cover").css("width", window.innerWidth);
-	$(".ajax-load-cover").css("height", window.innerHeight);
 	$(".ajax-load-cover").css("visibility", "visible");
 	$(".ajax-load-cover").css("opacity", 0);
 	$(".ajax-load-cover").animate({opacity: 1}, 300, 'swing');

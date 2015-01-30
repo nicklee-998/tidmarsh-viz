@@ -118,6 +118,7 @@ html, body {
 	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
 	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
 	background-color: rgba(0, 0, 0, 0.8);
+	visibility: hidden;
 }
 
 #health_sensor_date {
@@ -221,7 +222,7 @@ html, body {
  ***********************************************/
 #history_date_panel {
 	position: absolute;
-	top: 170px;
+	top: 150px;
 	left: 50px;
 	width: 300px;
 	visibility: hidden;

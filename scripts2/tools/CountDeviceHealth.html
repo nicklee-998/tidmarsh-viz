@@ -3,12 +3,26 @@
 <head lang="en">
 	<meta charset="UTF-8">
 	<title>Count Device Health</title>
+	<style>
+
+		#labAllSensorInfoPrev {
+			margin-top: 20px;
+		}
+
+		#labAllSensorInfo {
+			margin-top: 10px;
+		}
+
+	</style>
 </head>
 <body>
 
 <p id="useTime">Elapsed time: </p><br>
 <p id="labAllDevicesInfo">Load all devices info: </p>
 <button id="btnLoadAllDevice" onclick="loadAllDevicesInfo()">Start</button>
+<div id="labAllSensorInfoPrev">------------------------------------------------------------------------------------------------------------------------------------------------</div>
+<div id="progressInfo">Loading Infomation: </div>
+<div id="labAllSensorInfoAfter">------------------------------------------------------------------------------------------------------------------------------------------------</div>
 <div id="labAllSensorInfo">Load all sensor info:</div>
 <button id="btnLoadSensor" onclick="goDigging()">Start</button>
 
@@ -126,9 +140,13 @@
 			$("#useTime").text(str);
 		}, 1000);
 
+
+		// --------------------------------------------------------
+		//  HERE TO SELECT HOW MANY DEVICE YOU WANT TO EXPLORE
+		// --------------------------------------------------------
 		var arr = new Array();
 		//for(var i = 0; i < devices.length; i++) {
-		for(var i = 30; i < devices.length; i++) {
+		for(var i = 0; i < 20; i++) {
 			arr.push(devices[i].title);
 		}
 		fetchMultiDevicesByDate(arr, [
@@ -191,6 +209,7 @@
 		_year = year;
 		_loadIdx3 = 0;
 		allYearData = new Array();
+		$("#progressInfo").append("<div></div>");
 		_startDayList();
 	}
 
@@ -198,6 +217,8 @@
 	{
 		if(_loadIdx3 == _daylist.length) {
 			//console.log("All year data has loaded!!!");
+
+			$("#progressInfo").append("<div></div>");
 
 			// show info
 			var min = Math.floor(timeCount2 / 60);
@@ -212,13 +233,13 @@
 			var csvData = new Array();
 			csvData.push('"did", "sht_temperature", "bmp_temperature", "illuminance", "bmp_pressure", ' +
 			'"sht_humidity", "battery_voltage", "charge_flags_charge", "charge_flags_fault", ' +
-			'"solar_voltage", "wind_direction", "wind_speed", "date"');
+			'"solar_voltage", "wind_direction", "wind_speed", "date", "rate"');
 
 			allYearData.forEach(function(item, index, array) {
 				csvData.push('"' + item.did + '","' + item.sht_temperature + '","' + item.bmp_temperature + '","' +
 				item.illuminance + '","' + item.bmp_pressure + '","' + item.sht_humidity + '","' + item.battery_voltage + '","' +
 				item.charge_flags_charge + '","' + item.charge_flags_fault + '","' + item.solar_voltage + '","' +
-				item.wind_direction + '","' + item.wind_speed + '","' + item.date + '"');
+				item.wind_direction + '","' + item.wind_speed + '","' + item.date + '","' + item.rate + '"');
 			});
 
 			// download stuff
@@ -266,7 +287,8 @@
 			"solar_voltage": -999,
 			"wind_direction": -999,
 			"wind_speed": -999,
-			"date": _start
+			"date": _start,
+			"rate": -999
 		};
 
 		fetchDeviceDataByDate(_dayDeviceId, _sensorlist, _start, _end);
@@ -276,6 +298,10 @@
 	{
 		allYearData.push(oneDayData);
 		console.log(oneDayData);
+
+		// Progress Bar
+		var progstr = "Progress: " + oneDayData.did + " | " + (_loadIdx3 + 1) + "/" + _daylist.length + " @" + oneDayData.date;
+		$("#progressInfo").children().last().text(progstr);
 
 		// info one day complete
 		//console.log("finsh");
@@ -404,6 +430,19 @@
 				oneDayData.wind_speed = dat.data.length;
 			}
 
+			// 如果该设备还没有rate，就根据这个sensor进行计算
+			// 这里我们假定6种主要的sensor的rate是一样的，所以我们只计算一种
+			if(_sensor.title == "sht_temperature" || _sensor.title == "bmp_temperature" || _sensor.title == "illuminance" ||
+				_sensor.title == "bmp_pressure" || _sensor.title == "sht_humidity" || _sensor.title == "battery_voltage") {
+
+				if(oneDayData.rate == -999) {
+					var rate = calcSampleRate(dat.data);
+					if(rate > 0) {
+						oneDayData.rate = rate;
+					}
+				}
+			}
+
 			_expired = true;
 			_startSensorDataChain();
 		}).fail(function() {
@@ -413,6 +452,27 @@
 			_expired = true;
 			_startSensorDataChain();
 		});
+	}
+
+	function calcSampleRate(dataset)
+	{
+		var rate = 0;
+
+		if(dataset.length >= 2) {
+
+			for(var i = 0; i < dataset.length; i+=2) {
+				var start = new Date(dataset[i].timestamp);
+				var end = new Date(dataset[i+1].timestamp);
+				var diff = parseInt((end.getTime() - start.getTime()) / parseInt(1000));
+
+				if(diff == 20 || diff == 30) {
+					rate = diff;
+					break;
+				}
+			}
+		}
+
+		return rate;
 	}
 
 	function getDeviceByName(dname)

@@ -155,9 +155,9 @@ function initHealthCalendar()
 				var arr2 = new Array();
 				var obj = calendarCsv[idx];
 				var total = 0;
+				var date;
 				for (value in obj) {
 					if (value == "did" ||
-						value.indexOf("date") != -1 ||
 						value.indexOf("wind_direction") != -1 ||
 						value.indexOf("wind_speed") != -1 ||
 						value.indexOf("solar_voltage") != -1 ||
@@ -166,6 +166,8 @@ function initHealthCalendar()
 						//console.log(value + ", " + obj[value]);
 						continue;
 
+					} else if(value.indexOf("date") != -1) {
+						date = new Date(obj[value]);
 					} else {
 						var val = parseInt(obj[value]);
 						if (val == -999) {
@@ -187,7 +189,6 @@ function initHealthCalendar()
 				}
 				var health = tol / arr2.length * 100;
 
-				var date = new Date(obj.date);
 				$("#health_sensor_date").text("DATE: " + date.toLocaleDateString());
 				$("#health_sensor_value").text("DEVICE HEALTH: " + health.toFixed(2) + "%");
 
@@ -283,7 +284,7 @@ function initHealthCalendar()
 		.text(function(d) { return d.label; });
 
 	// hide graph
-	$("#health_sensor").css("top", -(_barHeight+50));
+	$("#health_sensor").css("top", -(_barHeight+100));
 	_barIsHide = true;
 
 	// -----------------------------------------
@@ -337,6 +338,7 @@ function showChart(flag)
 {
 	if(flag) {
 		//if(_barIsHide) {
+		$("#health_sensor").css("visibility", "visible");
 		$("#health_sensor").clearQueue();
 		$("#health_sensor").animate({
 			"top": _barGoY
@@ -350,6 +352,7 @@ function showChart(flag)
 		$("#health_sensor").stop().animate({
 			"top": py
 		}, 500, "easeOutQuint", function() {
+			$("#health_sensor").css("visibility", "hidden");
 			_barIsHide = true;
 		});
 	}

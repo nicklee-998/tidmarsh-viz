@@ -72,7 +72,6 @@ d3.selection.prototype.moveToFront = function() {
 $(document).ready(function() {
 
 	// INIT UI
-	initSliderBar();
 	initHealthCalendar();
 	lineChart = new UiLineChart();
 	menuDataHistory = new UiDataHistoryMenu();
@@ -109,6 +108,9 @@ $(document).ready(function() {
 		}
 	});
 
+	jQuery.subscribe(NETWORK_VORONOI_MOUSE_OVER, onNetworkVoronoiOver);
+	jQuery.subscribe(NETWORK_VORONOI_MOUSE_OUT, onNetworkVoronoiOut);
+	jQuery.subscribe(LINE_CHART_DRAG, onLineChartDrag);
 	jQuery.subscribe(GMAP_INIT, onGmapInit);
 	network = new NodeNetwork();
 });
@@ -499,14 +501,17 @@ function onMainMenuClick(e)
 			// realtime
 			network.enterVoronoi("REALTIME");
 		} else {
-			// menu
-			menuDataHistory.showMe("date_picker");
+			// 如果没有默认的日期，跳出日期框进行选择
+			// 否则使用默认的日期
+			if(sliderYear == null) {
+				// menu
+				menuDataHistory.showMe("date_picker");
+			} else {
+				getDevicesDataBySensorMenu();
+			}
+
 			// history
 			network.enterVoronoi("HISTORY");
-
-			jQuery.subscribe(NETWORK_VORONOI_MOUSE_OVER, onNetworkVoronoiOver);
-			jQuery.subscribe(NETWORK_VORONOI_MOUSE_OUT, onNetworkVoronoiOut);
-			jQuery.subscribe(LINE_CHART_DRAG, onLineChartDrag);
 		}
 
 	} else if(e.type == MAINMENU_DEVICE) {
@@ -580,11 +585,6 @@ function onMainMenuChange(e)
 			showLineChart(false);
 			// Restore to realtime mode
 			mainmenu.currSelectRH = 0;
-
-			// Unregister mouse event
-			jQuery.unsubscribe(NETWORK_VORONOI_MOUSE_OVER, onNetworkVoronoiOver);
-			jQuery.unsubscribe(NETWORK_VORONOI_MOUSE_OUT, onNetworkVoronoiOut);
-			jQuery.unsubscribe(LINE_CHART_DRAG, onLineChartDrag);
 
 			break;
 		case MAINMENU_DEVICE_LEAVE:
@@ -680,7 +680,7 @@ function setScenePerspective(idx)
 	} else if(idx == 4) {
 
 		TweenMax.to(ground.position, 1, {y:-430, ease:Quint.easeOut});
-		TweenMax.to(camera.position, 1.2, {x:365, y:624, z:1388, ease:Quart.easeOut});
+		TweenMax.to(camera.position, 1.2, {x:440, y:395, z:1828, ease:Quart.easeOut});
 		// Hide sensor node
 		if(sensornode.visible) {
 			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
