@@ -152,6 +152,7 @@ function initHealthCalendar()
 				//console.log(calendarCsv[idx]);
 
 				var arr = new Array();
+				var arr2 = new Array();
 				var obj = calendarCsv[idx];
 				var total = 0;
 				for (value in obj) {
@@ -172,9 +173,23 @@ function initHealthCalendar()
 						}
 						total += val;
 						arr.push({label:value, value:val});
-						//console.log(value + ", " + obj[value]);
+
+						// fixme: 4320 is the message ratio, it's hard code right now
+						var f = val / 4320;
+						arr2.push(f);
 					}
 				}
+
+				// calculate health
+				var tol = 0;
+				for(index in arr2) {
+					tol += arr2[index];
+				}
+				var health = tol / arr2.length * 100;
+
+				var date = new Date(obj.date);
+				$("#health_sensor_date").text("DATE: " + date.toLocaleDateString());
+				$("#health_sensor_value").text("DEVICE HEALTH: " + health.toFixed(2) + "%");
 
 				barChange(arr);
 				showChart(true);
@@ -201,16 +216,16 @@ function initHealthCalendar()
 	// -----------------------------------------
 	//  Sensor graph - Bar Chart
 	// -----------------------------------------
-	var margin = {top:10, right:0, bottom:10, left:10};
+	var margin = {top:50, right:0, bottom:10, left:10};
 	_barWidth = 350;
-	_barHeight = 180;
+	_barHeight = 140;
 
 	_barXScale = d3.scale.ordinal()
 		.domain(["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage", "bmp_temperature"])
 		.rangeRoundBands([0, _barWidth], 0.3);
 	_barYScale = d3.scale.linear()
 		.domain([0, 4320])
-		.range([_barHeight - margin.top - margin.bottom, 0]);
+		.range([_barHeight - margin.bottom / 2, 0]);
 
 	_barSvg = d3.select("#health_sensor")
 		.append("svg")

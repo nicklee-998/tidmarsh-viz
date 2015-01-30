@@ -308,6 +308,11 @@ NodeNetwork.prototype.createHealthGraph = function(csvfile)
 		.range([c1, c2])
 		.interpolate(d3.interpolateHsl);
 
+	// open loader
+	$(".loading-text").text("Analysising Data...");
+	loader2start();
+	self._isHealthAnalysis = true;
+
 	d3.csv(csvfile, function(d) {
 		//console.log(self.devices);
 
@@ -316,206 +321,39 @@ NodeNetwork.prototype.createHealthGraph = function(csvfile)
 		var zidx = 0;
 		var queueIdx = 0;
 
-		function startQueue() {
-
-			if(queueIdx >= d.length) {
-				stopQueue();
-				return;
-			}
-
-			// Find the device
-			var isfind = false;
-			if(did != d[queueIdx]["did"]) {
-
-				for(var i = queueIdx; i < d.length; i++) {
-					device = self.getDeviceById(d[queueIdx]["did"]);
-					if(device != null) {
-						did = d[queueIdx]["did"];
-						zidx = 0;
-						isfind = true;
-						break;
-					} else {
-						queueIdx++;
-					}
-				}
-
-				// 如果整个csv文件中都没有有效的设备，循环结束
-				if(!isfind) {
-					stopQueue();
-					return;
-				}
-			}
-
-			//console.log("start queue: " + did);
-
-			var obj = d[queueIdx];
-			var arr = new Array();
-			var health = 0;
-			for(value in obj) {
-				if(value == "did" || value.indexOf("date") != -1 || value == "charge_flags_charge" || value == "charge_flags_fault") {
-					continue;
-				} else {
-					var val = parseInt(obj[value]);
-					if(val == -999) {
-						continue;
-					} else {
-						// fixme: 4320 is the message ratio, it's hard code right now
-						var f = val / 4320;
-						arr.push(f);
-					}
-					//console.log(value + ", " + obj[value]);
-				}
-			}
-
-			// calculate health
-			var total = 0;
-			for(index in arr) {
-				total += arr[index];
-			}
-			health = total / arr.length;
-
-			createBlock(health);
-		}
-
-		function stopQueue()
-		{
-			// 全部结束，显示时间轴
-			// health timeline
-			if(self._healthTimeline == null) {
-				var timelineWid = 4;
-				var timelineHei = 365 * 2;
-				self._healthTimeline = new THREE.Mesh(
-					new THREE.PlaneBufferGeometry(timelineWid, timelineHei, 20, 20),
-					new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true, side:THREE.DoubleSide})
-				);
-				self._healthTimeline.material.opacity = 0.7;
-				self._healthTimeline.position.x = -groundWid / 2 - (timelineWid / 2) / 1.414;
-				self._healthTimeline.position.y = -groundHei / 2 - (timelineWid / 2) / 1.414;
-				self._healthTimeline.position.z = timelineHei / 2;
-				self._healthTimeline.rotation.x = Math.PI / 2;
-				self._healthTimeline.rotation.y = Math.PI / 4;
-
-				// start title
-				var startTitle = document.createElement( "canvas" );
-				startTitle.width = 150;
-				startTitle.height = 60;
-				var context = startTitle.getContext( "2d" );
-				context.fillStyle = "white";
-				context.font = "18pt arial";
-				context.fillText( "2014/1/1", 25, 60 );
-
-				var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(startTitle), transparent: true, side:THREE.DoubleSide});
-				xm.map.needsUpdate = true;
-				var startmesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
-				startmesh.position.x = -50;
-				startmesh.position.y = -(timelineHei / 2) + 30;
-				startmesh.position.z = -2;
-				self._healthTimeline.add(startmesh);
-
-				// end title
-				var endTitle = document.createElement( "canvas" );
-				endTitle.width = 150;
-				endTitle.height = 60;
-				var context = endTitle.getContext( "2d" );
-				context.fillStyle = "white";
-				context.font = "18pt arial";
-				context.fillText( "2014/12/31", 25, 60 );
-
-				var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(endTitle), transparent: true, side:THREE.DoubleSide});
-				xm.map.needsUpdate = true;
-				var endmesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
-				endmesh.position.x = -70;
-				endmesh.position.y = (timelineHei / 2) + 15;
-				endmesh.position.z = -2;
-				self._healthTimeline.add(endmesh);
-			}
-			ground.add(self._healthTimeline);
-			TweenMax.from(self._healthTimeline.material, 0.8, {opacity:0, ease:Expo.easeOut});
-
-
-			// Remove loading
-			loader2end();
-			self._isHealthAnalysis = false;
-
-			console.log("All finish");
-		}
-
-		function createBlock(health) {
-
-			if(health != 0) {
-				var hColor = valueToColorScale(health);
-				hColor = "0x" + hColor.substring(1);
-
-				var box = new THREE.Mesh (
-					new THREE.BoxGeometry(25, 25, 2),
-					new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent:true} )
-				);
-				box.material.color.setHex(hColor);
-				box.position.x = device.mesh.position.x;
-				box.position.y = device.mesh.position.y;
-				box.position.z = zidx * 2;
-				box.userData = {
-					px:box.position.x, py:box.position.y, pz:box.position.z,
-					rx:box.rotation.x, ry:box.rotation.y, rz:box.rotation.z,
-					sx:box.scale.x, sy:box.scale.y, sz:box.scale.z
-				};
-				device.healthBoxes.push(box);
-			} else {
-				//device.healthBoxes.push(null);
-			}
-
-			zidx++;
-			queueIdx++;
-
-			if(queueIdx == d.length) {
-				stopQueue();
-			}
-
-			// Find device will change, do animation, then go to next device
-			if(did != d[queueIdx]["did"]) {
-
-				console.log(did + ": " + device.healthBoxes.length);
-				var count = 0;
-				var threshold = parseInt(device.healthBoxes.length);
-				for(var i = 0; i < device.healthBoxes.length; i++) {
-					var box = device.healthBoxes[i];
-					if(box != null) {
-						TweenMax.from(box.material, 0.1, {opacity:0, delay: 0.01 * i, ease:Expo.easeOut, onComplete: function() {
-							count++;
-							if(count >= threshold) {
-								startQueue();
-							}
-						}});
-						ground.add(box);
-					}
-				}
-			} else {
-				startQueue();
-			}
-		}
-
-		startQueue();
-
-		// open loader
-		$(".loading-text").text("Analysising Data...");
-		loader2start();
-		self._isHealthAnalysis = true;
-
-		//for(var i = 0; i < d.length; i++) {
+		//function startQueue() {
+		//
+		//	if(queueIdx >= d.length) {
+		//		stopQueue();
+		//		return;
+		//	}
 		//
 		//	// Find the device
-		//	if(did != d[i]["did"]) {
-		//		for(var j = 0; j < self.devices.length; j++) {
-		//			if(self.devices[j].id == d[i]["did"]) {
-		//				device = self.devices[j];
-		//				did = d[i]["did"];
+		//	var isfind = false;
+		//	if(did != d[queueIdx]["did"]) {
+		//
+		//		for(var i = queueIdx; i < d.length; i++) {
+		//			device = self.getDeviceById(d[queueIdx]["did"]);
+		//			if(device != null) {
+		//				did = d[queueIdx]["did"];
 		//				zidx = 0;
+		//				isfind = true;
 		//				break;
+		//			} else {
+		//				queueIdx++;
 		//			}
+		//		}
+		//
+		//		// 如果整个csv文件中都没有有效的设备，循环结束
+		//		if(!isfind) {
+		//			stopQueue();
+		//			return;
 		//		}
 		//	}
 		//
-		//	var obj = d[i];
+		//	//console.log("start queue: " + did);
+		//
+		//	var obj = d[queueIdx];
 		//	var arr = new Array();
 		//	var health = 0;
 		//	for(value in obj) {
@@ -541,6 +379,74 @@ NodeNetwork.prototype.createHealthGraph = function(csvfile)
 		//	}
 		//	health = total / arr.length;
 		//
+		//	createBlock(health);
+		//}
+
+		function stopQueue()
+		{
+			// 全部结束，显示时间轴
+			// health timeline
+			if(self._healthTimeline == null) {
+				var timelineWid = 4;
+				var timelineHei = 365 * 2;
+				self._healthTimeline = new THREE.Mesh(
+					new THREE.PlaneBufferGeometry(timelineWid, timelineHei, 20, 20),
+					new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true, side:THREE.DoubleSide})
+				);
+				self._healthTimeline.material.opacity = 0.7;
+				self._healthTimeline.position.x = groundWid / 2 + (timelineWid / 2) / 1.414;
+				self._healthTimeline.position.y = groundHei / 2 + (timelineWid / 2) / 1.414;
+				self._healthTimeline.position.z = timelineHei / 2;
+				self._healthTimeline.rotation.x = Math.PI / 2;
+				self._healthTimeline.rotation.y = Math.PI / 4;
+
+				// start title
+				var startTitle = document.createElement( "canvas" );
+				startTitle.width = 150;
+				startTitle.height = 60;
+				var context = startTitle.getContext( "2d" );
+				context.fillStyle = "white";
+				context.font = "18pt arial";
+				context.fillText( "2014/1/1", 25, 60 );
+
+				var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(startTitle), transparent: true, side:THREE.DoubleSide});
+				xm.map.needsUpdate = true;
+				var startmesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
+				startmesh.position.x = 50;
+				startmesh.position.y = -(timelineHei / 2) + 30;
+				startmesh.position.z = -2;
+				self._healthTimeline.add(startmesh);
+
+				// end title
+				var endTitle = document.createElement( "canvas" );
+				endTitle.width = 150;
+				endTitle.height = 60;
+				var context = endTitle.getContext( "2d" );
+				context.fillStyle = "white";
+				context.font = "18pt arial";
+				context.fillText( "2014/12/31", 25, 60 );
+
+				var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(endTitle), transparent: true, side:THREE.DoubleSide});
+				xm.map.needsUpdate = true;
+				var endmesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
+				endmesh.position.x = 70;
+				endmesh.position.y = (timelineHei / 2) + 15;
+				endmesh.position.z = -2;
+				self._healthTimeline.add(endmesh);
+			}
+			ground.add(self._healthTimeline);
+			TweenMax.from(self._healthTimeline.material, 0.8, {opacity:0, ease:Expo.easeOut});
+
+
+			// Remove loading
+			loader2end();
+			self._isHealthAnalysis = false;
+
+			console.log("All finish");
+		}
+
+		//function createBlock(health) {
+		//
 		//	if(health != 0) {
 		//		var hColor = valueToColorScale(health);
 		//		hColor = "0x" + hColor.substring(1);
@@ -559,16 +465,150 @@ NodeNetwork.prototype.createHealthGraph = function(csvfile)
 		//			sx:box.scale.x, sy:box.scale.y, sz:box.scale.z
 		//		};
 		//		device.healthBoxes.push(box);
-		//
-		//		TweenMax.from(box.position, 0.5, {z:0, ease:Expo.easeOut});
-		//
-		//		ground.add(box);
 		//	} else {
-		//		device.healthBoxes.push(null);
+		//		//device.healthBoxes.push(null);
 		//	}
 		//
 		//	zidx++;
+		//	queueIdx++;
+		//
+		//	if(queueIdx == d.length) {
+		//		stopQueue();
+		//		return;
+		//	}
+		//
+		//	// Find device will change, do animation, then go to next device
+		//	if(did != d[queueIdx]["did"]) {
+		//
+		//		console.log(did + ": " + device.healthBoxes.length);
+		//		var count = 0;
+		//		var localIdx = 0;
+		//		var threshold = parseInt(device.healthBoxes.length);
+		//
+		//		var timer = setInterval(function() {
+		//
+		//			//console.log(localIdx + ", " + device.healthBoxes.length);
+		//			if(localIdx >= device.healthBoxes.length ) {
+		//				clearInterval(timer);
+		//				startQueue();
+		//				return;
+		//			}
+		//
+		//			var box = device.healthBoxes[localIdx];
+		//			if(box != null) {
+		//				//TweenMax.from(box.material, 0.01, {opacity:0, delay: 0.01 * i, ease:Expo.easeOut, onComplete: function() {
+		//
+		//				//}});
+		//				ground.add(box);
+		//
+		//				//count++;
+		//				//if(count == threshold) {
+		//				//	startQueue();
+		//				//}
+		//			}
+		//			localIdx++;
+		//		}, 1);
+		//
+		//		//for(var i = 0; i < device.healthBoxes.length; i++) {
+		//		//	//console.log(localIdx + ", " + device.healthBoxes.length);
+		//		//	var box = device.healthBoxes[i];
+		//		//	if(box != null) {
+		//		//		//TweenMax.from(box.material, 0.01, {opacity:0, delay: 0.01 * i, ease:Expo.easeOut, onComplete: function() {
+		//		//
+		//		//		//}});
+		//		//		ground.add(box);
+		//		//
+		//		//		count++;
+		//		//		if(count >= threshold) {
+		//		//			console.log("jaaj");
+		//		//			startQueue();
+		//		//		}
+		//		//	}
+		//		//}
+		//	} else {
+		//		startQueue();
+		//	}
 		//}
+		//startQueue();
+
+
+		//var did = "default";
+		//var device = null;
+		//var zidx = 0;
+		//var queueIdx = 0;
+
+
+		for(var i = 0; i < d.length; i++) {
+
+			// Find the device
+			if(did != d[i]["did"]) {
+
+				device = self.getDeviceById(d[i]["did"]);
+				if(device != null) {
+					did = d[i]["did"];
+					zidx = 0;
+				} else {
+					continue;
+				}
+			}
+
+			var obj = d[i];
+			var arr = new Array();
+			var health = 0;
+			for(value in obj) {
+				if(value == "did" || value.indexOf("date") != -1 || value == "charge_flags_charge" || value == "charge_flags_fault") {
+					continue;
+				} else {
+					var val = parseInt(obj[value]);
+					if(val == -999) {
+						continue;
+					} else {
+						// fixme: 4320 is the message ratio, it's hard code right now
+						var f = val / 4320;
+						arr.push(f);
+					}
+					//console.log(value + ", " + obj[value]);
+				}
+			}
+
+			// calculate health
+			var total = 0;
+			for(index in arr) {
+				total += arr[index];
+			}
+			health = total / arr.length;
+			//console.log("health = " + health);
+
+			if(health != 0) {
+				var hColor = valueToColorScale(health);
+				hColor = "0x" + hColor.substring(1);
+
+				var box = new THREE.Mesh (
+					new THREE.BoxGeometry(25, 25, 2),
+					new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent:true} )
+				);
+				box.material.color.setHex(hColor);
+				box.position.x = device.mesh.position.x;
+				box.position.y = device.mesh.position.y;
+				box.position.z = zidx * 2;
+				box.userData = {
+					px:box.position.x, py:box.position.y, pz:box.position.z,
+					rx:box.rotation.x, ry:box.rotation.y, rz:box.rotation.z,
+					sx:box.scale.x, sy:box.scale.y, sz:box.scale.z
+				};
+				device.healthBoxes.push(box);
+
+				//TweenMax.from(box.position, 0.5, {z:0, ease:Expo.easeOut});
+
+				ground.add(box);
+			} else {
+				device.healthBoxes.push(null);
+			}
+
+			zidx++;
+		}
+
+		stopQueue();
 
 		// 选择日期层
 		//if(self._healthDateLayers == null) {
@@ -590,6 +630,7 @@ NodeNetwork.prototype.createHealthGraph = function(csvfile)
 		//		self._healthDateLayers.push(layer);
 		//	}
 		//}
+
 
 		self._mode = self.NETWORK_MODE_HEALTH;
 	});

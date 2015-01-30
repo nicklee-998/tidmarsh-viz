@@ -139,23 +139,31 @@ function UiMainMenu()
 		console.log(btnname);
 
 		if(btnname == "mainmenu_sbtn_health") {
-			self.currSelectDeviceMenuIdx = 0;
-			// ------------------------------
-			// Send main menu event
-			// ------------------------------
-			jQuery.publish(MAINMENU_DEVICE);
+
+			if(self.currSelectDeviceMenuIdx != 0) {
+				self.currSelectDeviceMenuIdx = 0;
+				// ------------------------------
+				// Send main menu event
+				// ------------------------------
+				jQuery.publish(MAINMENU_DEVICE);
+			}
 		} else if(btnname == "mainmenu_sbtn_power") {
-			self.currSelectDeviceMenuIdx = 1;
-			// ------------------------------
-			// Send main menu event
-			// ------------------------------
-			jQuery.publish(MAINMENU_DEVICE);
+
+			if(self.currSelectDeviceMenuIdx != 1) {
+				self.currSelectDeviceMenuIdx = 1;
+				// ------------------------------
+				// Send main menu event
+				// ------------------------------
+				jQuery.publish(MAINMENU_DEVICE);
+			}
 		}
 
 		self.arrangeDeviceButtons();
 	}
 
-	this.dButtons = [$("#mainmenu_sbtn_health"), $("#mainmenu_sbtn_power")];
+	//this.dButtons = [$("#mainmenu_sbtn_health"), $("#mainmenu_sbtn_power")];
+	$("#mainmenu_sbtn_power").css("visibility", "hidden");
+	this.dButtons = [$("#mainmenu_sbtn_health")];
 	this.btnColors2 = ["#027b08", "#9a0101"];
 	this.arrangeDeviceButtons();
 

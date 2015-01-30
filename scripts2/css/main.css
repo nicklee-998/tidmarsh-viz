@@ -120,6 +120,30 @@ html, body {
 	background-color: rgba(0, 0, 0, 0.8);
 }
 
+#health_sensor_date {
+	position: absolute;
+	top: 13px;
+	left: 13px;
+	font-size: 14px;
+	color: rgba(231, 231, 231, 0.89)
+}
+
+#health_sensor_value {
+	position: absolute;
+	top: 13px;
+	right: 13px;
+	font-size: 14px;
+	color: rgba(231, 231, 231, 0.89)
+}
+
+#health_sensor_tips {
+	position: absolute;
+	top: 38px;
+	left: 13px;
+	font-size: 10px;
+	color: rgba(150, 150, 150, 0.85)
+}
+
 .pie_labels {
 	fill: #ffffff;
 	font-size: 9px;
