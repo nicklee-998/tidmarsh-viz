@@ -22,9 +22,29 @@ function APManager()
 		[ 0xffffff, 0xffb5c1, 0xffe1b5 ]
 	];
 	this._trees = [];
+	this._isTreeMouseOver = false;
 
 	// BIRDS
 	this._morphs = [];
+	this._selectedMorph = null;
+	this._isMorphMouseOver = false;
+
+	// ------------------------------------------
+	//  Mouse interaction
+	// ------------------------------------------
+	this._raycaster = new THREE.Raycaster();
+	this._intersected = null;
+
+	document.addEventListener( 'mouseup', function() {
+
+		if(self._isTreeMouseOver) {
+			window.open("http://tidmarshfarms.com/",'_blank');
+		} else if(self._isMorphMouseOver) {
+			window.open("http://ebird.org/ebird/hotspot/L908623",'_blank');
+		}
+	});
+
+	var self = this;
 }
 
 APManager.prototype.init = function()
@@ -96,19 +116,41 @@ APManager.prototype._createTree = function( tileX, tileZ, color )
 		new THREE.CylinderGeometry( 3, 10, trunkHeight, 5, 1 ),
 		new THREE.MeshLambertMaterial( { color: 0x342205, shading: THREE.FlatShading } )
 	);
+	trunk.name = "tree_trunk_" + tileX;
 	trunk.position.y = trunkHeight / 2;
 
+	// Outline
+	//var trunkOutline = new THREE.Mesh(
+	//	new THREE.CylinderGeometry(3, 10, trunkHeight, 5, 1),
+	//	new THREE.MeshBasicMaterial({color: 0xff0000, side: THREE.BackSide})
+	//);
+	//trunkOutline.position = trunk.position;
+	//trunkOutline.scale.multiplyScalar(1.05);
+
+	var leafGeometry = new THREE.CylinderGeometry( 0, leafRadius, leafHeight, 8, 1 );
 	var leaf = new THREE.Mesh(
-		new THREE.CylinderGeometry( 0, leafRadius, leafHeight, 8, 1 ),
-		new THREE.MeshLambertMaterial( { color: color, shading: THREE.FlatShading } )
+		leafGeometry, new THREE.MeshLambertMaterial( { color: color, shading: THREE.FlatShading } )
 	);
+	leaf.name = "tree_leaf_" + tileX;
 	leaf.castShadow = true;
 	leaf.receiveShadow = true;
 	leaf.position.y = leafHeight / 2 + trunk.position.y;
 
+	// Leaf outline
+	var leafOutline = new THREE.Mesh(
+		leafGeometry, new THREE.MeshBasicMaterial( {color: 0xf0beb3, transparent:true, side: THREE.BackSide} )
+	);
+	leafOutline.name = "tree_outline";
+	leafOutline.position.y = leaf.position.y;
+	leafOutline.scale.multiplyScalar(1.2);
+	leafOutline.visible = false;
+
 	var tree = new THREE.Object3D();
+	tree.name = "tree_" + tileX;
 	tree.add( trunk );
+	//tree.add( trunkOutline );
 	tree.add( leaf );
+	tree.add( leafOutline );
 
 	tree.position.x = ( -this._tileSizeX * this._tilePerSide ) / 2 + ( this._tileSizeX * tileX ) + ( this._tileSizeX / 2 ) + ( Math.random() * this._tileSizeX ) - this._tileSizeX / 2;
 	tree.position.y = ( -this._tileSizeY * this._tilePerSide ) / 2 + ( this._tileSizeY * tileZ ) + ( this._tileSizeY / 2 ) + ( Math.random() * this._tileSizeY ) - this._tileSizeY / 2;
@@ -180,6 +222,30 @@ APManager.prototype._hideAnimation = function()
 	}
 }
 
+APManager.prototype.onTreeMouseOver = function()
+{
+	for(var i = 0; i < this._trees.length; i++) {
+		var tree = this._trees[i];
+		var outline = tree.getObjectByName("tree_outline");
+		outline.visible = true;
+		outline.material.opacity = 0;
+		TweenMax.to( outline.material, 1.2, { opacity: 0.7, ease:Elastic.easeOut} );
+	}
+	this._isTreeMouseOver = true;
+}
+
+APManager.prototype.onTreeMouseOut = function()
+{
+	for(var i = 0; i < this._trees.length; i++) {
+		var tree = this._trees[i];
+		var outline = tree.getObjectByName("tree_outline");
+		TweenMax.to( outline.material, 1.2, { opacity: 0, ease:Elastic.easeOut, onComplete: function() {
+			outline.visible = false;
+		}} );
+	}
+	this._isTreeMouseOver = false;
+}
+
 //APManager.prototype._objDestroyed = function()
 //{
 //
@@ -206,13 +272,11 @@ APManager.prototype._initBirds = function()
 	} );
 
 	loader.load( "res/models/stork.js", function( geometry ) {
-
 		self._morphColorsToFaceColors( geometry );
 		self._addMorph( geometry, 350, 1000, 340, getRandomArbitrary(-groundWid/2, groundWid/2), 350 );
 	} );
 
 	loader.load( "res/models/parrot.js", function( geometry ) {
-
 		self._morphColorsToFaceColors( geometry );
 		self._addMorph( geometry, 450, 500, 700, getRandomArbitrary(-groundWid/2, groundWid/2), 300 );
 	} );
@@ -223,7 +287,7 @@ APManager.prototype._showBirds = function()
 {
 	for ( var i = 0; i < this._morphs.length; i ++ ) {
 		var morph = this._morphs[ i ];
-		morph.material.opacity = 1;
+		morph.visible = true;
 	}
 }
 
@@ -231,7 +295,7 @@ APManager.prototype._hideBirds = function()
 {
 	for ( var i = 0; i < this._morphs.length; i ++ ) {
 		var morph = this._morphs[ i ];
-		morph.material.opacity = 0;
+		morph.visible = false;
 		//TweenMax.to( morph.material, 700, { opacity: 0, ease:Cubic.easeOut } );
 	}
 }
@@ -248,6 +312,7 @@ APManager.prototype._addMorph = function(geometry, speed, duration, x, y, z, fud
 
 	var meshAnim = new THREE.MorphAnimMesh( geometry, material );
 
+	meshAnim.name = "bird_mesh";
 	meshAnim.speed = speed;
 	meshAnim.duration = duration;
 	meshAnim.time = 600 * Math.random();
@@ -260,7 +325,6 @@ APManager.prototype._addMorph = function(geometry, speed, duration, x, y, z, fud
 	meshAnim.receiveShadow = true;
 
 	ground.add( meshAnim );
-
 	this._morphs.push( meshAnim );
 }
 
@@ -275,17 +339,68 @@ APManager.prototype._morphColorsToFaceColors = function( geometry )
 	}
 }
 
-APManager.prototype.update = function()
+APManager.prototype.onBirdMouseOver = function(morph)
+{
+	morph.currentHex = morph.material.emissive.getHex();
+	morph.material.emissive.setHex(0x999999);
+	this._selectedMorph = morph;
+	this._isMorphMouseOver = true;
+}
+
+APManager.prototype.onBirdMouseOut = function()
+{
+	if(this._selectedMorph != null) {
+		this._selectedMorph.material.emissive.setHex(this._selectedMorph.currentHex);
+		this._selectedMorph = null;
+	}
+	this._isMorphMouseOver = false;
+}
+
+APManager.prototype.update = function(mx, my)
 {
 	var delta = clock.getDelta();
 
 	for ( var i = 0; i < this._morphs.length; i ++ ) {
 		var morph = this._morphs[ i ];
 		morph.updateAnimation( 1000 * delta );
-		morph.position.x += morph.speed * delta;
 
-		if ( morph.position.x  > 2000 )  {
-			morph.position.x = -1000 - Math.random() * 500;
+		if(this._selectedMorph != morph) {
+			morph.position.x += morph.speed * delta;
+
+			if ( morph.position.x  > 2000 )  {
+				morph.position.x = -1000 - Math.random() * 500;
+			}
+		}
+	}
+
+	// find intersections
+	var vector = new THREE.Vector3(mx, my, 1).unproject(camera);
+	this._raycaster.set(camera.position, vector.sub(camera.position).normalize());
+	var intersects = this._raycaster.intersectObjects(ground.children, true);
+
+	if(intersects.length > 0) {
+		if(intersects[0].object.name.indexOf("tree_") != -1) {
+			if(!this._isTreeMouseOver) {
+				this.onTreeMouseOver();
+			}
+		} else if(intersects[0].object.name.indexOf("bird_mesh") != -1) {
+			if(!this._isMorphMouseOver) {
+				this.onBirdMouseOver(intersects[0].object);
+			}
+		} else {
+			if(this._isTreeMouseOver) {
+				this.onTreeMouseOut();
+			}
+			if(this._isMorphMouseOver) {
+				this.onBirdMouseOut();
+			}
+		}
+	} else {
+		if(this._isTreeMouseOver) {
+			this.onTreeMouseOut();
+		}
+		if(this._isMorphMouseOver) {
+			this.onBirdMouseOut();
 		}
 	}
 }

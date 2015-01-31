@@ -366,11 +366,6 @@ function animate()
 
 	render();
 	stats.update();
-
-	if(weather != null)
-		weather.update();
-	if(apManager != null)
-		apManager.update();
 }
 
 function onDocumentMouseMove( event )
@@ -393,9 +388,14 @@ function render()
 	if(network != null) {
 		network.render(mouse.x, mouse.y);
 	}
-
 	if(calendar != null) {
 		calendar.render(mouse.x, mouse.y);
+	}
+	if(weather != null) {
+		weather.update();
+	}
+	if(apManager != null) {
+		apManager.update(mouse.x, mouse.y);
 	}
 }
 
