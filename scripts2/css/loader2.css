@@ -2,6 +2,7 @@
 	position: absolute;
 	top:400px;
 	left:200px;
+	visibility: hidden;
 }
 
 .loading-bar {

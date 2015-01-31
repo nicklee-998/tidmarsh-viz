@@ -145,6 +145,14 @@ html, body {
 	color: rgba(150, 150, 150, 0.85)
 }
 
+#health_tip {
+	position: absolute;
+	top: 170px;
+	font-size: 16px;
+	color: rgba(231, 231, 231, 0.89);
+	visibility: hidden;
+}
+
 .pie_labels {
 	fill: #ffffff;
 	font-size: 9px;

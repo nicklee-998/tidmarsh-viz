@@ -315,7 +315,7 @@ UiMainMenu.prototype.rearrange = function()
 	this.arrangeRHButtons();
 	this.arrangeDeviceButtons();
 
-	if(this.currSelectIdx != 3) {
+	if(this.currSelectIdx == 1 || this.currSelectIdx == 2) {
 		for(var i = 0; i < this.sButtons.length; i++) {
 			this.sButtons[i].css("visibility", "hidden");
 		}
@@ -325,6 +325,7 @@ UiMainMenu.prototype.rearrange = function()
 		for(var i = 0; i < this.dButtons.length; i++) {
 			this.dButtons[i].css("visibility", "hidden");
 		}
+
 	}
 }
 

@@ -51,7 +51,9 @@ var sensorColorTable = ["#E77227", "#D81E00", "#E445BA", "#3242DF", "#57C66C"];
 //  Birds
 // --------------------------
 var lineChart;          // line chart of sensors
+
 var menuDataHistory     // menu of data history
+var menuHealth;
 
 // --------------------------
 //  Birds
@@ -75,6 +77,7 @@ $(document).ready(function() {
 	initHealthCalendar();
 	lineChart = new UiLineChart();
 	menuDataHistory = new UiDataHistoryMenu();
+	menuHealth = new UiHealthMenu();
 
 	// MAIN MENU
 	jQuery.subscribe(MAINMENU_BEGIN, onMainMenuClick);
@@ -202,8 +205,8 @@ function init3d()
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
 	// STATS
-	stats = new Stats();
-	$("#state").append(stats.domElement);
+	//stats = new Stats();
+	//$("#state").append(stats.domElement);
 
 	// CONTROLS
 	controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -365,7 +368,7 @@ function animate()
 	requestAnimationFrame(animate);
 
 	render();
-	stats.update();
+	//stats.update();
 }
 
 function onDocumentMouseMove( event )
@@ -530,6 +533,8 @@ function onMainMenuClick(e)
 		if(mainmenu.currSelectDeviceMenuIdx == 0) {
 			// Device health
 			hideHealthCalendar();
+			// show menu
+			menuHealth.showMe();
 			// Set 3d scene
 			setScenePerspective(4);
 			// enter health mode
@@ -590,6 +595,7 @@ function onMainMenuChange(e)
 		case MAINMENU_DEVICE_LEAVE:
 			// Device health
 			hideHealthCalendar();
+			menuHealth.hideMe();
 			network.clearHealthGraph();
 			network.restoreNodes();
 
