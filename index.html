@@ -1,1002 +1,370 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>Tidmarsh Living Observatory - Viz</title>
-        <link rel="stylesheet" type="text/css" href="css/main.css" />
-        <link rel="stylesheet" type="text/css" href="css/gbtags.css" />
-        <link rel="stylesheet" type="text/css" href="css/slider_bar_date.css" />
-        <link rel="stylesheet" type="text/css" href="css/sensor_checkbox.css" />
-        <link rel="stylesheet" type="text/css" href="css/gmap_style.css" />
-	<link rel="stylesheet" type="text/css" href="css/loading.css" />
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Tidmarsh Living Observatory - Viz(3d)</title>
+	<link rel="stylesheet" type="text/css" href="scripts2/css/main.css" />
+	<link rel="stylesheet" type="text/css" href="scripts2/css/slider_bar_date.css" />
 	<link rel="stylesheet" type="text/css" href="css/datepicker.css"/>
-	<link href="css/normalize.css" rel="stylesheet" type="text/css"/>
-        <style type="text/css">
-		.stations, .stations svg {
-  			position: absolute;
-		}
-		
-		path {
-  			stroke: #000;
-		}
-		
-		circle {
-  			fill: #000;
-  			pointer-events: none;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="scripts2/css/loading.css"/>
+	<link rel="stylesheet" type="text/css" href="scripts2/css/loader2.css"/>
 </head>
 
 <body>
-    	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
-	<script src="libs/jquery-1.11.1.min.js"></script>
-	<script src="libs/jquery-ui.js"></script>
-	<script src="libs/tiny-pubsub.js"></script>
-	<script src="libs/d3.js"></script>
-        <script src="libs/blur.js"></script>
-        <script src="libs/jquery.flip.min.js"></script>
-        <script src="libs/spin.min.js"></script>
-        <script src="scripts/tidmarsh.js"></script>
-	<script src="scripts/global_vars.js"></script>
-	<script src="scripts/gmap_manager_d3.js"></script>
-	<script src="scripts/voronoi_geo.js"></script>
-        <script src="scripts/server_manager.js"></script>
-        <script src="scripts/ui_slider_bar.js"></script>
-        <script src="scripts/data_factory.js"></script>
-        <script src="scripts/windhistory_graph.js"></script>
-        <script src="scripts/gmap_ghost.js"></script>
-	<script src="scripts/opening_loader.js"></script>
-        <script>
-		var sManager;
-		var gMap;
-		
-		var selectDevice = null;
-		var selectSensor = null;
-		
-		// incoming message effect
-		var _animTimer = null;
-		var _incomingObj;
-		var _ghostList;
-		var _lastTarget;	// 最后一个动画的目标，保存device的title
-		var _sensorTable;
+<div id="playground"></div>
+<div id="map-canvas"></div>
+<!-- Node information panel -->
+<div id="info-panel"></div>
+<!-- Float on the Page -->
+<div id="intro"></div>
+<div id='bar'>
+	<div id="bar_line"></div>
+	<input id='slider_date' readonly></input>
+	<div id="slider_left_frame"></div>
+	<div id="slider_right_frame"></div>
+	<div id='slider'></div>
+</div>
+<div id="datepicker_cover"></div>
+<div id="datepicker">
+	<div id="datepicker_tip">Please pick up a date to explore.</div>
+</div>
+<div id="weather">
+	<div id="forecast">getting weather...</div>
+	<div id="sunrise_sunset"></div>
+</div>
+<div id="weather_big">
+	<div id="weather_big_temp">31</div>
+	<div id="weather_big_symbol">℉</div>
+	<div id="weather_big_state">Snow</div>
+</div>
+<!-- health graph -->
+<div id="health_calendar"></div>
+<div id="health_tooltip"></div>
+<div id="health_sensor">
+	<div id="health_sensor_date">DATE: 2015/1/29</div>
+	<div id="health_sensor_value">DEVICE HEALTH: 80%</div>
+	<div id="health_sensor_tips">Package number of different sensors per day:</div>
+</div>
+<div id="health_tip">You can click the node to see detail information. </div>
+<!-- sensor realtime -->
+<div id="realtime_tip">Waiting for incoming message:</div>
+<div id="realtime_message">0x8011 sht_temperature is 23.1 ℃ now</div>
+<div id="realtime_message_fault">Opps! The realtime websocket stream is closed! You can explore sensor data record.</div>
+<!-- sensor history -->
+<div id="chart_div"></div>
+<div id="history_tooltip">
+	<div id="h_tooltip_did">0x0811</div>
+	<div id="h_tooltip_result">illuminance: 42.12 lux</div>
+	<div id="h_tooltip_time">2015/1/28 下午2:48:16</div>
+</div>
+<div id="history_date_panel">
+	<div id="history_date_title">year month day</div>
+	<div id="history_date">2015.01.29</div>
+	<div id="history_date_tip">Click date to choose another one.</div>
+</div>
+<!-- main menu -->
+<div id="state"></div>
+<div id="mainmenu"></div>
+<div class="ajax-load-cover"></div>
+<div id="ajax-load">
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-bar"></div>
+	<div class="loading-text">loading...</div>
+</div>
+<div id="opening_loader" class='wrapper'><div id="a"/></div>
 
-                // loading animation
-                var _spinner;
-		var _counter;
-		var _counterIdx = 0;
-		var _counterTotal = 0;
-		var _counterInterval;
+<script src="./libs/three.min.js"></script>
+<script src="./libs/d3.js"></script>
+<script src="./libs/jquery-1.11.1.min.js"></script>
+<script src="./libs/jquery-ui.js"></script>
+<script src="./libs/tiny-pubsub.js"></script>
+<script src="./libs/EasePack.min.js"></script>
+<script src="./libs/TweenMax.min.js"></script>
+<script src="./libs/jquery.easing.min.js"></script>
+<script src="./libs/jQueryRotate.js"></script>
+<script src="./js/controls/OrbitControls.js"></script>
+<script src="./js/libs/stats.min.js"></script>
+<script src="./js/SimulationRenderer.js"></script>
+<script src="./js/loaders/ColladaLoader.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
 
-		var _sensorIdx = 0;
+<script src="./scripts2/view/Main.js"></script>
+<script src="./scripts2/view/WeatherEffect.js"></script>
+<script src="./scripts2/view/NodeNetwork.js"></script>
+<script src="./scripts2/view/SensorNode.js"></script>
+<script src="./scripts2/view/CalendarEffect.js"></script>
+<script src="./scripts2/global/CustomEvent.js"></script>
+<script src="./scripts2/global/Utils.js"></script>
+<script src="./scripts2/global/GraphConfig.js"></script>
+<script src="./scripts2/global/SiteConfig.js"></script>
+<script src="./scripts2/data/ChainManager.js"></script>
+<script src="./scripts2/data/DataFactory.js"></script>
+<script src="./scripts2/data/APManager.js"></script>
+<script src="./scripts2/controllers/UiSliderBar.js"></script>
+<script src="./scripts2/controllers/UiNodeInfoPanel.js"></script>
+<script src="./scripts2/controllers/UiMainMenu.js"></script>
+<script src="./scripts2/controllers/UiIntroPage.js"></script>
+<script src="./scripts2/controllers/UiHealthCalendar.js"></script>
+<script src="./scripts2/controllers/UiLineChart.js"></script>
+<script src="./scripts2/controllers/UiLoader2.js"></script>
+<script src="./scripts2/controllers/UiDataMenu.js"></script>
+<script src="./scripts2/controllers/UiHealthMenu.js"></script>
+<script src="./scripts/opening_loader.js"></script>
+<script src="./scripts2/global/GlobalVars.js"></script>
 
-		function initialize() 
-		{
-			// ui
-			$("#wgraphcontainer").on('click', onWGraphContainerClick);
-			// date picker
-			$("#datepicker").datepicker({
-				inline: true,
-				showOtherMonths: true,
-				dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-				onSelect: function(date) {
-					onSelectDate(date);
-				}
-			});
+<script>
+	// From d3-threeD.js
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+	 * You can obtain one at http://mozilla.org/MPL/2.0/. */
+	function d3threeD(exports) {
 
-			initSliderBar();
-			updateWindow();
+		const DEGS_TO_RADS = Math.PI / 180, UNIT_SIZE = 100;
 
-			jQuery.subscribe(SERVER_SUMMARY, onServerSummary);
-			jQuery.subscribe(SERVER_INIT, onServerInit);
-			jQuery.subscribe(SERVER_DEVICE_INIT, onServerDeviceInit);
-			sManager = new ServerManager("http://chain-api.media.mit.edu/devices/?site_id=7");
-			sManager.init();
-		}
-		window.onload = initialize;
+		const DIGIT_0 = 48, DIGIT_9 = 57, COMMA = 44, SPACE = 32, PERIOD = 46, MINUS = 45;
 
-		function onServerSummary(e, i)
-		{
-			_counterTotal = i.totalCount;
+		exports.transformSVGPath =
+			function transformSVGPath(pathStr) {
+				var path = new THREE.Shape();
 
-			_counterInterval = setInterval(function() {
-				var number = (_counterIdx / _counterTotal) * 100;
-				_counter.countUpTo(Math.round(number));
-			}, 800);
-		}
+				var idx = 1, len = pathStr.length, activeCmd,
+					x = 0, y = 0, nx = 0, ny = 0, firstX = null, firstY = null,
+					x1 = 0, x2 = 0, y1 = 0, y2 = 0,
+					rx = 0, ry = 0, xar = 0, laf = 0, sf = 0, cx, cy;
 
-		function onServerDeviceInit()
-		{
-			_counterIdx++;
-		}
-		
-		function onServerInit()
-		{
-			jQuery.unsubscribe(SERVER_SUMMARY, onServerSummary);
-			jQuery.unsubscribe(SERVER_INIT, onServerInit);
-			jQuery.unsubscribe(SERVER_DEVICE_INIT, onServerDeviceInit);
-
-			// stop update opening loader
-			clearInterval(_counterInterval);
-			_counter.countUpTo(99);
-			
-			$('#map-canvas').css('visibility', 'hidden');
-			jQuery.subscribe(GMAP_INIT, onGmapInit);
-			jQuery.subscribe(GMAP_INIT_SHOW, onGmapInitShow);	
-			var canvas = document.getElementById('map-canvas');
-			gMap = new MapManager(canvas);
-		}
-		
-		function onGmapInit() 
-		{
-			jQuery.unsubscribe(GMAP_INIT, onGmapInit);
-			jQuery.subscribe(GMAP_CLICK, onGmapClick);
-			jQuery.subscribe(GMAP_CIRCLE_CLICK, onGmapCircleClick)
-			gMap.initVGraph(sManager.devices);
-		}
-		
-		function onGmapInitShow()
-		{
-			jQuery.unsubscribe(GMAP_INIT_SHOW, onGmapInitShow);
-			
-			$('#map-canvas').css('visibility', 'visible');
-			$('#map-canvas').css('opacity', '0');
-			$("#map-canvas").animate({opacity:'1'}, 'slow', 'swing');
-			showUIMenu(true);
-                        showSensorTable(true);
-			
-			// initalize ghost list
-			_ghostList = new Array();
-			for(var i = 0; i < gMap.ghostNum; i++) {
-				var ghost = new GmapGhost(gMap._vertices[i]);
-				_ghostList.push(ghost);
-			}
-                        multiGhost();
-			
-			// initalize sensor table
-			_sensorTable = [{sid:'sht_temperature', flg:false},
-                                        {sid:'illuminance', flg:false},
-                                        {sid:'bmp_pressure', flg:false},
-                                        {sid:'sht_humidity', flg:false},
-                                        {sid:'battery_voltage', flg:false}];
-
-			// remove loading animation
-			$("#opening_loader").animate({opacity:0}, 'fast', function() {
-				$("#opening_loader").css("visibility", "hidden");
-			});
-
-			// 打开incoming message center
-                        _flgProcessing = false;
-			startGhost();
-			handleIncomingMessage();
-		}
-		
-		/////////////////////////////////////////////
-		// Incoming Message
-		/////////////////////////////////////////////
-		function handleIncomingMessage()
-		{
-			var websocket = new WebSocket('ws://chain-api.media.mit.edu/ws/site-7');
-       			websocket.onopen = function(evt) {
-            			console.log('onopen');
-       			};
-        		websocket.onclose = function(evt) {
-            			console.log('onclose');
-        		};
-        		websocket.onmessage = function(evt) {
-				//console.log(evt);
-                                if(gMap.state == 1 || gMap.state == 4 || gMap.state == 5 || gMap.state == 6) {
-                                        var tmpobj = $.parseJSON(evt.data);
-                                        var href = tmpobj['_links']['ch:sensor']['href'];
-                                        var iobj = sManager.getDeviceBySensor(href);
-                                        if(iobj != null) {
-                                                processMessage(iobj.did, iobj.sid, tmpobj.value);
-                                        }
-                                }
-        		};
-        		websocket.onerror = function(evt) {
-            			console.log('onerror');
-        		};
-		}
-		
-		function processMessage(did, sid, value) 
-		{
-			// 先找到空闲的ghost
-			var ghost = null;
-			for(var i = 0; i < _ghostList.length; i++)
-                        {
-				if(_ghostList[i].state != GHOST_STATE_ACTIVE && 
-					_ghostList[i].state != GHOST_STATE_DISABLE)
-                                {
-					ghost = _ghostList[i];
-					//break;
-				}
-			}
-			
-			//console.log(ghost);
-			if(ghost != null)
-                        {
-				if(_lastTarget != did)
-                                {
-					// filter sensor data
-					var over = true;
-					for(var j = 0; j < _sensorTable.length; j++) {
-                                                //console.log(sid + ", " + _sensorTable[j].sid );
-						if(sid == _sensorTable[j].sid) {
-							if(!_sensorTable[j].flg) {
-								_sensorTable[j].flg = true;
-                                                                over = false;
-							}
-							break;	
-						}
-					}
-					if(over) return;
-								
-					//console.log("****** " + over + ", " + did + ", " + sid );
-							
-					var conf = getConfigBySensor(sid);
-					var mstr = String(value.toFixed(2)) + conf.unit;
-					var testobj = {did:did, sid:sid, msg:mstr, value:value};
-					var _endX, _endY;
-					var isfind = false;
-										
-					// FOR TEST
-					for(var i = 0; i < gMap._verticeInfos.length; i++) {
-						if(gMap._verticeInfos[i].device.title == did) {
-							_endX = gMap._vertices[i][0] - 0.2;
-							_endY = gMap._vertices[i][1] - 0.2;
-							isfind = true;
+				function eatNum() {
+					var sidx, c, isFloat = false, s;
+					// eat delims
+					while (idx < len) {
+						c = pathStr.charCodeAt(idx);
+						if (c !== COMMA && c !== SPACE)
 							break;
-						}
+						idx++;
 					}
-								
-					if(isfind) {
-						//console.log(_endX + ", " + _endY);
-						ghost.active(_endX, _endY, testobj);	
-						_lastTarget = did;
-					}					
-				}
-			}
-				
-			// check sensor table 
-			var isfind = false;
-			for(var j = 0; j < _sensorTable.length; j++) {
-				if(!_sensorTable[j].flg) {
-					isfind = true;
-					break;	
-				}
-			}
-			// if can't find any available flag, restore table
-			if(!isfind) {
-				for(var j = 0; j < _sensorTable.length; j++) {
-					_sensorTable[j].flg = false;
-				}
-			}
-		}
+					if (c === MINUS)
+						sidx = idx++;
+					else
+						sidx = idx;
+					// eat number
+					while (idx < len) {
+						c = pathStr.charCodeAt(idx);
+						if (DIGIT_0 <= c && c <= DIGIT_9) {
+							idx++;
+							continue;
+						}
+						else if (c === PERIOD) {
+							idx++;
+							isFloat = true;
+							continue;
+						}
 
-                /////////////////////////////////////////////
-                // Loading Animation
-                /////////////////////////////////////////////
-                $(function()
-                {
-                        var opts = {
-                                lines: 13, // The number of lines to draw
-                                length: 13, // The length of each line
-                                width: 2, // The line thickness
-                                radius: 13, // The radius of the inner circle
-                                corners: 1, // Corner roundness (0..1)
-                                rotate: 0, // The rotation offset
-                                direction: 1, // 1: clockwise, -1: counterclockwise
-                                color: '#000', // #rgb or #rrggbb or array of colors
-                                speed: 1, // Rounds per second
-                                trail: 60, // Afterglow percentage
-                                shadow: false, // Whether to render a shadow
-                                hwaccel: false, // Whether to use hardware acceleration
-                                className: 'spinner', // The CSS class to assign to the spinner
-                                zIndex: 2e9, // The z-index (defaults to 2000000000)
-                                top: '50%', // Top position relative to parent
-                                left: '50%' // Left position relative to parent
-                        };
-                        var target = document.getElementById('loading-canvas');
-                        _spinner = new Spinner(opts).spin(target);
-                        showLoading(false);
-                });
+						s = pathStr.substring(sidx, idx);
+						return isFloat ? parseFloat(s) : parseInt(s);
+					}
 
-                function showLoading(flg)
-                {
-                        if(flg) {
-                                var target = document.getElementById('loading-canvas');
-                                _spinner.spin(target);
-                                $("#loading-canvas").css("visibility", "visible");
-                                $("#loading-canvas").css("opacity", 0);
-                                $("#loading-canvas").animate({opacity:1}, 'fast');
-                        } else {
-                                _spinner.stop();
-                                $("#loading-canvas").css("opacity", 1);
-                                $("#loading-canvas").animate({opacity:0}, 'slow', function() {
-                                        $("#loading-canvas").css("visibility", "hidden");
-                                });
-                        }
-                }
-
-                /////////////////////////////////////////////
-                // Checkbox of Sensors
-                /////////////////////////////////////////////
-                $(function()
-                {
-                        // adjust checkbox position
-                        var i = 0;
-                        $("#cbSensors div").each(function() {
-                                $(this).css('left', (138 * i) + 'px');
-                                $(this).css('top', 0 + 'px');
-                                $(this).css('color', '#ffffff');
-                                i++;
-                        });
-
-                        $("#cbSensors :checkbox").prop('checked', true);
-                        $("#cbSensors :checkbox").click(function() {
-                                var $this = $(this);
-
-                                // $this will contain a reference to the checkbox
-                                if ($this.is(':checked')) {
-                                        // added to sensor table
-                                        var isfind = false;
-                                        for(var i = 0; i < _sensorTable.length; i++) {
-                                                if(_sensorTable[i].sid == $this.attr('name')) {
-                                                        isfind = true;
-                                                        break;
-                                                }
-                                        }
-                                        if(!isfind) {
-                                                _sensorTable.push({sid:$this.attr('name'), flg:false});
-                                        }
-                                } else {
-                                        // remove from sensor table
-                                        for(var i = 0; i < _sensorTable.length; i++) {
-                                                if(_sensorTable[i].sid == $this.attr('name')) {
-                                                        _sensorTable.splice(i, 1);
-                                                        break;
-                                                }
-                                        }
-                                }
-                                _sensorIdx = 0;
-                        });
-                });
-
-		/////////////////////////////////////////////
-		// Menu
-		/////////////////////////////////////////////
-		$(function() 
-		{
-			$('dd').filter(':nth-child(n)').addClass('hidden');
-
-			$('dl').on('click', 'dt', function() {
-				$(this).next().slideDown(300).siblings('dd').slideUp(300);
-			});
-			
-			// default choose
-			$("#main_menu").find("svg").css("visibility", "hidden");
-			$("#menu_normal").find("svg").css("visibility", "visible");
-			$("#menu_03").next().slideDown(300).siblings('dd').slideUp(300);
-			
-			// menu click listener
-			$("#menu_temperature").on('click', onMenuClick);
-			$("#menu_illuminance").on('click', onMenuClick);
-			$("#menu_pressure").on('click', onMenuClick);
-			$("#menu_humidity").on('click', onMenuClick);
-			$("#menu_battery").on('click', onMenuClick);
-			$("#menu_awc").on('click', onMenuClick);
-			$("#menu_bird").on('click', onMenuClick);
-			$("#menu_normal").on('click', onMenuClick);
-			$("#menu_area").on('click', onMenuClick);
-			$("#menu_transmit").on('click', onMenuClick);
-                        $("#menu_health").on('click', onMenuClick);
-		});
-		
-		function onMenuClick(e) 
-		{
-			// menu indicator
-			$("#main_menu").find("svg").css("visibility", "hidden");
-			$(e.currentTarget).find("svg").css("visibility", "visible");
-			
-			switch(e.currentTarget.id)
-			{
-				case "menu_temperature":
-					selectSensor = 'sht_temperature';
-					getDevicesDataBySensorMenu();
-					break;
-				case "menu_illuminance":
-					selectSensor = 'illuminance';
-					getDevicesDataBySensorMenu();
-					break;
-				case "menu_pressure":
-					selectSensor = 'bmp_pressure';
-					getDevicesDataBySensorMenu();
-					break;
-				case "menu_humidity":
-					selectSensor = 'sht_humidity';
-					getDevicesDataBySensorMenu();
-					break;
-				case "menu_battery":
-					selectSensor = 'battery_voltage';
-					getDevicesDataBySensorMenu();
-					break;
-				case "menu_awc":
-					gMap.enterFarmMode();
-
-                                        $('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
-                                                $('#bar').css('visibility', 'hidden');
-                                        });
-                                        // 关闭tooltip
-                                        $('#map_tooltip').css('visibility', 'hidden');
-                                        // 显示sensor table菜单
-                                        showSensorTable(true);
-					break;
-				case "menu_bird":
-					gMap.exitFarmMode();
-					break;
-				case "menu_normal":
-					selectSensor = null;
-					$('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
-						$('#bar').css('visibility', 'hidden');
-					});
-					// 关闭tooltip
-					$('#map_tooltip').css('visibility', 'hidden');
-					// 隐藏日历
-					showCal(false);
-                                        // 显示sensor table菜单
-                                        showSensorTable(true);
-                                        // resotre sensor idx
-                                        _sensorIdx = 0;
-					
-					if(gMap.state != 1)
-						gMap.restoreVGraph(1);
-					break;
-				case "menu_area":
-					selectSensor = null;
-					$('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
-						$('#bar').css('visibility', 'hidden');
-					});
-					// 关闭tooltip
-					$('#map_tooltip').css('visibility', 'hidden');
-					// 停止ghost模式
-					stopGhost();
-					// 隐藏日历
-					showCal(false);
-                                        // 隐藏sensor table菜单
-                                        showSensorTable(false);
-
-                                        if(gMap.state != 3)
-						gMap.restoreVGraph(3);
-					break;
-				case "menu_transmit":
-					selectSensor = null;
-					$('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
-						$('#bar').css('visibility', 'hidden');
-					});
-					// 关闭tooltip
-					$('#map_tooltip').css('visibility', 'hidden');
-					// 隐藏日历
-					showCal(false);
-                                        // 显示sensor table菜单
-                                        showSensorTable(true);
-
-                                        if(gMap.state != 4)
-						gMap.restoreVGraph(4);
-					break;
-			}
-		}
-		
-		function getDevicesDataBySensorMenu()
-		{
-			// 停止ghost模式
-			stopGhost();
-			// 进入传感器模式
-                        gMap.restoreVGraph(2);
-                        // 隐藏sensor table菜单
-                        showSensorTable(false);
-
-			// 关闭tooltip
-			$('#map_tooltip').css('visibility', 'hidden');
-			
-			// 如果打开了wind history graph，关闭之
-			if($('#wgraphcontainer').css('visibility'))
-				onWGraphContainerClick();
-			
-			var arr = new Array();
-			for(var i = 0; i < sManager.devices.length; i++) {
-				arr.push(sManager.devices[i].title);
-			}
-			
-			jQuery.subscribe(SERVER_DEVICE_LIST_START, onDeviceData);
-			jQuery.subscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
-			sManager.fetchMultiDevicesByDate(arr, [selectSensor],
-				{year:sliderYear, month:sliderMonth, day:sliderDay, hour:0, minu:0, sec:0}, 
-				{year:sliderYear, month:sliderMonth, day:sliderDay, hour:23, minu:59, sec:59});
-		}
-		
-		function onDeviceData(e, i)
-		{
-			if(e.type == SERVER_DEVICE_LIST_START) {
-				// 开始载入数据集
-				jQuery.unsubscribe(SERVER_DEVICE_LIST_START, onDeviceData);
-				console.log("开始载入数据集!");
-				// 隐藏菜单
-				if($('#bar').css('visibility') != 'hidden') {
-					$('#bar').animate({bottom:'-100px'}, 'slow', 'swing', function() {
-						$('#bar').css('visibility', 'hidden');
-					});
-				}
-				// 隐藏日历
-				showCal(false);
-				showUIMenu(false);
-                                showLoading(true);
-			} else if(e.type == SERVER_DEVICE_LIST_COMPLETE) {
-				jQuery.unsubscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
-				console.log("数据集载入完毕!");
-				
-				// 显示菜单, 默认载入中午
-				updateSliderInfo(bar.offsetLeft + bar_line.offsetLeft + bar_line.offsetWidth/2, 0.5);
-				updateVGraphBySlider();
-				$('#bar').css('visibility', 'visible');
-				$('#bar').css('bottom', '-100px');
-				$('#bar').animate({bottom:'75px'}, 'slow', 'swing');
-				// 显示日历
-				showCal(true);
-				showUIMenu(true);
-                                showLoading(false);
-			}
-		}
-		
-		/////////////////////////////////////////////
-		// CLICK MAP CIRCLE
-		/////////////////////////////////////////////
-		function onGmapCircleClick(e, i)
-		{
-			if(gMap.state == 3) {
-				var did = i.cid.substr(0, i.cid.indexOf('_c'));
-				
-				if($('#map_tooltip').css('visibility') == 'hidden') {
-					$('#map_tooltip').css('left', i.px);
-					$('#map_tooltip').css('top', i.py);
-					$('#map_tooltip').css('visibility', 'visible');
-				}
-				$('#map_tooltip').animate({left:i.px+50, top:i.py-30, opacity:1})
-				$('#tooltip_did').text(did);
-				
-				// get lastest data
-				jQuery.subscribe(SERVER_LASTEST_DATA, onLastestData);
-				sManager.getLastestData(did);
-			}
-		}
-		
-		function onLastestData(e, i)
-		{
-			jQuery.unsubscribe(SERVER_LASTEST_DATA, onLastestData);
-			
-			var arr = i.arr;
-			// update tooltip
-			for(var k = 0; k < arr.length; k++) {
-				var sobj = arr[k];
-				var txt = sobj.value.toFixed(2) + " " + rollupUnit(sobj.unit);
-				var date = new Date(sobj.updated);
-				if(sobj.metric == 'sht_temperature') {
-					$('#tooltip_temperature').text("temperature: " + txt);
-					$('#tooltip_date').text("received date: " + date.toTimeString());
-				} else if(sobj.metric == 'bmp_pressure') {
-					$('#tooltip_pressure').text("pressure: " + txt);
-				} else if(sobj.metric == 'illuminance') {
-					$('#tooltip_illuminance').text("illuminance: " + txt);
-				} else if(sobj.metric == 'battery_voltage') {
-					$('#tooltip_battery').text("battery voltage: " + txt);
-				} else if(sobj.metric == 'sht_humidity') {
-					$('#tooltip_humidity').text("humidity: " + txt);
+					s = pathStr.substring(sidx);
+					return isFloat ? parseFloat(s) : parseInt(s);
 				}
 
-			}
-		}
-		
-		/////////////////////////////////////////////
-		// CLICK MAP - OPEN WIND HISTORY
-		/////////////////////////////////////////////
-		function onGmapClick(e, i)
-		{	
-			if(selectSensor == null)
-				return;
-			
-			// 记录选择的设备
-			selectDevice = i;
-				
-			// 显示图表
-			$("#wgraphcontainer").css("visibility", "visible");
-			$('#bar').css('visibility', 'hidden');
-			// 隐藏菜单
-			showUIMenu(false);
-			
-			var did = i;
-			var gwid = 400;
-			var ghei = 400;
-			var sw = window.innerWidth;
-			var sh = window.innerHeight;
-			d3.select("#wgraphcontainer")
-				.append("g")
-				.attr("id", selectSensor)
-  				.attr("transform", "scale(-1 0.5) translate(" + [-sw/2-gwid/2, 90] + ")")
-				.transition()
-				.duration(500)
-				.attr("transform", "scale(1 1) translate(" + [sw/2-gwid/2, 90] + ")");
-				
-			var st = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);
-			var ed = new Date(sliderYear, sliderMonth, sliderDay, 23, 59, 59);
-				
-			// 初始化wind history graph
-			var conf = getConfigBySensor(selectSensor);
-			var gra = new WindHistoryGraph(gwid, ghei, "#"+selectSensor, selectSensor, conf, st, ed);
-			gra.initGraphScale();
-				
-			// 绘制数据
-			var arr = sManager.fetchDataById(did, selectSensor);
-			gra.drawBigWindrose(arr);
-		}
-		
-		// wind history graph for a week
-		function onWeekWindhistoryGraph() 
-		{
-			if(selectSensor == null)
-				return;
-			
-			d3.select('#wgraphcontainer')
-				.selectAll('g')
-				.remove();
-				
-			// 显示图表
-			$("#wgraphcontainer").css("visibility", "visible");
-			$('#bar').css('visibility', 'hidden');
-			
-			var did = selectDevice;
-			var gwid = 200;
-			var ghei = 200;
-			var sw = window.innerWidth;
-			var sh = window.innerHeight;
-			
-			for(var i = 0; i < 7; i++) {
-				d3.select("#wgraphcontainer").append("g")
-					.attr("id", selectSensor + i.toString())
-					.attr("transform", "translate(" + [210 * i, sh/2-ghei/2] + ")");
-				
-				var st = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);
-				var ed = new Date(sliderYear, sliderMonth, sliderDay, 23, 59, 59);
-				
-				// 初始化wind history graph
-				var conf = getConfigBySensor(selectSensor);
-				var gra = new WindHistoryGraph(gwid, ghei, "#"+selectSensor+i.toString(), selectSensor, conf, st, ed);
-				gra.initGraphScale();
-				
-				// 绘制数据
-				var arr = sManager.fetchDataById(did, selectSensor);
-				gra.drawBigWindrose(arr);
-			}
-		}
-		
-		// click wind history graph container
-		function onWGraphContainerClick()
-		{		
-			var sw = window.innerWidth;
-			var sh = window.innerHeight;	
-			d3.select('#wgraphcontainer')
-				.select('g')
-				.transition()
-				.duration(800)
-				.attr("transform", "translate(" + [sw/2-200, 850] + ")")
-				.each("end", function() {
-					d3.select(this).remove();
-					$('#wgraphcontainer').css('visibility', 'hidden');
-					$('#bar').css('bottom', '-100px');
-					$('#bar').css('visibility', 'visible');
-					$('#bar').animate({bottom:'50px'}, 'slow', 'swing');
-					
-					// 显示菜单
-					showUIMenu(true);
-				});
-		}
-		
-		/////////////////////////////////////////////
-		// UI - ANIMATION
-		/////////////////////////////////////////////
-		function showUIMenu(flg)
-		{
-			if(flg) {
-				if($('#title').css('top') != '8px') {
-					$('#title').css('top', '-160px');
-					$('#title').animate({top:'8px'}, 'slow');
+				function nextIsNum() {
+					var c;
+					// do permanently eat any delims...
+					while (idx < len) {
+						c = pathStr.charCodeAt(idx);
+						if (c !== COMMA && c !== SPACE)
+							break;
+						idx++;
+					}
+					c = pathStr.charCodeAt(idx);
+					return (c === MINUS || (DIGIT_0 <= c && c <= DIGIT_9));
 				}
-				$('#main_menu').css('right', '-160px');
-				$('#main_menu').delay(300).animate({right:'0px'}, 'slow');
-				if($('#weather').css('bottom') == '-27px') {
-					$('#weather').css('bottom', '-27px');
-					$('#weather').delay(600).animate({bottom:'0px'}, 'slow');
+
+				var canRepeat;
+				activeCmd = pathStr[0];
+				while (idx <= len) {
+					canRepeat = true;
+					switch (activeCmd) {
+						// moveto commands, become lineto's if repeated
+						case 'M':
+							x = eatNum();
+							y = eatNum();
+							path.moveTo(x, y);
+							activeCmd = 'L';
+							firstX = x;
+							firstY = y;
+							break;
+						case 'm':
+							x += eatNum();
+							y += eatNum();
+							path.moveTo(x, y);
+							activeCmd = 'l';
+							firstX = x;
+							firstY = y;
+							break;
+						case 'Z':
+						case 'z':
+							canRepeat = false;
+							if (x !== firstX || y !== firstY)
+								path.lineTo(firstX, firstY);
+							break;
+						// - lines!
+						case 'L':
+						case 'H':
+						case 'V':
+							nx = (activeCmd === 'V') ? x : eatNum();
+							ny = (activeCmd === 'H') ? y : eatNum();
+							path.lineTo(nx, ny);
+							x = nx;
+							y = ny;
+							break;
+						case 'l':
+						case 'h':
+						case 'v':
+							nx = (activeCmd === 'v') ? x : (x + eatNum());
+							ny = (activeCmd === 'h') ? y : (y + eatNum());
+							path.lineTo(nx, ny);
+							x = nx;
+							y = ny;
+							break;
+						// - cubic bezier
+						case 'C':
+							x1 = eatNum(); y1 = eatNum();
+						case 'S':
+							if (activeCmd === 'S') {
+								x1 = 2 * x - x2; y1 = 2 * y - y2;
+							}
+							x2 = eatNum();
+							y2 = eatNum();
+							nx = eatNum();
+							ny = eatNum();
+							path.bezierCurveTo(x1, y1, x2, y2, nx, ny);
+							x = nx; y = ny;
+							break;
+						case 'c':
+							x1 = x + eatNum();
+							y1 = y + eatNum();
+						case 's':
+							if (activeCmd === 's') {
+								x1 = 2 * x - x2;
+								y1 = 2 * y - y2;
+							}
+							x2 = x + eatNum();
+							y2 = y + eatNum();
+							nx = x + eatNum();
+							ny = y + eatNum();
+							path.bezierCurveTo(x1, y1, x2, y2, nx, ny);
+							x = nx; y = ny;
+							break;
+						// - quadratic bezier
+						case 'Q':
+							x1 = eatNum(); y1 = eatNum();
+						case 'T':
+							if (activeCmd === 'T') {
+								x1 = 2 * x - x1;
+								y1 = 2 * y - y1;
+							}
+							nx = eatNum();
+							ny = eatNum();
+							path.quadraticCurveTo(x1, y1, nx, ny);
+							x = nx;
+							y = ny;
+							break;
+						case 'q':
+							x1 = x + eatNum();
+							y1 = y + eatNum();
+						case 't':
+							if (activeCmd === 't') {
+								x1 = 2 * x - x1;
+								y1 = 2 * y - y1;
+							}
+							nx = x + eatNum();
+							ny = y + eatNum();
+							path.quadraticCurveTo(x1, y1, nx, ny);
+							x = nx; y = ny;
+							break;
+						// - elliptical arc
+						case 'A':
+							rx = eatNum();
+							ry = eatNum();
+							xar = eatNum() * DEGS_TO_RADS;
+							laf = eatNum();
+							sf = eatNum();
+							nx = eatNum();
+							ny = eatNum();
+							if (rx !== ry) {
+								console.warn("Forcing elliptical arc to be a circular one :(",
+									rx, ry);
+							}
+							// SVG implementation notes does all the math for us! woo!
+							// http://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes
+							// step1, using x1 as x1'
+							x1 = Math.cos(xar) * (x - nx) / 2 + Math.sin(xar) * (y - ny) / 2;
+							y1 = -Math.sin(xar) * (x - nx) / 2 + Math.cos(xar) * (y - ny) / 2;
+							// step 2, using x2 as cx'
+							var norm = Math.sqrt(
+								(rx*rx * ry*ry - rx*rx * y1*y1 - ry*ry * x1*x1) /
+								(rx*rx * y1*y1 + ry*ry * x1*x1));
+							if (laf === sf)
+								norm = -norm;
+							x2 = norm * rx * y1 / ry;
+							y2 = norm * -ry * x1 / rx;
+							// step 3
+							cx = Math.cos(xar) * x2 - Math.sin(xar) * y2 + (x + nx) / 2;
+							cy = Math.sin(xar) * x2 + Math.cos(xar) * y2 + (y + ny) / 2;
+
+							var u = new THREE.Vector2(1, 0),
+								v = new THREE.Vector2((x1 - x2) / rx,
+									(y1 - y2) / ry);
+							var startAng = Math.acos(u.dot(v) / u.length() / v.length());
+							if (u.x * v.y - u.y * v.x < 0)
+								startAng = -startAng;
+
+							// we can reuse 'v' from start angle as our 'u' for delta angle
+							u.x = (-x1 - x2) / rx;
+							u.y = (-y1 - y2) / ry;
+
+							var deltaAng = Math.acos(v.dot(u) / v.length() / u.length());
+							// This normalization ends up making our curves fail to triangulate...
+							if (v.x * u.y - v.y * u.x < 0)
+								deltaAng = -deltaAng;
+							if (!sf && deltaAng > 0)
+								deltaAng -= Math.PI * 2;
+							if (sf && deltaAng < 0)
+								deltaAng += Math.PI * 2;
+
+							path.absarc(cx, cy, rx, startAng, startAng + deltaAng, sf);
+							x = nx;
+							y = ny;
+							break;
+						default:
+							throw new Error("weird path command: " + activeCmd);
+					}
+					// just reissue the command
+					if (canRepeat && nextIsNum())
+						continue;
+					activeCmd = pathStr[idx++];
 				}
-			} else {
-				$('#title').animate({top:'-160px'}, 'slow');
-				$('#main_menu').delay(300).animate({right:'-160px'}, 'slow');	
-				//$('#weather').delay(600).animate({bottom:'-27px'}, 'slow');
+
+				return path;
 			}
-		}
+	}
 
-                function showSensorTable(flg)
-                {
-                        if(flg) {
-                                $("#checkboxSensors").css("opacity", 0);
-                                $("#checkboxSensors").animate({opacity:1}, 'slow');
-                        } else {
-                                $("#checkboxSensors").css("opacity", 0);
-                        }
-                }
+	var $d3g = {};
+	d3threeD($d3g);
+</script>
 
-		function showCal(flg)
-		{
-			if(flg) {
-				var dwid = $('#datepicker').css('width');
-				$('#datepicker').css('visibility', 'visible');
-				$('#datepicker').css('left', '-'+dwid);
-				$('#datepicker').animate({left:'15px'}, 'slow', 'swing');
-			} else {
-				var dwid = $('#datepicker').css('width');
-				if($('#datepicker').css('visibility') != 'hidden') {
-					$('#datepicker').animate({left:'-'+dwid}, 'fast', 'swing', function() {
-						$('#datepicker').css('visibility', 'hidden');
-					});
-				}
-			}
-		}
-		
-		/////////////////////////////////////////////
-		// Incoming Message - ANIMATION
-		/////////////////////////////////////////////
-		function startGhost()
-		{
-			jQuery.subscribe(GHOST_ANIM_COMPLETE, onGhostAnim);
-			if(_animTimer == null)
-				_animTimer = setInterval(doCounter, 20);
-		}
-		
-		function stopGhost()
-		{
-			for(var i = 0; i < _ghostList.length; i++) {
-				if(_ghostList[i].state != GHOST_STATE_DISABLE)
-					_ghostList[i].sleep();
-			}
-			
-			// not use...
-			/*jQuery.unsubscribe(GHOST_ANIM_COMPLETE, onGhostAnim);
-			window.clearInterval(animTimer);
-			animTimer = null;*/
-		}
-		
-		function singleGhost()
-		{
-			for(var i = 1; i < _ghostList.length; i++) {
-				_ghostList[i].disable();
-			}
-		}
-		
-		function multiGhost()
-		{
-			for(var i = 1; i < _ghostList.length; i++) {
-				_ghostList[i].sleep();
-			}
-		}
-		
-		function doCounter() 
-		{
-			var allSleep = true;
-			for(var i = 0; i < _ghostList.length; i++) {
-				//if(_ghostList[i].state != GHOST_STATE_SLEEP) {
-					_ghostList[i].update();
-					allSleep = false;
-				//}
-			}
-			
-			// if all ghost sleep, do nothing...
-			if(!allSleep) {
-                                gMap._redraw();
-                        }
-		}
-		
-		function onGhostAnim(e, i) 
-		{
-			gMap.showIncomingMessage(i.did, i.sid, i.msg, i.value);
-		}
-		
-		/////////////////////////////////////////////
-		// SYSTEM EVENT - SIZE CHANGE
-		/////////////////////////////////////////////
-		function updateWindow()
-		{
-			var wid = $('#bar').css('width').replace('px', '');
-			var px = window.innerWidth / 2 - wid / 2;
-			$("#bar").css('left', px + 'px');
-		}
-		window.onresize = updateWindow;
-		
-		/////////////////////////////////////////////
-		// JUST FOR TEST 
-		/////////////////////////////////////////////
-		function onKeyboardDown()
-		{
-			// 返回键退出
-			if(d3.event.keyCode == 66) 	// B:
-			{
-                                simulateIncomingData();
-			}
-			else if(d3.event.keyCode == 67) 	// C: 
-			{
-				singleGhost();
-			}
-			else if(d3.event.keyCode == 68) 	// D: 
-			{
-				multiGhost();
-			}
-                        else if(d3.event.keyCode == 69)         // E:
-                        {
-                                if(gMap.state == 2) {
-                                        gMap.restoreVGraph(22);
-                                }
-                        }
-			else if(d3.event.keyCode == 73)	// I: 
-			{
-
-			}
-		}
-		d3.select("body").on("keydown", onKeyboardDown);
-
-                function simulateIncomingData()
-                {
-                        //console.log("wwwwww");
-                        // 模拟incoming message
-                        if(gMap.state == 1 || gMap.state == 4 || gMap.state == 5 || gMap.state == 6) {
-                                //var idx = getRandomInt(0, sManager.devices.length-1);
-                                //var device = sManager.devices[idx];
-                                //var sarr = ["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity", "battery_voltage"];
-                                //var iidx = getRandomInt(0, sarr.length-1);
-                                //console.log(_sensorIdx);
-                                var sid = _sensorTable[_sensorIdx].sid;
-                                var conf = getConfigBySensor(sid);
-                                var v = getRandomArbitrary(conf.min, conf.max);
-
-                                var iiidx = getRandomInt(0, gMap._verticeInfos.length-1);
-                                var devtitle = gMap._verticeInfos[iiidx].device.title;
-
-                                if(devtitle.indexOf('ghost') == -1) {
-                                        processMessage(devtitle, sid, v);
-
-                                        _sensorIdx++;
-                                        if(_sensorIdx == _sensorTable.length)
-                                                _sensorIdx = 0;
-                                }
-                        }
-                }
-		
-		function getRandomInt(min, max) 
-		{
-  			return Math.floor(Math.random() * (max - min)) + min;
-		}
-		
-		function getRandomArbitrary(min, max) 
-		{
-  			return Math.random() * (max - min) + min;
-		}
-	</script>
-        
-        <div id="map-canvas"></div>
-        <div id="map_tooltip">
-          <table width="100%" height="244" border="0" cellpadding="0" cellspacing="0">
-            <tr>
-              <td width="42%" rowspan="5" align="center" valign="bottom"><img src="images/sensor_photo_circle.png" width="100" height="100" /></td>
-              <td width="58%" height="22">&nbsp;</td>
-            </tr>
-            <tr>
-              <td valign="bottom" id="tooltip_temperature">temperature: </td>
-            </tr>
-            <tr>
-              <td valign="bottom" id="tooltip_illuminance">illuminance:</td>
-            </tr>
-            <tr>
-              <td valign="bottom" id="tooltip_pressure">pressure:</td>
-            </tr>
-            <tr>
-              <td height="31" valign="bottom" id="tooltip_humidity">humidity:</td>
-            </tr>
-            <tr>
-              <td width="42%" align="center" valign="bottom" id="tooltip_did">0x8110</td>
-              <td valign="bottom" id="tooltip_battery">battery voltage:</td>
-            </tr>
-            <tr>
-              <td width="42%" align="center" valign="middle">&nbsp;</td>
-              <td height="40">&nbsp;</td>
-            </tr>
-            <tr>
-              <td colspan="2" id="tooltip_date"> received date:</td>
-            </tr>
-          </table>
-	</div>
-        
-        <svg id="wgraphcontainer"></svg>
-	<div id="wgraphtooltip"><p><span id="value">100</span></p></div>
-
-        <div id="loading-canvas"></div>
-
-
-        <!-- Float on the Page -->
-        <div id='bar'>
-       	  	<div id="bar_line"></div>
-	  	<div id='slider'></div>
-         	<input id='slider_date' readonly></input>
-  		<div id="slider_left_frame"></div>
-		<div id="slider_right_frame"></div>
-	</div>
-        <div id="checkboxSensors">
-                <form id="cbSensors">
-                        <div class="squaredOne">
-                                <input type="checkbox" value="none" id="squaredOne" name="sht_temperature"/>
-                                <label for="squaredOne"></label>
-                                <span>temperature</span>
-                        </div>
-                        <div class="squaredTwo">
-                                <input type="checkbox" value="none" id="squaredTwo" name="illuminance"/>
-                                <label for="squaredTwo"></label>
-                                <span>illuminance</span>
-                        </div>
-                        <div class="squaredThree">
-                                <input type="checkbox" value="none" id="squaredThree" name="bmp_pressure"/>
-                                <label for="squaredThree"></label>
-                                <span>pressure</span>
-                        </div>
-                        <div class="squaredFour">
-                                <input type="checkbox" value="none" id="squaredFour" name="sht_humidity"/>
-                                <label for="squaredFour"></label>
-                                <span>humidity</span>
-                        </div>
-                        <div class="squaredFive">
-                                <input type="checkbox" value="none" id="squaredFive" name="battery_voltage"/>
-                                <label for="squaredFive"></label>
-                                <span>battery</span>
-                        </div>
-                </form>
-        </div>
-        
-        <div id="title">
-        	<h1>Tidmarsh </h1>
-        	<h1>Living </h1>
-        	<h1>Observatory</h1>
-    	</div>
-	<div id="datepicker"></div>
-	<div id="weather">
-		<div id="forecast">getting weather...</div>
-        	<div id="sunrise_sunset"></div>
-	</div>
-        <dl id="main_menu">
-		<dt id="menu_01">Sensors</dt>
-        	<dd>
-            		<div id="menu_temperature" class="sensor_menu"><svg class="menu_block"></svg>temperature</div>
-    			<div id="menu_illuminance" class="sensor_menu"><svg class="menu_block"></svg>illuminance</div>
-                        <div id="menu_pressure" class="sensor_menu"><svg class="menu_block"></svg>pressure</div>
-    			<div id="menu_humidity" class="sensor_menu"><svg class="menu_block"></svg>humidity</div>
-                  <div id="menu_battery" class="sensor_menu"><svg class="menu_block"></svg>battery</div>
-            	</dd>
-		<dt id="menu_02">Ecology</dt>
-		<dd>
-            		<div id="menu_awc" class="sensor_menu"><svg class="menu_block"></svg>awc</div>
-    			<!--<div id="menu_bird" class="sensor_menu"><svg class="menu_block"></svg>bird</div>-->
-            	</dd>
-		<dt id="menu_03">Network</dt>
-		<dd> 
-            		<div id="menu_normal" class="sensor_menu"><svg class="menu_block"></svg>normal</div>
-    			<div id="menu_area" class="sensor_menu"><svg class="menu_block"></svg>topology</div>
-    			<div id="menu_transmit" class="sensor_menu"><svg class="menu_block"></svg>transmit</div>
-                        <div id="menu_health" class="sensor_menu"><svg class="menu_block"></svg>health</div>
-		</dd>
-	</dl>
-
-	<div id="opening_loader" class='wrapper'><div id="a" /></div>
 </body>
 </html>
