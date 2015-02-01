@@ -76,7 +76,7 @@ $(document).ready(function() {
 	// INIT UI
 	initHealthCalendar();
 	lineChart = new UiLineChart();
-	menuData = new UiDataHistoryMenu();
+	menuData = new UiDataMenu();
 	menuHealth = new UiHealthMenu();
 
 	// MAIN MENU
@@ -499,7 +499,7 @@ function onMainMenuClick(e)
 
 		if(mainmenu.currSelectRH == 0) {
 			// Hide cal and dragbar
-			menuData.hideMe();
+			menuData.showMe(DATA_REALTIME_OPEN);
 			showDragBar(false);
 			// realtime
 			network.enterVoronoi("REALTIME");
@@ -508,7 +508,7 @@ function onMainMenuClick(e)
 			// 否则使用默认的日期
 			if(sliderYear == null) {
 				// menu
-				menuData.showMe("date_picker");
+				menuData.showMe(DATA_HISTORY_SELECT_DATE);
 			} else {
 				getDevicesDataBySensorMenu();
 			}
@@ -948,7 +948,7 @@ function onDeviceData(e, i)
 		//updateNetworkNode();
 
 		// 显示日历和拖动条
-		menuData.showMe("operate_tools");
+		menuData.showMe(DATA_HISTORY_EXPLORE);
 		showLineChart(true);
 		//showDragBar(true);
 		//showUIMenu(true);
@@ -1138,6 +1138,8 @@ function simulateIncomingData()
 	//network.updateNode(devtitle, now);
 
 	if(mainmenu.currSelectIdx == 3 && mainmenu.currSelectRH == 0) {
+		var str = devtitle + " " + sid + " is " + v.toFixed(2) + conf.unit + " now.";
+		menuData.showMe(DATA_REALTIME_OPEN, {message: str});
 		network.updateVoronoi(devtitle, sid, v, now);
 	}
 

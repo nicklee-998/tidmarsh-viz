@@ -471,7 +471,7 @@ NodeNetwork.prototype.createHealthGraph = function(csvfile)
 				self._healthTimeline.add(endmesh);
 			}
 			ground.add(self._healthTimeline);
-			TweenMax.from(self._healthTimeline.material, 0.8, {opacity:0, ease:Expo.easeOut});
+			//TweenMax.from(self._healthTimeline.material, 0.8, {opacity:0, ease:Expo.easeOut});
 
 
 			// Remove loading
@@ -841,9 +841,19 @@ NodeNetwork.prototype.openIncomingMessage = function()
 		this._siteWebsocket = new WebSocket('ws://chain-api.media.mit.edu/ws/site-7');
 		this._siteWebsocket.onopen = function(evt) {
 			console.log('tidmarsh site realtime message onopen');
+
+			// update menu
+			if(self._mode == self.NETWORK_MODE_VORONOI_REALTIME) {
+				menuData.showMe(DATA_REALTIME_OPEN, {message: ""});
+			}
 		};
 		this._siteWebsocket.onclose = function(evt) {
 			console.log('tidmarsh site realtime message onclose');
+
+			// update menu
+			if(self._mode == self.NETWORK_MODE_VORONOI_REALTIME) {
+				menuData.showMe(DATA_REALTIME_FAULT);
+			}
 		};
 		this._siteWebsocket.onmessage = function(evt) {
 			//console.log(evt);
@@ -868,6 +878,11 @@ NodeNetwork.prototype.openIncomingMessage = function()
 		};
 		this._siteWebsocket.onerror = function(evt) {
 			console.log('tidmarsh siste realtime message onerror');
+
+			// update menu
+			if(self._mode == self.NETWORK_MODE_VORONOI_REALTIME) {
+				menuData.showMe(DATA_REALTIME_FAULT);
+			}
 		};
 	}
 }
@@ -883,6 +898,13 @@ NodeNetwork.prototype.closeIncomingMessage = function()
 
 NodeNetwork.prototype.processMessage = function(did, sid, value, date)
 {
+	// update menu
+	if(this._mode == this.NETWORK_MODE_VORONOI_REALTIME) {
+		var conf = getConfigBySensor(sid);
+		var str = did + " " + sid + " is " + value.toFixed(2) + conf.unit + " now.";
+		menuData.showMe(DATA_REALTIME_OPEN, {message: str});
+	}
+
 	this.updateVoronoi(did, sid, value, date);
 }
 

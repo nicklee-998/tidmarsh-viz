@@ -1,12 +1,14 @@
 /**
  * Created by marian_mcpartland on 15/1/29.
  */
-function UiDataHistoryMenu()
+function UiDataMenu()
 {
 	this.visible = false;
 
 	this.dpLeft = 50;
 	this.dpTop = 280;
+
+	this._messageTop = parseInt($('#realtime_message').css("top"));
 
 	$("#datepicker").css("left", this.dpLeft);
 	$("#datepicker").css("top", this.dpTop);
@@ -29,27 +31,54 @@ function UiDataHistoryMenu()
 	var self = this;
 }
 
-UiDataHistoryMenu.prototype.showMe = function(mode)
+UiDataMenu.prototype.showMe = function(mode, params)
 {
-	if(mode == "date_picker") {
+	if(mode == DATA_REALTIME_OPEN) {
+		this._showRealtimeTip(true);
+		this._showRealtimeFaultTip(false);
+		this._showDate(false);
+		this._showCal(false);
+
+		if(params) {
+			$('#realtime_message').text(params.message);
+			$('#realtime_message').css("opacity", 0);
+			$('#realtime_message').css("top", this._messageTop + 10);
+			$('#realtime_message').animate({
+				top: this._messageTop,
+				opacity: 1
+			}, 700, 'easeOutQuint');
+		}
+
+	} else if(mode == DATA_REALTIME_FAULT) {
+		this._showRealtimeFaultTip(true);
+		this._showRealtimeTip(false);
+		this._showDate(false);
+		this._showCal(false);
+	} else if(mode == DATA_HISTORY_SELECT_DATE) {
 		this._showCal(true);
 		this._showDate(false);
-	} else if(mode == "operate_tools") {
+		this._showRealtimeTip(false);
+		this._showRealtimeFaultTip(false);
+	} else if(mode == DATA_HISTORY_EXPLORE) {
 		this._showCal(false);
 		this._showDate(true);
+		this._showRealtimeTip(false);
+		this._showRealtimeFaultTip(false);
 	}
 }
 
-UiDataHistoryMenu.prototype.hideMe = function()
+UiDataMenu.prototype.hideMe = function()
 {
 	this._showDate(false);
 	this._showCal(false);
+	this._showRealtimeTip(false);
+	this._showRealtimeFaultTip(false);
 }
 
 // ---------------------------------------------------
 //  Ui animation
 // ---------------------------------------------------
-UiDataHistoryMenu.prototype._showDate = function(flg)
+UiDataMenu.prototype._showDate = function(flg)
 {
 	if(flg) {
 		$('#history_date_panel').css('visibility', 'visible');
@@ -68,7 +97,7 @@ UiDataHistoryMenu.prototype._showDate = function(flg)
 	}
 }
 
-UiDataHistoryMenu.prototype._showCal = function(flg)
+UiDataMenu.prototype._showCal = function(flg)
 {
 	if(flg) {
 		// cover
@@ -96,6 +125,60 @@ UiDataHistoryMenu.prototype._showCal = function(flg)
 				top: '-120px'
 			}, 800, 'easeOutQuint', function() {
 				$('#datepicker').css('visibility', 'hidden');
+			});
+		}
+	}
+}
+
+UiDataMenu.prototype._showRealtimeTip = function(flg)
+{
+	if(flg) {
+		if($('#realtime_tip').css('visibility') != 'visible') {
+			$('#realtime_tip').css('visibility', 'visible');
+			$('#realtime_tip').css('opacity', 0);
+			$('#realtime_tip').animate({
+				opacity: 1
+			}, 500, 'easeOutQuint');
+
+			$('#realtime_message').css('visibility', 'visible');
+			$('#realtime_message').css('opacity', 0);
+			$('#realtime_message').animate({
+				opacity: 1
+			}, 500, 'easeOutQuint');
+		}
+	} else {
+		if($('#realtime_tip').css('visibility') != 'hidden') {
+			$('#realtime_tip').animate({
+				opacity: 0
+			}, 500, 'easeOutQuint', function() {
+				$('#realtime_tip').css('visibility', 'hidden');
+			});
+
+			$('#realtime_message').animate({
+				opacity: 0
+			}, 500, 'easeOutQuint', function() {
+				$('#realtime_message').css('visibility', 'hidden');
+			});
+		}
+	}
+}
+
+UiDataMenu.prototype._showRealtimeFaultTip = function(flg)
+{
+	if(flg) {
+		if($('#realtime_message_fault').css('visibility') != 'visible') {
+			$('#realtime_message_fault').css('visibility', 'visible');
+			$('#realtime_message_fault').css('opacity', 0);
+			$('#realtime_message_fault').animate({
+				opacity: 1
+			}, 500, 'easeOutQuint');
+		}
+	} else {
+		if($('#realtime_message_fault').css('visibility') != 'hidden') {
+			$('#realtime_message_fault').animate({
+				opacity: 0
+			}, 500, 'easeOutQuint', function() {
+				$('#realtime_message_fault').css('visibility', 'hidden');
 			});
 		}
 	}
