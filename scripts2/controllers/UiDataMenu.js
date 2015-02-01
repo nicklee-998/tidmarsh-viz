@@ -17,6 +17,8 @@ function UiDataMenu()
 	$("#datepicker_cover").css('width', '100%');
 	$("#datepicker_cover").css('height', '100%');
 
+	$("#realtime_message").text("");
+
 	$("#history_date").click(function() {
 
 		// Click date, show calendar to select the date
