@@ -1,14 +1,25 @@
 /**
  * Created by marian_mcpartland on 14/12/15.
+ *
+ * 说明：
+ *
+ * 1. 设备类型定义请搜索：'Device Object Definition'
  */
 function NodeNetwork()
 {
+	// ------------------------------------------
+	//  Public Variables
+	// ------------------------------------------
+
 	// Mode
 	this.NETWORK_MODE_NONE = "network_mode_none";
 	this.NETWORK_MODE_NORMAL = "network_mode_normal";
 	this.NETWORK_MODE_VORONOI_REALTIME = "network_mode_voronoi_realtime";
 	this.NETWORK_MODE_VORONOI_HISTORY = "network_mode_voronoi_history";
 	this.NETWORK_MODE_HEALTH = "network_mode_health";
+
+	// Mouse Interaction
+	this.disableMouseEvent = false;         // 是否禁止鼠标交互
 
 	this._mode = this.NETWORK_MODE_NONE;
 
@@ -20,6 +31,11 @@ function NodeNetwork()
 	// Voronoi
 	this.vertices;
 	this._voronoiContainer;
+	this._voronoiLabelContainer;
+	// cell label text
+	this._cellLabelTextFontSize = 30;
+	this._cellLabelTextColor = {r:70, g:70, b:70, a:0.7};
+	this._cellLabelTextWidth;
 
 	// Health Graph
 	this._healthDateLayers = null;
@@ -180,7 +196,19 @@ NodeNetwork.prototype.createDevice = function(dInfo)
 	box.rotation.x -= Math.PI / 2;
 	box.rotation.z = -Math.PI;
 	box.name = dInfo.title;
-	this.devices.push({type: "cell", mesh: box, node:node, healthBoxes:new Array(), id: dInfo.title, cell: null});
+
+	// ---------------------------------
+	//  Device Object Definition
+	// ---------------------------------
+	this.devices.push({
+		type: "cell",                   // 该设备的类型：'cell'表示实际的node，‘blank’表示假的node（用于填充vgraph用）
+		mesh: box,                      // 该设备的模型（目前为cylinder），node中包含同样的链接
+		node:node,                      // 该设备的模型（SensorNode Class）
+		healthBoxes:new Array(),        // 该设备的health shape，每天一个
+		id: dInfo.title,                // 该设备Id
+		cell: null,                     // voronoi graph中该设备对应的shape
+		cellLabel: null                 // voronoi graph中该设备对应shape的提示sprite
+	});
 	this.deviceBoxes.push(box);
 	// todo:
 	//if(dInfo.lastUpdated != null) {
@@ -219,7 +247,15 @@ NodeNetwork.prototype.createFakeDevices = function()
 				box.position.y = -(py - groundHei / 2);
 				box.position.z = 8;
 				box.rotation.x = -Math.PI / 2;
-				this.devices.push({type: "blank", mesh: box, node:null, id: "blank"+i, cell: null});
+				this.devices.push({
+					type: "blank",
+					mesh: box,
+					node: null,
+					healthBoxes: null,
+					id: "blank"+i,
+					cell: null,
+					cellLabel: null
+				});
 				//ground.add(box);
 				//this.growAnimation(box);
 
@@ -900,6 +936,11 @@ NodeNetwork.prototype.createVoronoi = function()
 	//this._voronoiContainer.position.y = groundZero;
 	scene.add(this._voronoiContainer);
 
+	// create voronoi label container
+	this._voronoiLabelContainer = new THREE.Object3D();
+	this._voronoiLabelContainer.rotation.x -= Math.PI / 2;
+	scene.add(this._voronoiLabelContainer);
+
 	len = thePaths.length;
 	for (i = 0; i < len; ++i) {
 		var device = this.getDeviceByPoint(theVertices[i]);
@@ -933,16 +974,50 @@ NodeNetwork.prototype.createVoronoi = function()
 			});
 			mesh = new THREE.Mesh(shape3d, material);
 			//mesh.rotation.x = -Math.PI / 2;
-			mesh.translateZ( groundZero);
 			mesh.translateX( - theCenter.x);
 			mesh.translateY( - theCenter.y);
+			mesh.translateZ( groundZero);
 			mesh.name = "voronoi_" + device.id;
 			mesh.visible = false;
 			this._voronoiContainer.add(mesh);
 
+			// -----------------------------------
+			//  Mesh label
+			// -----------------------------------
+			var canvas = document.createElement('canvas');
+			var context = canvas.getContext('2d');
+			context.font = "Bold " + this._cellLabelTextFontSize + "px Arial";
+
+			// get size data (height depends only on font size)
+			var metrics = context.measureText( "23.0000 lux" );
+			this._cellLabelTextWidth = metrics.width;
+
+			// text color
+			context.fillStyle = "rgba(" + this._cellLabelTextColor.r + "," + this._cellLabelTextColor.g + "," + this._cellLabelTextColor.b + "," + this._cellLabelTextColor.a + ")";
+			context.fillText( "23 x", this._cellLabelTextWidth / 2, 95);
+
+			var texture = new THREE.Texture(canvas);
+			texture.needsUpdate = true;
+
+			var spriteMaterial = new THREE.SpriteMaterial({
+				map: texture
+			});
+			var meshLabel = new THREE.Sprite(spriteMaterial);
+			meshLabel.translateX(device.mesh.position.x);
+			meshLabel.translateY(device.mesh.position.y);
+			meshLabel.translateZ(groundZero);
+			meshLabel.visible = false;
+			meshLabel.scale.set( this._cellLabelTextWidth, this._cellLabelTextWidth / 2, 1 );
+
+			// TODO: find some best way to handle blank cell
+			if(device.type != "blank") {
+				this._voronoiLabelContainer.add(meshLabel);
+			}
+
 			// 将cell加入到device的信息中
 			if(j == 0) {
 				device.cell = mesh;
+				device.cellLabel = meshLabel;
 			}
 		}
 	}
@@ -990,8 +1065,25 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value, date)
 			device.cell.position.z = ground.position.y + 3;
 			TweenMax.to(device.cell.scale, 0.5, {z:mobj.height, ease:Elastic.easeOut});
 
+			// 显示数量提示符
+			if(device.cellLabel != null) {
+				device.cellLabel.visible = true;
+
+				var context = device.cellLabel.material.map.image.getContext('2d');
+				device.cellLabel.material.map.needsUpdate = true;
+				context.clearRect(0, 0, this._cellLabelTextWidth * 2, this._cellLabelTextWidth * 2);
+				context.font = "Bold " + this._cellLabelTextFontSize + "px Arial";
+				context.fillStyle = "rgba(" + this._cellLabelTextColor.r + "," + this._cellLabelTextColor.g + "," + this._cellLabelTextColor.b + "," + this._cellLabelTextColor.a + ")";
+				context.fillText( value.toFixed(2) + mobj.unit, this._cellLabelTextWidth / 2, 95);
+
+				device.cellLabel.position.z = ground.position.y + 13 + mobj.height;
+			}
+
 		} else {
 			device.cell.visible = false;
+			if(device.cellLabel != null) {
+				device.cellLabel.visible = false;
+			}
 		}
 	}
 
@@ -1006,11 +1098,17 @@ NodeNetwork.prototype.clearVoronoi = function(isAnim)
 
 		if(isAnim) {
 			device.cell.visible = false;
+			if(device.cellLabel != null) {
+				device.cellLabel.visible = false;
+			}
 			//TweenMax.to(device.cell.scale, 0.2, {z:0.001, ease:Expo.easeOut, onComplete:function() {
 			//	device.cell.visible = false;
 			//}});
 		} else {
 			device.cell.visible = false;
+			if(device.cellLabel != null) {
+				device.cellLabel.visible = false;
+			}
 		}
 	}
 }
@@ -1070,6 +1168,11 @@ NodeNetwork.prototype.getDeviceById = function(did)
 //---------------------------------------------------------
 NodeNetwork.prototype.render = function(mx, my)
 {
+	// 如果禁止鼠标事件，不做下面的事情
+	if(this.disableMouseEvent) {
+		return;
+	}
+
 	// find intersections
 	var vector = new THREE.Vector3(mx, my, 1).unproject(camera);
 	this._raycaster.set(camera.position, vector.sub(camera.position).normalize());
@@ -1303,10 +1406,11 @@ NodeNetwork.prototype.getMeshConf = function(sensorid, value)
 		.range([c1, c2])
 		.interpolate(d3.interpolateHsl);
 
-	// Can't set the range minum to 0, cause some bug
+	// Can't set the range min to 0, cause some bug
+	// TODO: 13 should from SensorNode Class
 	var valueScale = d3.scale.linear()
 		.domain([conf.min, conf.max])
-		.range([0.1, 100]);
+		.range([13, 100]);
 
 	var obj = {color: valueToColorScale(value), height: valueScale(value), unit: conf.unit, title: conf.title};
 

@@ -93,11 +93,11 @@ function getConfigBySensor(sname)
 			config.max = 8;
 			config.avg = 5;
 			config.step = 2;
-			config.hueL = 145;
-			config.hueR = 145;
-			config.saturationL = 30;
+			config.hueL = 120;
+			config.hueR = 120;
+			config.saturationL = 60;
 			config.saturationR = 70;
-			config.lightnessL = 85;
+			config.lightnessL = 60;
 			config.lightnessR = 38;
 			config.unit = "V";
 			break;

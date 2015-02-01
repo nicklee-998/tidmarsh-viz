@@ -52,7 +52,7 @@ var sensorColorTable = ["#E77227", "#D81E00", "#E445BA", "#3242DF", "#57C66C"];
 // --------------------------
 var lineChart;          // line chart of sensors
 
-var menuDataHistory     // menu of data history
+var menuData;           // menu of data history
 var menuHealth;
 
 // --------------------------
@@ -76,7 +76,7 @@ $(document).ready(function() {
 	// INIT UI
 	initHealthCalendar();
 	lineChart = new UiLineChart();
-	menuDataHistory = new UiDataHistoryMenu();
+	menuData = new UiDataHistoryMenu();
 	menuHealth = new UiHealthMenu();
 
 	// MAIN MENU
@@ -499,7 +499,7 @@ function onMainMenuClick(e)
 
 		if(mainmenu.currSelectRH == 0) {
 			// Hide cal and dragbar
-			menuDataHistory.hideMe();
+			menuData.hideMe();
 			showDragBar(false);
 			// realtime
 			network.enterVoronoi("REALTIME");
@@ -508,7 +508,7 @@ function onMainMenuClick(e)
 			// 否则使用默认的日期
 			if(sliderYear == null) {
 				// menu
-				menuDataHistory.showMe("date_picker");
+				menuData.showMe("date_picker");
 			} else {
 				getDevicesDataBySensorMenu();
 			}
@@ -585,7 +585,7 @@ function onMainMenuChange(e)
 			network.closeIncomingMessage();
 			network.clearVoronoi(true);
 			// Hide cal and dragbar
-			menuDataHistory.hideMe();
+			menuData.hideMe();
 			showDragBar(false);
 			showLineChart(false);
 			// Restore to realtime mode
@@ -900,8 +900,10 @@ function showLineChart(flg)
 function getDevicesDataBySensorMenu()
 {
 	// Hide cal and dragbar
-	menuDataHistory.hideMe();
+	menuData.hideMe();
 	showDragBar(false);
+	// disable mouse event
+	network.disableMouseEvent = true;
 
 	var arr = new Array();
 	for(var i = 0; i < chainManager.devices.length; i++) {
@@ -924,7 +926,7 @@ function onDeviceData(e, i)
 		console.log("开始载入数据集!");
 
 		// 隐藏日历
-		menuDataHistory.hideMe();
+		menuData.hideMe();
 		showLineChart(false);
 		//showUIMenu(false);
 
@@ -946,13 +948,15 @@ function onDeviceData(e, i)
 		//updateNetworkNode();
 
 		// 显示日历和拖动条
-		menuDataHistory.showMe("operate_tools");
+		menuData.showMe("operate_tools");
 		showLineChart(true);
 		//showDragBar(true);
 		//showUIMenu(true);
 
 		// 隐藏loader
 		loader2end();
+		// 打开鼠标事件
+		network.disableMouseEvent = false;
 
 		// 显示当前时间
 		var datestr = sliderYear + "." + (sliderMonth + 1) + "." + sliderDay;
@@ -1131,9 +1135,11 @@ function simulateIncomingData()
 	var devtitle = chainManager.devices[iiidx].title;
 
 	var now = new Date();
-	network.updateNode(devtitle, now);
+	//network.updateNode(devtitle, now);
 
-	//processMessage(devtitle, sid, v, new Date());
+	if(mainmenu.currSelectIdx == 3 && mainmenu.currSelectRH == 0) {
+		network.updateVoronoi(devtitle, sid, v, now);
+	}
 
 	_sensorIdx++;
 	if(_sensorIdx == sarr.length) {
