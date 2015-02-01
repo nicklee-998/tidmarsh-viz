@@ -589,30 +589,7 @@ NodeNetwork.prototype.createHealthGraph = function(csvfile)
 			}
 
 			var obj = d[i];
-			var arr = new Array();
-			var health = 0;
-			for(value in obj) {
-				if(value == "did" || value.indexOf("date") != -1 || value == "charge_flags_charge" || value == "charge_flags_fault") {
-					continue;
-				} else {
-					var val = parseInt(obj[value]);
-					if(val == -999) {
-						continue;
-					} else {
-						// fixme: 4320 is the message ratio, it's hard code right now
-						var f = val / 4320;
-						arr.push(f);
-					}
-					//console.log(value + ", " + obj[value]);
-				}
-			}
-
-			// calculate health
-			var total = 0;
-			for(index in arr) {
-				total += arr[index];
-			}
-			health = total / arr.length;
+			var health = caculateHealthFromCSV(obj);
 			//console.log("health = " + health);
 
 			if(health != 0) {

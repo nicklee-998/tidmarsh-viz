@@ -151,24 +151,21 @@ function initHealthCalendar()
 				var idx = parseInt(str.substring(4));
 				//console.log(calendarCsv[idx]);
 
-				var arr = new Array();
-				var arr2 = new Array();
 				var obj = calendarCsv[idx];
+				var arr = new Array();
 				var total = 0;
-				var date;
-				for (value in obj) {
-					if (value == "did" ||
-						value.indexOf("wind_direction") != -1 ||
-						value.indexOf("wind_speed") != -1 ||
-						value.indexOf("solar_voltage") != -1 ||
-						value.indexOf("charge_flags_charge") != -1 ||
-						value.indexOf("charge_flags_fault") != -1) {
-						//console.log(value + ", " + obj[value]);
-						continue;
+				var date, value;
 
-					} else if(value.indexOf("date") != -1) {
-						date = new Date(obj[value]);
-					} else {
+				for (value in obj) {
+
+					if(value.indexOf("sht_temperature") != -1 ||
+						value.indexOf("bmp_temperature") != -1 ||
+						value.indexOf("illuminance") != -1 ||
+						value.indexOf("bmp_pressure") != -1 ||
+						value.indexOf("sht_humidity") != -1 ||
+						value.indexOf("battery_voltage") != -1) {
+
+						// for bar graph
 						var val = parseInt(obj[value]);
 						if (val == -999) {
 							val = 0;
@@ -176,18 +173,13 @@ function initHealthCalendar()
 						total += val;
 						arr.push({label:value, value:val});
 
-						// fixme: 4320 is the message ratio, it's hard code right now
-						var f = val / 4320;
-						arr2.push(f);
+					} else if(value.indexOf("date") != -1) {
+
+						date = new Date(obj[value]);
 					}
 				}
 
-				// calculate health
-				var tol = 0;
-				for(index in arr2) {
-					tol += arr2[index];
-				}
-				var health = tol / arr2.length * 100;
+				var health = caculateHealthFromCSV(obj) * 100;
 
 				$("#health_sensor_date").text("DATE: " + date.toLocaleDateString());
 				$("#health_sensor_value").text("DEVICE HEALTH: " + health.toFixed(2) + "%");
@@ -524,38 +516,8 @@ function setHealthCalendar(csvfile)
 			.attr("fill", function (d, i) {
 
 				var obj = csv[idx];
-				var arr = new Array();
-				var health = 0;
-				for (value in obj) {
-					if (value == "did" ||
-						value.indexOf("date") != -1 ||
-						value.indexOf("charge_flags_charge") != -1 ||
-						value.indexOf("charge_flags_fault") != -1) {
-						//console.log(value + ", " + obj[value]);
-						continue;
-
-					} else {
-						var val = parseInt(obj[value]);
-						if (val == -999) {
-							continue;
-						} else {
-							// fixme: 4320 is the message ratio, it's hard code right now
-							var f = val / 4320;
-							arr.push(f);
-						}
-						//console.log(value + ", " + obj[value]);
-					}
-				}
-
-				// calculate health
-				var total = 0;
-				for (index in arr) {
-					total += arr[index];
-				}
-				health = total / arr.length;
-
+				var health = caculateHealthFromCSV(obj);
 				var hColor = valueToColorScale(health);
-
 				idx++;
 
 				return hColor;

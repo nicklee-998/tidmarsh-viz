@@ -146,7 +146,7 @@
 		// --------------------------------------------------------
 		var arr = new Array();
 		//for(var i = 0; i < devices.length; i++) {
-		for(var i = 0; i < 20; i++) {
+		for(var i = 55; i < devices.length; i++) {
 			arr.push(devices[i].title);
 		}
 		fetchMultiDevicesByDate(arr, [
@@ -297,7 +297,7 @@
 	function _onDayComplete()
 	{
 		allYearData.push(oneDayData);
-		console.log(oneDayData);
+		//console.log(oneDayData);
 
 		// Progress Bar
 		var progstr = "Progress: " + oneDayData.did + " | " + (_loadIdx3 + 1) + "/" + _daylist.length + " @" + oneDayData.date;
@@ -461,13 +461,16 @@
 		if(dataset.length >= 2) {
 
 			for(var i = 0; i < dataset.length; i+=2) {
-				var start = new Date(dataset[i].timestamp);
-				var end = new Date(dataset[i+1].timestamp);
-				var diff = parseInt((end.getTime() - start.getTime()) / parseInt(1000));
 
-				if(diff == 20 || diff == 30) {
-					rate = diff;
-					break;
+				if((i+1) < dataset.length) {
+					var start = new Date(dataset[i].timestamp);
+					var end = new Date(dataset[i+1].timestamp);
+					var diff = parseInt((end.getTime() - start.getTime()) / parseInt(1000));
+
+					if(diff == 20 || diff == 30) {
+						rate = diff;
+						break;
+					}
 				}
 			}
 		}

@@ -35,13 +35,27 @@ function APManager()
 	this._raycaster = new THREE.Raycaster();
 	this._intersected = null;
 
-	document.addEventListener( 'mouseup', function() {
+	this._origX;
+	this._origY;
+	document.addEventListener("mousedown", function(e) {
+		self._origX = e.x;
+		self._origY = e.y;
+	});
 
-		if(self._isTreeMouseOver) {
-			window.open("http://tidmarshfarms.com/",'_blank');
-		} else if(self._isMorphMouseOver) {
-			window.open("http://ebird.org/ebird/hotspot/L908623",'_blank');
+	document.addEventListener( 'mouseup', function(e) {
+
+		var dist = lineDistance({x: self._origX, y: self._origY}, {x: e.x, y: e.y});
+
+		// It means click
+		if(dist < 10) {
+			if(self._isTreeMouseOver) {
+				window.open("http://tidmarshfarms.com/",'_blank');
+			} else if(self._isMorphMouseOver) {
+				window.open("http://ebird.org/ebird/hotspot/L908623",'_blank');
+			}
 		}
+
+
 	});
 
 	var self = this;
