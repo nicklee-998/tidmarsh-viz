@@ -821,15 +821,8 @@ NodeNetwork.prototype.openIncomingMessage = function()
 
 			// update menu
 			if(self._mode == self.NETWORK_MODE_VORONOI_REALTIME) {
+				menuData.flashWaitMessageLabel(true);
 				menuData.showMe(DATA_REALTIME_OPEN, {message: ""});
-			}
-		};
-		this._siteWebsocket.onclose = function(evt) {
-			console.log('tidmarsh site realtime message onclose');
-
-			// update menu
-			if(self._mode == self.NETWORK_MODE_VORONOI_REALTIME) {
-				menuData.showMe(DATA_REALTIME_FAULT);
 			}
 		};
 		this._siteWebsocket.onmessage = function(evt) {
@@ -845,6 +838,9 @@ NodeNetwork.prototype.openIncomingMessage = function()
 
 			} else if(self._mode == self.NETWORK_MODE_VORONOI_REALTIME) {
 
+				// Stop flashing
+				menuData.flashWaitMessageLabel(false);
+
 				if(iobj != null) {
 					if(iobj.sid == sensorTable[mainmenu.currSelectSensorIdx]) {
 						//console.log(iobj.did + ", " + iobj.sid + ", " + tmpobj.value);
@@ -853,11 +849,27 @@ NodeNetwork.prototype.openIncomingMessage = function()
 				}
 			}
 		};
-		this._siteWebsocket.onerror = function(evt) {
-			console.log('tidmarsh siste realtime message onerror');
+		this._siteWebsocket.onclose = function(evt) {
+			console.log('tidmarsh site realtime message onclose');
+
+			self._siteWebsocket = null;
 
 			// update menu
 			if(self._mode == self.NETWORK_MODE_VORONOI_REALTIME) {
+				// Stop flashing
+				menuData.flashWaitMessageLabel(false);
+				menuData.showMe(DATA_REALTIME_FAULT);
+			}
+		};
+		this._siteWebsocket.onerror = function(evt) {
+			console.log('tidmarsh siste realtime message onerror');
+
+			self._siteWebsocket = null;
+
+			// update menu
+			if(self._mode == self.NETWORK_MODE_VORONOI_REALTIME) {
+				// Stop flashing
+				menuData.flashWaitMessageLabel(false);
 				menuData.showMe(DATA_REALTIME_FAULT);
 			}
 		};

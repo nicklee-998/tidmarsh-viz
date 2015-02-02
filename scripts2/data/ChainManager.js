@@ -1,5 +1,10 @@
 /**
  * Created by marian_mcpartland on 14/12/15.
+ *
+ *  * 说明：
+ *
+ * 1. Device数据类型定义请搜索：'Device Object Definition'
+ * 2. Sesnor数据类型定义请搜索：'Sensor Object Definition'
  */
 function ChainManager(url)
 {
@@ -69,7 +74,7 @@ ChainManager.prototype.init = function()
 
 	$.getJSON(this.websiteUrl, function(dat) {
 		// ------------------------------
-		// Send device summary event
+		//  Send device summary event
 		// ------------------------------
 		jQuery.publish(SERVER_SUMMARY_COMPLETE, {totalCount:dat.totalCount});
 
@@ -99,6 +104,9 @@ ChainManager.prototype._getAllDeviceInfo = function()
 	var self = this;
 	var device = this.devices[this._loadIdx];
 	$.getJSON(device.href, function(dat) {
+		// ---------------------------------
+		//  Device Object Definition
+		// ---------------------------------
 		device.building = dat.building;
 		device.room = dat.room;
 		device.floor = dat.floor;
@@ -127,8 +135,21 @@ ChainManager.prototype._getAllDeviceInfo = function()
 					lastUpdatedUrl = h;
 				}
 
-				// sensor object...
-				arr.push({title:t, href:h, dataHistory:"", dataType:"", metric:"", unit:"", dataPrev:"", dataNext:"", loadFlag:false});
+				// ---------------------------------
+				//  Sensor Object Definition
+				// ---------------------------------
+				arr.push({
+					title:t,
+					href:h,
+					dataHistory:"",
+					dataType:"",
+					metric:"",
+					unit:"",
+					dataPrev:"",
+					dataNext:"",
+					updated:"",             // 最后一次该sensor数据更新的时间
+					loadFlag:false
+				});
 			}
 			device.sensors = arr;
 

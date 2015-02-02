@@ -57,5 +57,12 @@
 		//})(this), 2000);
 	});
 
+	$(window).resize(function() {
+		var twid = $("#mainloading_title").width();
+		$("#mainloading_title").css("left", (window.innerWidth / 2 - twid / 2));
+		var owid = $("#opening_loader").width();
+		$("#opening_loader").css("left", window.innerWidth / 2 - owid / 2 - 5);
+	});
+
 }).call(this);
 //@ sourceURL=pen.js

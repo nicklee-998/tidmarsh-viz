@@ -498,6 +498,8 @@ function onMainMenuClick(e)
 		}
 
 		if(mainmenu.currSelectRH == 0) {
+			// Start flashing
+			menuData.flashWaitMessageLabel(true);
 			// Hide cal and dragbar
 			menuData.showMe(DATA_REALTIME_OPEN);
 			showDragBar(false);
@@ -584,8 +586,11 @@ function onMainMenuChange(e)
 			// CLEAR GRAPH
 			network.closeIncomingMessage();
 			network.clearVoronoi(true);
+			// Stop flashing
+			menuData.flashWaitMessageLabel(false);
 			// Hide cal and dragbar
 			menuData.hideMe();
+
 			showDragBar(false);
 			showLineChart(false);
 			// Restore to realtime mode
@@ -1139,6 +1144,8 @@ function simulateIncomingData()
 
 	if(mainmenu.currSelectIdx == 3 && mainmenu.currSelectRH == 0) {
 		var str = devtitle + " " + sid + " is " + v.toFixed(2) + conf.unit + " now.";
+		// Stop flashing
+		menuData.flashWaitMessageLabel(false);
 		menuData.showMe(DATA_REALTIME_OPEN, {message: str});
 		network.updateVoronoi(devtitle, sid, v, now);
 	}

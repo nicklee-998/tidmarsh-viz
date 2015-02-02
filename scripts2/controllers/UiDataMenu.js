@@ -8,6 +8,7 @@ function UiDataMenu()
 	this.dpLeft = 50;
 	this.dpTop = 280;
 
+	this._isMessageFlash = false;
 	this._messageTop = parseInt($('#realtime_message').css("top"));
 
 	$("#datepicker").css("left", this.dpLeft);
@@ -28,6 +29,9 @@ function UiDataMenu()
 
 	$("#datepicker_cover").click(function() {
 		self._showCal(false);
+		if(sliderYear != null) {
+			self._showDate(true);
+		}
 	});
 
 	var self = this;
@@ -36,10 +40,13 @@ function UiDataMenu()
 UiDataMenu.prototype.showMe = function(mode, params)
 {
 	if(mode == DATA_REALTIME_OPEN) {
+
 		this._showRealtimeTip(true);
 		this._showRealtimeFaultTip(false);
 		this._showDate(false);
 		this._showCal(false);
+
+		$('#realtime_message').text("");
 
 		if(params) {
 			$('#realtime_message').text(params.message);
@@ -75,6 +82,41 @@ UiDataMenu.prototype.hideMe = function()
 	this._showCal(false);
 	this._showRealtimeTip(false);
 	this._showRealtimeFaultTip(false);
+}
+
+UiDataMenu.prototype.flashWaitMessageLabel = function(flg)
+{
+	if(flg) {
+
+		if(!this._isMessageFlash) {
+			console.log("open flash");
+			//make it flash
+			function loop() {
+				$('#realtime_tip').css({opacity:0.3});
+				$('#realtime_tip').animate ({
+					opacity: 1
+				}, 600, 'easeOutQuint', function() {
+					$(this).animate({
+						opacity: 0.3
+					}, 800, 'easeInQuint', function() {
+						loop();
+					});
+				});
+			}
+			loop();
+			this._isMessageFlash = true;
+		}
+
+	} else {
+
+		if(this._isMessageFlash) {
+			console.log("stop flash");
+			// remove flash
+			$('#realtime_tip').stop(true);
+			$('#realtime_tip').css({opacity:1});
+			this._isMessageFlash = false;
+		}
+	}
 }
 
 // ---------------------------------------------------
