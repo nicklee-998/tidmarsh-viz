@@ -1038,15 +1038,13 @@ NodeNetwork.prototype.enterVoronoi = function(mode)
 {
 	if(mode == "REALTIME")
 	{
-		this.openIncomingMessage();
-
 		this._mode = this.NETWORK_MODE_VORONOI_REALTIME;
+		this.openIncomingMessage();
 	}
 	else if(mode == "HISTORY")
 	{
-		this.closeIncomingMessage();
-
 		this._mode = this.NETWORK_MODE_VORONOI_HISTORY;
+		this.closeIncomingMessage();
 	}
 }
 

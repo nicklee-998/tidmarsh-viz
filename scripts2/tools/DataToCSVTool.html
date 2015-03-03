@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Data to CSV tool</title>
+	<style>
+
+		#labTitleName {
+			font-size: 35px;
+		}
+
+	</style>
+</head>
+<body>
+
+<p id="labTitleName">Data to CSV Tool</p><br>
+<button id="btnLoadAllDevice" onclick="loadDeviceInfo()">Start</button>
+<p id="labSensorsInfo">All sensors belong to </p><br>
+
+<button id="btnLoadSensor" onclick="goDigging()">Start</button>
+<div id="labAllSensorInfoPrev">------------------------------------------------------------------------------------------------------------------------------------------------</div>
+<p id="useTime">Elapsed time: </p>
+<div id="progressInfo">Loading Infomation: </div>
+<div id="labAllSensorInfoAfter">------------------------------------------------------------------------------------------------------------------------------------------------</div>
+<div id="labAllSensorInfo">Load all sensor info:</div>
+
+<script src="../../libs/jquery-1.11.1.min.js"></script>
+<script src="../../libs/d3.js"></script>
+<script>
+
+	var site_url = "http://chain-api.media.mit.edu/devices/?site_id=7";
+	var device_title = "tidbase4";
+	var device;
+
+	var _allData;
+
+	// date
+	var start_date = new Date(2015, 0, 1);
+	var end_date = new Date();
+	var time_block = 10;	// unit: minute
+
+	// private params
+	var _date_list;		// genrate automatic
+	var _load_idx;
+	var _start, _end;
+	var _one_line_data;
+
+	// sensor params
+	var _loadIdx2;
+	var _sensor;
+	var _expired;
+
+	// time
+	var timer, timeCount;
+
+
+	//---------------------------------------------------------------------
+	// PUBLIC METHOD:
+	// 	Get all year data
+	//---------------------------------------------------------------------
+	function goDigging()
+	{
+		// 计时
+		timeCount = 0;
+		timer = setInterval(function() {
+			timeCount++;
+			var min = Math.floor(timeCount / 60);
+			var sec = timeCount % 60;
+			var str = "Elapsed time = " + min + ":" + sec + " mins";
+			$("#useTime").text(str);
+		}, 1000);
+
+		//var datelist = d3.time.minutes(new Date(2015, 0, 1), new Date(2015, 1, 1));
+
+		_date_list = new Array();
+		var temp_end = new Date(start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
+		while(temp_end < end_date) {
+			_date_list.push(new Date(temp_end.getTime()));
+			temp_end.setMinutes(temp_end.getMinutes() + time_block);
+		}
+
+		_load_idx = 0;
+		_allData = new Array();
+		$("#progressInfo").append("<div></div>");
+		_startDateList();
+
+//		_year = year;
+//		_loadIdx3 = 0;
+//		_startDayList();
+	}
+
+	function _startDateList()
+	{
+		if((_load_idx+1) >= _date_list.length) {
+			//console.log("All year data has loaded!!!");
+
+			// -----------------------------------
+			// All device list complete
+			// -----------------------------------
+			console.log("All Done!!!");
+			$("#labAllSensorInfo").append("<p>ALL DONE!!!</p>");
+
+			clearInterval(timer);
+
+			// -----------------------------------
+			// 保存该设备的csv文件
+			// -----------------------------------
+			var csvData = new Array();
+			var firstline = '"did",';
+			for(var i = 0; i < device.sensors.length; i++) {
+				firstline += '"' + device.sensors[i].title + '",';
+			}
+			firstline += '"date"';
+			csvData.push(firstline);
+
+			_allData.forEach(function(item, index, array) {
+				var linestr = item.did + ",";
+				for(var i = 0; i < device.sensors.length; i++) {
+					linestr += '"' + item[device.sensors[i].title] + '",';
+				}
+				linestr += '"' + item.date + '"';
+				csvData.push(linestr);
+			});
+
+			// download stuff
+			var fileName = device_title + ".csv";
+			var buffer = csvData.join("\n");
+			var blob = new Blob([buffer], {
+				"type": "text/csv;charset=utf8;"
+			});
+			var link = document.createElement("a");
+
+			if(link.download !== undefined) { // feature detection
+				// Browsers that support HTML5 download attribute
+				link.setAttribute("href", window.URL.createObjectURL(blob));
+				link.setAttribute("download", fileName);
+			}
+			else {
+				// it needs to implement server side export
+				link.setAttribute("href", "http://www.example.com/export");
+			}
+			link.innerHTML = "Export to CSV";
+			//document.body.appendChild(link);
+			$("#labAllSensorInfo").append(link);
+
+			return;
+		}
+
+		_start = _date_list[_load_idx];
+		_end = _date_list[_load_idx+1];
+
+		_one_line_data = {};
+		_one_line_data["did"] = device_title;
+		for(var i = 0; i < device.sensors.length; i++) {
+			_one_line_data[device.sensors[i].title] = null;
+		}
+		_one_line_data["date"] = _start.toLocaleDateString() + " " + _start.getHours() + ":" + _start.getMinutes() + ":" + _start.getSeconds();
+
+		fetchDeviceDataByDate(device_title, []);
+	}
+
+	function _onDateComplete()
+	{
+		_allData.push(_one_line_data);
+		console.log(_one_line_data);
+
+		// Progress Bar
+		var progstr = "Progress: | " + (_load_idx + 1) + "/" + _date_list.length + " @" + _date_list[_load_idx];
+		$("#progressInfo").children().last().text(progstr);
+
+		// info one day complete
+		//console.log("finsh");
+
+		_load_idx++;
+		_startDateList();
+	}
+
+	//---------------------------------------------------------------------
+	// PUBLIC METHOD:
+	// 	Get Device Sensors Data by Period
+	// 	sensors is array -> a list of sensor name which need get data
+	// 	start&end is object -> {year, month, day}
+	//---------------------------------------------------------------------
+	function fetchDeviceDataByDate(sensors)
+	{
+		if(device != null) {
+			// for sensor list
+			_loadIdx2 = 0;
+			// set load flag of sensor
+			for(var i = 0; i < device.sensors.length; i++) {
+				var sobj = device.sensors[i];
+				// 去掉不需要的sensor
+				for(var j = 0; j < sensors.length; j++) {
+					if(sensors[j] == sobj.title) {
+						sobj.loadFlag = false;
+						break;
+					}
+				}
+			}
+
+			_startSensorsList();
+		} else {
+			// ------------------------
+			// Send error event
+			// ------------------------
+			alert("");
+		}
+	}
+
+	function _startSensorsList()
+	{
+		if(_loadIdx2 >= device.sensors.length) {
+
+			// clear flag of sensors
+			for(var i = 0; i < device.sensors.length; i++) {
+				var sobj = device.sensors[i];
+				sobj.loadFlag = true;
+			}
+
+			// 继续开始下一天的数据
+			_onDateComplete();
+
+			return;
+		}
+
+		//console.log("3. startMultiSensorDataChain: " + sensor_load_idx + ", " + sensor_sarr.length);
+
+		// find specific sensor
+		_sensor = device.sensors[_loadIdx2];
+		if(_sensor.loadFlag) {
+			// start
+			_expired = false;
+			_startSensorDataChain();
+		} else {
+			// go on next sensor...
+			_loadIdx2++;
+			_startSensorsList();
+		}
+	}
+
+	function _startSensorDataChain()
+	{
+		if(_expired) {
+			// go on next sensor...
+			_loadIdx2++;
+			_startSensorsList();
+
+			return;
+		}
+
+		//console.log("4. startSensorDataChain2: " + this._loadIdx);
+
+		// TODO: a hacker way, not offical method to get date...
+		//var ststr = (_start.getTime() - _start.getTimezoneOffset() * 60000).toString();
+		//var edstr = (_end.getTime() - _end.getTimezoneOffset() * 60000).toString();
+		var ststr = (_start.getTime()).toString();
+		var edstr = (_end.getTime()).toString();
+		var short_ststr = ststr.substr(0, 10);
+		var short_edstr = edstr.substr(0, 10);
+		var url = _sensor.dataHistory + '&timestamp__gte=' + short_ststr + '&timestamp__lt=' + short_edstr;
+
+		$.getJSON(url, function(dat) {
+
+			//console.log(_sensor.title + " [" + _start + "] to [" + _end + "] Total data number is: " + dat.data.length);
+
+			if(dat.data.length > 0) {
+				var avg = _calcAvg(dat.data);
+				_one_line_data[_sensor.title] = avg;
+			}
+
+			_expired = true;
+			_startSensorDataChain();
+		}).fail(function() {
+			var str = "Failure: " + _dayDeviceId + "[" + _start + "] to [" + _end + "]";
+			$("#labAllSensorInfo").append("<p>" + str + "</p>");
+
+			_expired = true;
+			_startSensorDataChain();
+		});
+	}
+
+	function _calcAvg(dataset)
+	{
+		var total = 0;
+		for(var i = 0; i < dataset.length; i++) {
+			total += dataset[i].value;
+		}
+		return total / dataset.length;
+	}
+
+	// ------------------------------------------------------------
+	//  Load basic information of all devices
+	// ------------------------------------------------------------
+	function loadDeviceInfo()
+	{
+		$.getJSON(site_url, function(dat) {
+
+			// TODO: That's use a little trick way to get all sensors from on request, maybe change the way in future...
+			var url = site_url + '&limit=' + dat.totalCount + '&offset=0';
+			$.getJSON(url, function(dat2) {
+				var devices = dat2._links.items;
+
+				for(var i = 0; i < devices.length; i++) {
+
+					device = devices[i];
+					if(device.title == device_title) {
+
+						// Show sensor info
+						var str = $("#labSensorsInfo").text();
+						str += '[' + device.title + ']';
+						str += ": ";
+						$("#labSensorsInfo").text(str);
+
+						$.getJSON(device.href, function(dat10) {
+							$.getJSON(dat10["_links"]["ch:sensors"]["href"], function(dat11) {
+
+								var arr = [];
+								var load_sensor_idx = dat11["totalCount"];
+
+								for(var i = 0; i < dat11["_links"]["items"].length; i++)
+								{
+									$.getJSON(dat11["_links"]["items"][i].href, function(dat12) {
+
+										var t = dat12["metric"];
+										var h = dat12["_links"]["self"].href;
+										var d = dat12["_links"]["ch:dataHistory"]["href"];
+										var sobj = {title:t, href:h, dataHistory:d, loadFlag:true};
+
+										// sensor object...
+										arr.push(sobj);
+
+										// Show sensor info
+										var str = $("#labSensorsInfo").text();
+										str += t;
+										str += ", ";
+										$("#labSensorsInfo").text(str);
+
+										load_sensor_idx--;
+										if(load_sensor_idx == 0) {
+											device.sensors = arr;
+
+											// Device Info Ready!
+										}
+									});
+								}
+							});
+						});
+
+						break;
+					}
+				}
+			});
+		});
+	}
+
+</script>
+
+</body>
+</html>

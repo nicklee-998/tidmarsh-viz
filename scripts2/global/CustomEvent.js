@@ -49,21 +49,29 @@ var SERVER_DEVICE_DATA_ERROR = "server_device_data_error";	// 获取server上某
  * MAIN MENU EVENT
  ***********************************/
 var MAINMENU_BEGIN = "main_menu_begin";
-var MAINMENU_NETWORK = "main_menu_network";
-var MAINMENU_DATA = "main_menu_data";
-var MAINMENU_DEVICE = "main_menu_device";
-
-// 表示主菜单切换事件，只发生在主菜单变化时
 var MAINMENU_BEGIN_LEAVE = "main_menu_begin_leave";
+var MAINMENU_NETWORK = "main_menu_network";
 var MAINMENU_NETWORK_LEAVE = "main_menu_network_leave";
+var MAINMENU_DATA = "main_menu_data";
 var MAINMENU_DATA_LEAVE = "main_menu_data_leave";
+var MAINMENU_DEVICE = "main_menu_device";
 var MAINMENU_DEVICE_LEAVE = "main_menu_device_leave";
 
 var MAINMENU_DATA_TEMPRATURE = "main_menu_data_temprature";
-var MAINMENU_DATA_ILLUMINANCE = "main_menu_data_illminance";
+var MAINMENU_DATA_TEMPRATURE_LEAVE = "main_menu_data_temprature_leave";
+var MAINMENU_DATA_ILLUMINANCE = "main_menu_data_illuminance";
+var MAINMENU_DATA_ILLUMINANCE_LEAVE = "main_menu_data_illuminance_leave";
 var MAINMENU_DATA_PRESSURE = "main_menu_data_pressure";
+var MAINMENU_DATA_PRESSURE_LEAVE = "main_menu_data_pressure_leave";
 var MAINMENU_DATA_HUMIDITY = "main_menu_data_humidity";
+var MAINMENU_DATA_HUMIDITY_LEAVE = "main_menu_data_humidity_leave";
 var MAINMENU_DATA_VOLTAGE = "main_menu_data_voltage";
+var MAINMENU_DATA_VOLTAGE_LEAVE = "main_menu_data_voltage_leave";
 
 var MAINMENU_REALTIME = "main_menu_realtime";
 var MAINMENU_HISTORY = "main_menu_history";
+
+var MAINMENU_HEALTH = "main_menu_health";
+var MAINMENU_HEALTH_LEAVE = "main_menu_health_leave";
+var MAINMENU_POWER = "main_menu_power";
+var MAINMENU_POWER_LEAVE = "main_menu_power_leave";

@@ -88,6 +88,7 @@ $(document).ready(function() {
 	jQuery.subscribe(MAINMENU_NETWORK_LEAVE, onMainMenuChange);
 	jQuery.subscribe(MAINMENU_DATA_LEAVE, onMainMenuChange);
 	jQuery.subscribe(MAINMENU_DEVICE_LEAVE, onMainMenuChange);
+
 	jQuery.subscribe(MAINMENU_DATA_TEMPRATURE, onMainMenuClick);
 	jQuery.subscribe(MAINMENU_DATA_ILLUMINANCE, onMainMenuClick);
 	jQuery.subscribe(MAINMENU_DATA_PRESSURE, onMainMenuClick);
@@ -95,6 +96,12 @@ $(document).ready(function() {
 	jQuery.subscribe(MAINMENU_DATA_VOLTAGE, onMainMenuClick);
 	jQuery.subscribe(MAINMENU_REALTIME, onMainMenuClick);
 	jQuery.subscribe(MAINMENU_HISTORY, onMainMenuClick);
+
+	jQuery.subscribe(MAINMENU_HEALTH, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_HEALTH_LEAVE, onMainMenuChange);
+	jQuery.subscribe(MAINMENU_POWER, onMainMenuClick);
+	jQuery.subscribe(MAINMENU_POWER_LEAVE, onMainMenuChange);
+
 	mainmenu = new UiMainMenu();
 	mainmenuCurrent = MAINMENU_BEGIN;
 	// INTRO PAGE
@@ -110,6 +117,14 @@ $(document).ready(function() {
 			onSelectDate(date);
 		}
 	});
+
+	// --------------------------------
+	// Register all event
+	// --------------------------------
+	// enter health mode
+	jQuery.subscribe(NETWORK_HEALTH_NODE_SELECTED, onNetworkNodeSelected);
+	jQuery.subscribe(NETWORK_HEALTH_NODE_DESELECTED, onNetworkNodeDeselected);
+
 
 	jQuery.subscribe(NETWORK_VORONOI_MOUSE_OVER, onNetworkVoronoiOver);
 	jQuery.subscribe(NETWORK_VORONOI_MOUSE_OUT, onNetworkVoronoiOut);
@@ -519,7 +534,7 @@ function onMainMenuClick(e)
 			network.enterVoronoi("HISTORY");
 		}
 
-	} else if(e.type == MAINMENU_DEVICE) {
+	} else if(e.type == MAINMENU_HEALTH) {
 
 		// 隐藏动物和植物
 		apManager.hideAP();
@@ -532,23 +547,29 @@ function onMainMenuClick(e)
 		network.closeIncomingMessage();
 		network.clearVoronoi(true);
 
-		if(mainmenu.currSelectDeviceMenuIdx == 0) {
-			// Device health
-			hideHealthCalendar();
-			// show menu
-			menuHealth.showMe();
-			// Set 3d scene
-			setScenePerspective(4);
-			// enter health mode
-			jQuery.subscribe(NETWORK_HEALTH_NODE_SELECTED, onNetworkNodeSelected);
-			jQuery.subscribe(NETWORK_HEALTH_NODE_DESELECTED, onNetworkNodeDeselected);
+		// Device health
+		hideHealthCalendar();
+		// show menu
+		menuHealth.showMe();
+		// Set 3d scene
+		setScenePerspective(4);
 
-			var cfile = "./res/data_2014/2014_all.csv"
-			network.createHealthGraph(cfile);
+		var cfile = "./res/data_2014/2014_all.csv"
+		network.createHealthGraph(cfile);
 
-		} else if(mainmenu.currSelectDeviceMenuIdx == 1) {
+	} else if(e.type == MAINMENU_POWER) {
 
-		}
+		// 隐藏动物和植物
+		apManager.hideAP();
+		// 关闭天气
+		weather.create("CLOUDY");
+		// weather big
+		showWeatherBig(false);
+		showWeatherSmall(false);
+		// CLEAR GRAPH
+		network.closeIncomingMessage();
+		network.clearVoronoi(true);
+
 	}
 
 	mainmenuCurrent = e.type;
@@ -593,20 +614,19 @@ function onMainMenuChange(e)
 
 			showDragBar(false);
 			showLineChart(false);
-			// Restore to realtime mode
-			mainmenu.currSelectRH = 0;
 
 			break;
-		case MAINMENU_DEVICE_LEAVE:
+		case MAINMENU_HEALTH_LEAVE:
 			// Device health
 			hideHealthCalendar();
 			menuHealth.hideMe();
 			network.clearHealthGraph();
 			network.restoreNodes();
 
-			// Unregister mouse event
-			jQuery.unsubscribe(NETWORK_HEALTH_NODE_SELECTED, onNetworkNodeSelected);
-			jQuery.unsubscribe(NETWORK_HEALTH_NODE_DESELECTED, onNetworkNodeDeselected);
+			break;
+		case MAINMENU_POWER_LEAVE:
+
+
 
 			break;
 		default :

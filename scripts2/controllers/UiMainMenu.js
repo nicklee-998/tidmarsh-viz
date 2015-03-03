@@ -62,7 +62,11 @@ function UiMainMenu()
 						jQuery.publish(MAINMENU_DATA_LEAVE);
 						break;
 					case 4:
-						jQuery.publish(MAINMENU_DEVICE_LEAVE);
+						if(self.currSelectDeviceMenuIdx == 0) {
+							jQuery.publish(MAINMENU_HEALTH_LEAVE);
+						} else if(self.currSelectDeviceMenuIdx == 1) {
+							jQuery.publish(MAINMENU_POWER_LEAVE);
+						}
 						break;
 				}
 				self.currSelectIdx = idx;
@@ -74,9 +78,6 @@ function UiMainMenu()
 						self.hideSensorButtons();
 						self.hideRHButtons();
 
-						// ------------------------------
-						// Send main menu event
-						// ------------------------------
 						jQuery.publish(MAINMENU_BEGIN);
 						break;
 					case 2:
@@ -84,32 +85,30 @@ function UiMainMenu()
 						self.hideSensorButtons();
 						self.hideRHButtons();
 
-						// ------------------------------
-						// Send main menu event
-						// ------------------------------
 						jQuery.publish(MAINMENU_NETWORK);
 						break;
 					case 3:
+						// 默认回到第一个子菜单
+						self.currSelectSensorIdx = 0;
+						self.currSelectRH = 0;
+
 						self.hideDeviceButtons();
 						self.showSubButtons();
 						self.arrangeSensorButtons();
 						self.arrangeRHButtons();
 
-						// ------------------------------
-						// Send main menu event
-						// ------------------------------
 						jQuery.publish(MAINMENU_DATA);
 						break;
 					case 4:
+						// 默认回到第一个子菜单
+						self.currSelectDeviceMenuIdx = 0;
+
 						self.hideSensorButtons();
 						self.hideRHButtons();
 						self.showDeviceSubButtons();
 						self.arrangeDeviceButtons();
 
-						// ------------------------------
-						// Send main menu event
-						// ------------------------------
-						jQuery.publish(MAINMENU_DEVICE);
+						jQuery.publish(MAINMENU_HEALTH);
 						break;
 				}
 
@@ -136,34 +135,36 @@ function UiMainMenu()
 
 	function onDeviceClick() {
 		var btnname = $(this).attr("id");
-		console.log(btnname);
+		//console.log(btnname);
 
+		var idx;
 		if(btnname == "mainmenu_sbtn_health") {
-
-			if(self.currSelectDeviceMenuIdx != 0) {
-				self.currSelectDeviceMenuIdx = 0;
-				// ------------------------------
-				// Send main menu event
-				// ------------------------------
-				jQuery.publish(MAINMENU_DEVICE);
-			}
+			idx = 0;
 		} else if(btnname == "mainmenu_sbtn_power") {
+			idx = 1;
+		}
 
-			if(self.currSelectDeviceMenuIdx != 1) {
-				self.currSelectDeviceMenuIdx = 1;
-				// ------------------------------
-				// Send main menu event
-				// ------------------------------
-				jQuery.publish(MAINMENU_DEVICE);
+		if(self.currSelectDeviceMenuIdx != idx) {
+			if(self.currSelectDeviceMenuIdx == 0) {
+				jQuery.publish(MAINMENU_HEALTH_LEAVE);
+			} else if(self.currSelectDeviceMenuIdx == 1) {
+				jQuery.publish(MAINMENU_POWER_LEAVE);
+			}
+			self.currSelectDeviceMenuIdx = idx;
+
+			if(idx == 0) {
+				jQuery.publish(MAINMENU_HEALTH);
+			} else if(idx == 1) {
+				jQuery.publish(MAINMENU_POWER);
 			}
 		}
 
 		self.arrangeDeviceButtons();
 	}
 
-	//this.dButtons = [$("#mainmenu_sbtn_health"), $("#mainmenu_sbtn_power")];
-	$("#mainmenu_sbtn_power").css("visibility", "hidden");
-	this.dButtons = [$("#mainmenu_sbtn_health")];
+	//$("#mainmenu_sbtn_power").css("visibility", "hidden");
+	this.dButtons = [$("#mainmenu_sbtn_health"), $("#mainmenu_sbtn_power")];
+	//this.dButtons = [$("#mainmenu_sbtn_health")];
 	this.btnColors2 = ["#027b08", "#9a0101"];
 	this.arrangeDeviceButtons();
 
@@ -197,37 +198,22 @@ function UiMainMenu()
 
 		if(btnname == "mainmenu_sbtn_t") {
 			self.currSelectSensorIdx = 0;
-			// ------------------------------
-			// Send main menu event
-			// ------------------------------
 			jQuery.publish(MAINMENU_DATA);
 
 		} else if(btnname == "mainmenu_sbtn_i") {
 			self.currSelectSensorIdx = 1;
-			// ------------------------------
-			// Send main menu event
-			// ------------------------------
 			jQuery.publish(MAINMENU_DATA);
 
 		} else if(btnname == "mainmenu_sbtn_p") {
 			self.currSelectSensorIdx = 2;
-			// ------------------------------
-			// Send main menu event
-			// ------------------------------
 			jQuery.publish(MAINMENU_DATA);
 
 		} else if(btnname == "mainmenu_sbtn_h") {
 			self.currSelectSensorIdx = 3;
-			// ------------------------------
-			// Send main menu event
-			// ------------------------------
 			jQuery.publish(MAINMENU_DATA);
 
 		}else if(btnname == "mainmenu_sbtn_v") {
 			self.currSelectSensorIdx = 4;
-			// ------------------------------
-			// Send main menu event
-			// ------------------------------
 			jQuery.publish(MAINMENU_DATA);
 		}
 		self.arrangeSensorButtons();

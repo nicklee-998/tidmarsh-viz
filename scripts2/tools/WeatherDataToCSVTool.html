@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Weather Data to CSV Tool</title>
+</head>
+<body>
+<button id="btnLoadWeatherData" onclick="goDigging()">Start</button>
+<div id="labAllSensorInfo">Load all info:</div>
+
+<script src="../../libs/jquery-1.11.1.min.js"></script>
+<script src="../../libs/d3.js"></script>
+<script>
+
+	var url01 = "http://api.wunderground.com/api/2f66729e5667f166/history_";
+	var url02 = "/q/MA/manomet.json";
+
+	var _start = new Date(2015, 0, 1);
+	var _end = new Date();	// not include this one
+	var _daylist;
+	var _idx;
+
+	var _allData;
+
+	function goDigging()
+	{
+		_allData = new Array();
+		_idx = 0;
+		_daylist = d3.time.days(_start, _end);
+		_startQueue();
+	}
+
+	function _startQueue()
+	{
+		if(_idx == _daylist.length) {
+
+			// -----------------------------------
+			// 保存该设备的csv文件
+			// -----------------------------------
+			var csvData = new Array();
+			csvData.push('"conds", "fog", "hail", "rain", "snow", ' +
+			'"thunder", "tornado", "temp", "vis", "date", "pretty"');
+
+			_allData.forEach(function(item, index, array) {
+				var dstr = item.date.year + "/" + item.date.mon + "/" + item.date.mday + " " + item.date.hour + ":" + item.date.min + ":00";
+				var pretty = item.date.pretty;
+
+				csvData.push('"' + item.conds + '","' + item.fog + '","' + item.hail + '","' +
+				item.rain + '","' + item.snow + '","' + item.thunder + '","' + item.tornado + '","' +
+				item.tempm + '","' + item.vism + '","' + dstr + '","' + pretty + '"');
+			});
+
+			// download stuff
+			var fileName = "weather_" + _start.toLocaleDateString() + "_" + _end.toLocaleDateString() + ".csv";
+			var buffer = csvData.join("\n");
+			var blob = new Blob([buffer], {
+				"type": "text/csv;charset=utf8;"
+			});
+			var link = document.createElement("a");
+
+			if(link.download !== undefined) { // feature detection
+				// Browsers that support HTML5 download attribute
+				link.setAttribute("href", window.URL.createObjectURL(blob));
+				link.setAttribute("download", fileName);
+			}
+			else {
+				// it needs to implement server side export
+				link.setAttribute("href", "http://www.example.com/export");
+			}
+			link.innerHTML = "Export to CSV";
+			//document.body.appendChild(link);
+			$("#labAllSensorInfo").append(link);
+
+			return;
+		}
+
+		var day = _daylist[_idx];
+		var mstr;
+		if(day.getMonth() < 9) {
+			mstr = "0" + (day.getMonth()+1);
+		} else {
+			mstr = (day.getMonth() + 1);
+		}
+		var dstr;
+		if(day.getDate() < 10) {
+			dstr = "0" + day.getDate();
+		} else {
+			dstr = day.getDate();
+		}
+		var urlstr = url01 + day.getFullYear() + mstr + dstr + url02;
+		console.log(urlstr);
+
+		$.getJSON(urlstr, function(dat) {
+
+			var history = dat.history.observations;
+			for(var i = 0; i < history.length; i++) {
+				var wdat = history[i];
+				_allData.push(wdat);
+			}
+
+			_idx++;
+			_startQueue();
+		});
+	}
+
+</script>
+
+</body>
+</html>
