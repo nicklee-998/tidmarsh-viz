@@ -36,8 +36,8 @@
 
 	// date
 	var start_date = new Date(2015, 0, 1);
-	var end_date = new Date();
-	var time_block = 10;	// unit: minute
+	var end_date = new Date(2015, 1, 1);
+	var time_block = 5;	// unit: minute
 
 	// private params
 	var _date_list;		// genrate automatic
@@ -154,7 +154,8 @@
 		for(var i = 0; i < device.sensors.length; i++) {
 			_one_line_data[device.sensors[i].title] = null;
 		}
-		_one_line_data["date"] = _start.toLocaleDateString() + " " + _start.getHours() + ":" + _start.getMinutes() + ":" + _start.getSeconds();
+		//_one_line_data["date"] = _start.toLocaleDateString() + " " + _start.getHours() + ":" + _start.getMinutes() + ":" + _start.getSeconds();
+		_one_line_data["date"] = _start.toString();
 
 		fetchDeviceDataByDate(device_title, []);
 	}

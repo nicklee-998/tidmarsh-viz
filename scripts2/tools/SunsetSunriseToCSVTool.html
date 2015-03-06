@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Sunset&Sunrise to CSV Tool</title>
+</head>
+
+<body>
+
+<p id="labTitleName">Sunset&Sunrise to CSV Tool</p><br>
+<button id="btnLoadAllDevice" onclick="loadSunsetSunriseInfo()">Start</button>
+
+<div id="labAllSensorInfoPrev">------------------------------------------------------------------------------------------------------------------------------------------------</div>
+<div id="progressInfo">Loading Infomation: </div>
+<div id="labAllSensorInfoAfter">------------------------------------------------------------------------------------------------------------------------------------------------</div>
+<div id="labAllSensorInfo">Sunset&Sunrise file:</div>
+
+<script src="../../libs/jquery-1.11.1.min.js"></script>
+<script src="../../libs/d3.js"></script>
+<script>
+
+	// date, month from 0 - 11
+	var start_date = new Date(2015, 0, 1);
+	var end_date = new Date(2015, 1, 1);
+
+	var dayList;
+	var dayIdx;
+
+	var dayData;
+	var allData;
+
+	var url = "http://api.sunrise-sunset.org/json?lat=41.90400583756355&lng=-70.57257771492004&date=";
+
+	function loadSunsetSunriseInfo()
+	{
+		dayList = new Array();
+		var temp_end = new Date(start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
+		while(temp_end < end_date) {
+			dayList.push(new Date(temp_end.getTime()));
+			temp_end.setHours(temp_end.getHours() + 24);
+		}
+		dayIdx = 0;
+		allData = new Array();
+		$("#progressInfo").append("<div></div>");
+
+		_startDateList();
+	}
+
+	function _startDateList()
+	{
+		if(dayIdx >= dayList.length) {
+		//if(dayIdx >= 2) {
+
+			// -----------------------------------
+			// All list complete
+			// -----------------------------------
+			console.log("All Done!!!");
+			$("#labAllSensorInfo").append("<p>ALL DONE!!!</p>");
+
+			// -----------------------------------
+			// 保存该设备的csv文件
+			// -----------------------------------
+			var csvData = new Array();
+			var firstline = '"year",';
+			firstline += '"month",';
+			firstline += '"day",';
+			firstline += '"sunrise",';
+			firstline += '"sunset"';
+			csvData.push(firstline);
+
+			allData.forEach(function(item, index, array) {
+				var linestr = item.year + ",";
+				linestr += item.month + ",";
+				linestr += item.day + ",";
+				linestr += item.sunrise + ",";
+				linestr += item.sunset + ",";
+				csvData.push(linestr);
+			});
+
+			// download stuff
+			var fileName = "sunrise_sunset_" + start_date.getFullYear() + "_" + (start_date.getMonth()+1) + ".csv";
+			var buffer = csvData.join("\n");
+			var blob = new Blob([buffer], {
+				"type": "text/csv;charset=utf8;"
+			});
+			var link = document.createElement("a");
+
+			if(link.download !== undefined) { // feature detection
+				// Browsers that support HTML5 download attribute
+				link.setAttribute("href", window.URL.createObjectURL(blob));
+				link.setAttribute("download", fileName);
+			}
+			else {
+				// it needs to implement server side export
+				link.setAttribute("href", "http://www.example.com/export");
+			}
+			link.innerHTML = "Export to CSV";
+			//document.body.appendChild(link);
+			$("#labAllSensorInfo").append(link);
+
+			return;
+		}
+
+		var day = dayList[dayIdx];
+
+		dayData = {};
+		dayData["year"] = day.getFullYear();
+		dayData["month"] = day.getMonth();
+		dayData["day"] = day.getDate();
+
+		var dayurl = url + day.getFullYear() + "-" + (day.getMonth()+1) + "-" + day.getDate();
+
+		$.getJSON(dayurl, function(dat) {
+
+			var dstr = day.getFullYear() + "-" + (day.getMonth()+1) + "-" + day.getDate();
+			dstr += " " + dat["results"]["sunrise"];
+			var dstr1 = day.getFullYear() + "-" + (day.getMonth()+1) + "-" + day.getDate();
+			dstr1 += " " + dat["results"]["sunset"];
+
+			var date = new Date(dstr);
+			var localdate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+			date = new Date(dstr1);
+			var localdate1 = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+
+			dayData["sunrise"] = localdate.toString();
+			dayData["sunset"] = localdate1.toString();
+
+			allData.push(dayData);
+			dayIdx++;
+			_startDateList();
+
+		}).fail(function() {
+			var str = "Failure: " + day.toString();
+			$("#labAllSensorInfo").append("<p>" + str + "</p>");
+		});
+	}
+
+</script>
+
+</body>
+</html>
