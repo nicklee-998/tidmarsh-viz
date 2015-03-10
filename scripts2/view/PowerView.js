@@ -36,7 +36,7 @@ PowerView.prototype.genMonthGraph = function(year, month)
 {
 	var suncsvfile = "./res/data_power/sunrise_sunset_" + year + "_" + month + ".csv";
 	var weathercsvfile = "./res/data_power/weather_" + year + "_" + month + ".csv";
-	var csvfile = "./res/data_power/tidbase4_" + year + "_" + month + "_2232.csv";
+	var csvfile = "./res/data_power/tidbase4_" + year + "_" + month + ".csv";
 	var self = this;
 
 	this._dayList = d3.time.days(new Date(year, month-1, 1), new Date(year, month, 1));
@@ -121,8 +121,10 @@ PowerView.prototype._genDayLine = function(datset, idx)
 
 	var c1 = "hsl(0, 100%, 100%)";
 	var c2 = "hsl(0, 100%, 50%)";
-	var min = this._getMinTemperature(datset);
-	var max = this._getMaxTemperature(datset);
+	//var min = this._getMinTemperature(datset);
+	//var max = this._getMaxTemperature(datset);
+	var min = -10;
+	var max = 50;
 	var _scaleTemprature = d3.scale.sqrt()
 		//.linear()
 		.domain([min, max])
@@ -349,7 +351,10 @@ PowerView.prototype._drawWeatherByMonth = function()
 			.domain([date1, date2])
 			.rangeRound([-this._dayWidth / 2, this._dayWidth / 2]);
 
+		var _tmpconds = "";
+		var _tmppnts = new Array();
 		for(var j = 0; j < this._weatherDataArr.length-1; j++) {
+
 			var wdate1 = new Date(
 				this._weatherDataArr[j].year,
 				this._weatherDataArr[j].month-1,
@@ -358,6 +363,7 @@ PowerView.prototype._drawWeatherByMonth = function()
 				this._weatherDataArr[j].minute,
 				this._weatherDataArr[j].second
 			);
+			// 用于判断是否为当天最后一个值
 			var wdate2 = new Date(
 				this._weatherDataArr[j+1].year,
 				this._weatherDataArr[j+1].month-1,
@@ -367,35 +373,83 @@ PowerView.prototype._drawWeatherByMonth = function()
 				this._weatherDataArr[j+1].second
 			);
 
-			if((wdate1 < date2 && wdate1 > date1) &&
-				(wdate2 < date2 && wdate2 > date1)) {
+			if(wdate1 < date2 && wdate1 > date1) {
+
 				var pos1 = _scaleTime(wdate1);
-				var pos2 = _scaleTime(wdate2);
+				//var pos2 = _scaleTime(wdate2);
 
 				var lt = new THREE.Vector2(pos1, daypos + this._dayLength /2);
 				var lb = new THREE.Vector2(pos1, daypos - this._dayLength / 2);
-				var rt = new THREE.Vector2(pos2, daypos + this._dayLength / 2);
-				var rb = new THREE.Vector2(pos2, daypos - this._dayLength / 2);
+				//var rt = new THREE.Vector2(pos2, daypos + this._dayLength / 2);
+				//var rb = new THREE.Vector2(pos2, daypos - this._dayLength / 2);
 
-				if(this._weatherDataArr[j].conds.indexOf("Clear") != -1) {
-					ptsClear.push([lb, lt, rt, rb]);
-				} else if(this._weatherDataArr[j].conds.indexOf("Cloudy") != -1 ||
-					this._weatherDataArr[j].conds.indexOf("Overcast") != -1) {
-					ptsCloud.push([lb, lt, rt, rb]);
-				} else if(this._weatherDataArr[j].conds.indexOf("Rain") != -1) {
-					ptsRain.push([lb, lt, rt, rb]);
-				} else if(this._weatherDataArr[j].conds.indexOf("Snow") != -1) {
-					ptsSnow.push([lb, lt, rt, rb]);
+				if(this._rollupConds(this._weatherDataArr[j].conds) != _tmpconds) {
+
+					if(_tmppnts.length == 0) {
+						_tmppnts.push(lt);
+						_tmppnts.push(lb);
+
+						_tmpconds = this._rollupConds(this._weatherDataArr[j].conds);
+					} else {
+						_tmppnts.push(lb);
+						_tmppnts.push(lt);
+
+						if(_tmpconds.indexOf("CLEAR") != -1) {
+							ptsClear.push(_tmppnts);
+						} else if(_tmpconds.indexOf("CLOUDY") != -1) {
+							ptsCloud.push(_tmppnts);
+						} else if(_tmpconds.indexOf("RAIN") != -1) {
+							ptsRain.push(_tmppnts);
+						} else if(_tmpconds.indexOf("SNOW") != -1) {
+							ptsSnow.push(_tmppnts);
+						} else {
+							console.log(_tmpconds);
+						}
+
+						_tmppnts = new Array();
+						_tmppnts.push(lt);
+						_tmppnts.push(lb);
+
+						_tmpconds = this._rollupConds(this._weatherDataArr[j].conds);
+					}
+
+				} else {
+
+					// 如何下一个日子是第二天了，就保存图形数组
+					if(wdate2 > date2) {
+						_tmppnts.push(lb);
+						_tmppnts.push(lt);
+
+						if(_tmpconds.indexOf("CLEAR") != -1) {
+							ptsClear.push(_tmppnts);
+						} else if(_tmpconds.indexOf("CLOUDY") != -1) {
+							ptsCloud.push(_tmppnts);
+						} else if(_tmpconds.indexOf("RAIN") != -1) {
+							ptsRain.push(_tmppnts);
+						} else if(_tmpconds.indexOf("SNOW") != -1) {
+							ptsSnow.push(_tmppnts);
+						} else {
+							console.log(_tmpconds);
+						}
+
+					} else {
+						if(_tmppnts.length == 0) {
+							_tmppnts.push(lt);
+							_tmppnts.push(lb);
+						} else {
+							_tmppnts.push(lb);
+						}
+					}
 				}
 			}
 		}
 	}
 
 	// Draw Weather
-	this._drawWeatherBox(ptsClear, 0xd6aa95);
+	//this._drawWeatherBox(ptsClear, 0xd6aa95);
 	//this._drawWeatherBox(ptsCloud, 0x4f5f64);
 	//this._drawWeatherBox(ptsRain, 0x3d8db8);
-	//this._drawWeatherBox(ptsSnow, 0x93e19f);
+	//this._drawWeatherBox(ptsSnow, 0xffffff);
 }
 
 PowerView.prototype._drawWeatherBox = function(pts, color)
@@ -414,7 +468,7 @@ PowerView.prototype._drawWeatherBox = function(pts, color)
 	var material = new THREE.MeshBasicMaterial( {
 		color: color,
 		transparent: true,
-		opacity: 0.2,
+		opacity: 0.5,
 		depthTest: false,
 		depthWrite: false,
 		side: THREE.FrontSide } );
@@ -440,6 +494,30 @@ PowerView.prototype._getSunTime = function(year, month, day)
 	}
 
 	return obj;
+}
+
+// --------------------------------------------------------------
+//  将不同的气象描述词语归纳成四种状态：CLEAR, CLOUDY, SNOW, RAIN
+// --------------------------------------------------------------
+PowerView.prototype._rollupConds = function(conds)
+{
+	var newconds;
+	if(conds.indexOf("Clear") != -1) {
+		newconds = "CLEAR";
+	} else if(conds.indexOf("Cloudy") != -1 ||
+		conds.indexOf("Overcast") != -1 ||
+		conds.indexOf("Clouds") != -1 ||
+		conds.indexOf("Haze") != -1 ||
+		conds.indexOf("Mist") != -1 ||
+		conds.indexOf("Fog") != -1) {
+		newconds = "CLOUDY";
+	} else if(conds.indexOf("Rain") != -1) {
+		newconds = "RAIN";
+	} else if(conds.indexOf("Snow") != -1) {
+		newconds = "SNOW";
+	}
+
+	return newconds;
 }
 
 PowerView.prototype._getMinTemperature = function(datset)
