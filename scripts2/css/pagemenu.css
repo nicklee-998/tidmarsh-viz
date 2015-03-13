@@ -1,0 +1,63 @@
+/*************************
+ * All Sub Menu
+ *************************/
+#submenu {
+	position: absolute;
+	top: 150px;
+	left: 0px;
+}
+
+/*************************
+ * Power View Menu
+ *************************/
+#powermenu_container {
+	position: absolute;
+	left: 50px;
+}
+
+#powermenu_date {
+	position: absolute;
+	top: 10px;
+	left: 35px;
+	color: rgba(255, 255, 255, 0.70);
+	font-size: 30px;
+}
+
+#powermenu_type {
+	position: absolute;
+	top: 65px;
+	color: rgba(135, 135, 135, 0.85);
+	font-size: 50px;
+	cursor: pointer;
+}
+
+.powermenu_weather {
+	position: absolute;
+	width: 250px;
+	padding: 2px 8px;
+	cursor: pointer;
+	color: rgba(255, 255, 255, 0.70);
+	font-size: 30px;
+}
+
+.powermenu_weather_selected {
+	color: rgba(50, 50, 50, 1);
+	background-color: rgba(185, 185, 185, 0.85);
+}
+
+.powermenu_left {
+	position: absolute;
+	top: 16px;
+	width: 15px;
+	height: 15px;
+	cursor: pointer;
+}
+
+.powermenu_right {
+	position: absolute;
+	top: 16px;
+	left: 150px;
+	width: 15px;
+	height: 15px;
+	cursor: pointer;
+}

@@ -16,26 +16,34 @@
 		#stats #fps #fpsText { color: #aaa !important }
 		#stats #fps #fpsGraph { color: #0040ff }
 	</style>
+	<link rel="stylesheet" type="text/css" href="scripts2/css/pagemenu.css"/>
 </head>
 
 <body>
 <div id="state"></div>
 <div id="playground"></div>
+<div id="submenu"></div>
 
 <script src="./libs/three.min.js"></script>
 <script src="./libs/d3.js"></script>
 <script src="./libs/jquery-1.11.1.min.js"></script>
+<script src="./libs/tiny-pubsub.js"></script>
+<script src="./libs/EasePack.min.js"></script>
+<script src="./libs/TweenMax.min.js"></script>
 <script src="./js/controls/OrbitControls.js"></script>
 <script src="./js/libs/stats.min.js"></script>
 <script src="./scripts2/view/PowerView.js"></script>
+<script src="./scripts2/controllers/UiPowerViewMenu.js"></script>
+<script src="./scripts2/global/CustomEvent.js"></script>
+<script src="./scripts2/global/GlobalVars.js"></script>
+
 <script>
 
 	var container, scene, renderer, camera, controls, sw, sh;
+	var powermenu;
 
 	$(document).ready(function() {
-
 		init3d();
-
 	});
 
 	function init3d()
@@ -52,8 +60,9 @@
 
 		// Setup the camera
 		camera = new THREE.PerspectiveCamera(45, sw / sh, 0.1, 10000);
-		camera.position.y = 1000;
-		camera.position.z = 1000;
+		camera.position.x = 1669;
+		camera.position.y = 1505;
+		camera.position.z = 2497;
 
 		// Setup the scene
 		scene = new THREE.Scene();
@@ -93,8 +102,13 @@
 //		);
 //		scene.add(box);
 
+
 		var powerview = new PowerView(scene);
-		powerview.genMonthGraph(2015, 2);
+
+		jQuery.subscribe(POWERMENU_CHANGE, function(e, d) {
+			powerview.genMonthGraph(d);
+		});
+		powermenu = new UiPowerViewMenu("submenu");
 	}
 
 	function animate()
@@ -109,6 +123,62 @@
 		renderer.render(scene, camera);
 		controls.update();
 	}
+
+	/////////////////////////////////////////////
+	// JUST FOR TEST
+	/////////////////////////////////////////////
+	function onKeyboardDown()
+	{
+		// 返回键退出
+		if(d3.event.keyCode == 68) 	// D:
+		{
+			var obj = scene.getObjectByName("power_container");
+
+			console.log("= Camera Info =================================");
+			console.log(camera.position);
+			console.log("Polar Angle = " + controls.getPolarAngle());
+			console.log("Azimuthal Angle = " + controls.getAzimuthalAngle());
+			console.log(obj.position);
+			console.log("===============================================");
+
+		} else if(d3.event.keyCode == 69) {
+			var obj = scene.getObjectByName("power_container");
+			console.log(obj.position);
+		} else if(d3.event.keyCode == 70) {
+			camera.lookAt(new THREE.Vector3(0, 0, 0));
+		}
+		else if(d3.event.keyCode == 49)	// 1
+		{
+			var obj = scene.getObjectByName("power_container");
+			obj.position.x += 10;
+		}
+		else if(d3.event.keyCode == 50)	// 2
+		{
+			var obj = scene.getObjectByName("power_container");
+			obj.position.x -= 10;
+		}
+		else if(d3.event.keyCode == 51)	// 3
+		{
+			var obj = scene.getObjectByName("power_container");
+			obj.position.y += 10;
+		}
+		else if(d3.event.keyCode == 52)	// 4
+		{
+			var obj = scene.getObjectByName("power_container");
+			obj.position.y -= 10;
+		}
+		else if(d3.event.keyCode == 53)	// 5
+		{
+			var obj = scene.getObjectByName("power_container");
+			obj.position.z += 10;
+		}
+		else if(d3.event.keyCode == 54)	// 6
+		{
+			var obj = scene.getObjectByName("power_container");
+			obj.position.z -= 10;
+		}
+	}
+	d3.select("body").on("keydown", onKeyboardDown);
 
 </script>
 

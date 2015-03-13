@@ -75,3 +75,8 @@ var MAINMENU_HEALTH = "main_menu_health";
 var MAINMENU_HEALTH_LEAVE = "main_menu_health_leave";
 var MAINMENU_POWER = "main_menu_power";
 var MAINMENU_POWER_LEAVE = "main_menu_power_leave";
+
+/***********************************
+ * POWER MENU EVENT
+ ***********************************/
+var POWERMENU_CHANGE = "power_menu_change";

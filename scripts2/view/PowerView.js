@@ -4,7 +4,12 @@
 
 function PowerView(scene)
 {
-	this._scene = scene;
+	this._container = new THREE.Object3D();
+	this._container.name = "power_container";
+	this._container.position.x = 0;
+	this._container.position.y = -560;
+	this._container.position.z = 510;
+	scene.add(this._container);
 
 	// style
 	this._dayWidth = 2000;
@@ -14,7 +19,31 @@ function PowerView(scene)
 	// data buffer
 	this._dayList;
 	this._sunDataArr;
-	this._weatherDataArr;
+	this._weatherDataArr = null;
+
+	this._ptsClear;
+	this._ptsCloud;
+	this._ptsRain;
+	this._ptsSnow;
+
+	this._meshClear = null;
+	this._meshCloud = null;
+	this._meshRain = null;
+	this._meshSnow = null;
+	this._meshSunrise = null;
+
+	// graph buffer
+	this._charging_lines;
+	this._running_lines;
+
+	this._weatherColors = [0xd6aa95, 0x4f5f64, 0x3d8db8, 0xffffff];
+
+	this._view_state = {
+		year: 0,
+		month: 0,
+		type: "",
+		weather: ""
+	};
 }
 
 // ---------------------------------------------------
@@ -31,71 +60,131 @@ PowerView.prototype.hide = function()
 
 }
 
-
-PowerView.prototype.genMonthGraph = function(year, month)
+PowerView.prototype.genMonthGraph = function(cobj)
 {
-	var suncsvfile = "./res/data_power/sunrise_sunset_" + year + "_" + month + ".csv";
-	var weathercsvfile = "./res/data_power/weather_" + year + "_" + month + ".csv";
-	var csvfile = "./res/data_power/tidbase4_" + year + "_" + month + ".csv";
+	var suncsvfile = "./res/data_power/sunrise_sunset_" + cobj.year + "_" + cobj.month + ".csv";
+	var weathercsvfile = "./res/data_power/weather_" + cobj.year + "_" + cobj.month + ".csv";
+	var csvfile = "./res/data_power/tidbase4_" + cobj.year + "_" + cobj.month + ".csv";
 	var self = this;
 
-	this._dayList = d3.time.days(new Date(year, month-1, 1), new Date(year, month, 1));
+	this._dayList = d3.time.days(new Date(cobj.year, cobj.month-1, 1), new Date(cobj.year, cobj.month, 1));
 
-	d3.csv(suncsvfile, function(csv) {
-		// save sunrise & sunset infomation
-		self._sunDataArr = csv;
+	// Draw monthly charging & running graph
+	if(cobj.year != this._view_state.year || cobj.month != this._view_state.month) {
 
-		// ------------------------------------
-		//  Draw monthly sunrise & sunset
-		// ------------------------------------
-		self._drawSunriseSunsetByMonth();
-	});
+		this._view_state.year = cobj.year;
+		this._view_state.month = cobj.month;
+		this._view_state.type = cobj.type;
+		this._view_state.weather = cobj.weather;
 
-	d3.csv(weathercsvfile, function(csv) {
-		// save weather information
-		self._weatherDataArr = csv;
+		// clear
+		this.dispose();
 
-		// ------------------------------------
-		//  Draw weather box
-		// ------------------------------------
-		self._drawWeatherByMonth();
-	});
+		// If date if not the same, clear and redraw
+		d3.csv(csvfile, function(csv) {
 
-	d3.csv(csvfile, function(csv) {
+			if(csv.length == 0)
+				return;
 
-		if(csv.length == 0)
-			return;
+			self._charging_lines = new Array();
+			self._running_lines = new Array();
 
-		var date = new Date(csv[0].date);
-		var currday = date.getDate();
-		var arr = new Array();
-		var dayidx = 0;
-		for(var i = 0; i < csv.length; i++) {
-			var obj = csv[i];
-			date = new Date(obj.date);
-			//console.log(date);
+			var date = new Date(csv[0].date);
+			var currday = date.getDate();
+			var arr = new Array();
+			var dayidx = 0;
+			for(var i = 0; i < csv.length; i++) {
+				var obj = csv[i];
+				date = new Date(obj.date);
+				//console.log(date);
 
-			if(currday == date.getDate()) {
-				arr.push(obj);
+				if(currday == date.getDate()) {
+					arr.push(obj);
+				} else {
+					self._genDayLine(arr, dayidx);
+
+					arr = new Array();
+					arr.push(obj);
+					currday = date.getDate();
+					dayidx++;
+
+					// FOR DEBUG
+					//if(dayidx == 3)
+					//	break;
+				}
+			}
+
+			// draw line
+			self._drawDayLine(cobj.type);
+		});
+
+		// loading sunrise & sunset csv
+		d3.csv(suncsvfile, function(csv) {
+			// save sunrise & sunset infomation
+			self._sunDataArr = csv;
+			if(self._view_state.weather == POWER_MENU_SUNRISE_SUNSET) {
+				this._meshSunrise = self._drawSunriseSunsetByMonth();
+			}
+		});
+
+		// loading weather csv
+		d3.csv(weathercsvfile, function(csv) {
+			// save weather information
+			self._weatherDataArr = csv;
+			self._genWeatherByMonth();
+
+			if(self._view_state.weather != POWER_MENU_NONE &&
+				self._view_state.weather != POWER_MENU_SUNRISE_SUNSET) {
+				this._drawWeather();
+			}
+		});
+	} else {
+
+		// Charging & Running
+		if(cobj.type != this._view_state.type) {
+			this._view_state.type = cobj.type;
+			this._drawDayLine(cobj.type);
+		}
+
+		// Weather
+		if(cobj.weather != this._view_state.weather) {
+			this._view_state.weather = cobj.weather;
+
+			// clear weather
+			this._clearWeather();
+
+			if(this._view_state.weather == POWER_MENU_NONE) {
+
+			} else if(this._view_state.weather == POWER_MENU_SUNRISE_SUNSET) {
+				//  draw monthly sunrise & sunset
+				if(this._meshSunrise == null) {
+					this._meshSunrise = self._drawSunriseSunsetByMonth();
+				} else {
+					this._animateIn(this._meshSunrise);
+				}
 			} else {
-				self._genDayLine(arr, dayidx);
-
-				arr = new Array();
-				arr.push(obj);
-				currday = date.getDate();
-				dayidx++;
-
-				// FOR DEBUG
-				//if(dayidx == 3)
-				//	break;
+				// draw weather
+				this._drawWeather();
 			}
 		}
-	});
+	}
 }
 
 PowerView.prototype.dispose = function()
 {
+	var obj, i;
+	for ( i = this._container.children.length - 1; i >= 0 ; i -- ) {
+		obj = this._container.children[ i ];
+		this._container.remove(obj);
+		obj.geometry.dispose();
+		obj.material.dispose();
+	}
 
+	this._meshClear = null;
+	this._meshCloud = null;
+	this._meshRain = null;
+	this._meshSnow = null;
+	this._meshSunrise = null;
 }
 
 // ---------------------------------------------------
@@ -150,16 +239,7 @@ PowerView.prototype._genDayLine = function(datset, idx)
 	daybox.position.x = 0;
 	daybox.position.y = this._dayHeight / 2;
 	daybox.position.z = posday;
-	this._scene.add(daybox);
-
-	// ---------------------------------
-	//  Draw Day sunrise & sunset
-	// ---------------------------------
-	//var tmpd = new Date(datset[0].date);
-	//var year = tmpd.getFullYear();
-	//var month = tmpd.getMonth();
-	//var day = tmpd.getDate();
-	//this._drawSunriseSunset(year, month, day, posday, _scaleTime);
+	this._container.add(daybox);
 
 	// -------------------------
 	//  Draw Graph
@@ -200,7 +280,9 @@ PowerView.prototype._genDayLine = function(datset, idx)
 			);
 
 			var line = new THREE.Line(geometry, material, THREE.LineStrip);
-			this._scene.add(line);
+			line.visible = false;
+			this._container.add(line);
+			this._running_lines.push(line);
 
 			// -------------------------
 			//  For charging
@@ -228,44 +310,69 @@ PowerView.prototype._genDayLine = function(datset, idx)
 				);
 
 				var line1 = new THREE.Line(geometry1, material1, THREE.LineStrip);
-				this._scene.add(line1);
+				line1.visible = false;
+				this._container.add(line1);
+				this._charging_lines.push(line1);
 			}
 		}
 	}
 }
 
-PowerView.prototype._drawSunriseSunset = function(year, month, day, posday, timescale)
+PowerView.prototype._drawDayLine = function(type)
 {
-	var boxcolor = 0x000000;
-	var boxopacity = 1;
-
-	var sundat = this._getSunTime(year, month, day);
-
-	var postime1 = timescale(sundat.sunrise);
-	var postime2 = timescale(sundat.sunset);
-
-	// sunrise box
-	var sunrisewid = postime1 - (-this._dayWidth / 2);
-	var sunrisebox = new THREE.Mesh(
-		new THREE.BoxGeometry(sunrisewid, this._dayHeight, this._dayLength, 10, 10, 10),
-		new THREE.MeshBasicMaterial({color: boxcolor, transparent: false, opacity: boxopacity})
-	);
-	sunrisebox.position.x = -this._dayWidth / 2 + sunrisewid / 2;
-	sunrisebox.position.y = this._dayHeight / 2;
-	sunrisebox.position.z = posday;
-	this._scene.add(sunrisebox);
-
-	// sunset box
-	var sunsetwid = (this._dayWidth / 2) - postime2;
-	var sunsetbox = new THREE.Mesh(
-		new THREE.BoxGeometry(sunsetwid, this._dayHeight, this._dayLength, 10, 10, 10),
-		new THREE.MeshBasicMaterial({color: boxcolor, transparent: false, opacity: boxopacity})
-	);
-	sunsetbox.position.x = postime2 + sunsetwid / 2;
-	sunsetbox.position.y = this._dayHeight / 2;
-	sunsetbox.position.z = posday;
-	this._scene.add(sunsetbox);
+	if(type == POWER_MENU_CHARGING) {
+		for(var i = 0; i < this._charging_lines.length; i++) {
+			var line = this._charging_lines[i];
+			line.visible = true;
+		}
+		for(var i = 0; i < this._running_lines.length; i++) {
+			var line = this._running_lines[i];
+			line.visible = false;
+		}
+	} else {
+		for(var i = 0; i < this._charging_lines.length; i++) {
+			var line = this._charging_lines[i];
+			line.visible = false;
+		}
+		for(var i = 0; i < this._running_lines.length; i++) {
+			var line = this._running_lines[i];
+			line.visible = true;
+		}
+	}
 }
+
+//PowerView.prototype._drawSunriseSunset = function(year, month, day, posday, timescale)
+//{
+//	var boxcolor = 0x000000;
+//	var boxopacity = 1;
+//
+//	var sundat = this._getSunTime(year, month, day);
+//
+//	var postime1 = timescale(sundat.sunrise);
+//	var postime2 = timescale(sundat.sunset);
+//
+//	// sunrise box
+//	var sunrisewid = postime1 - (-this._dayWidth / 2);
+//	var sunrisebox = new THREE.Mesh(
+//		new THREE.BoxGeometry(sunrisewid, this._dayHeight, this._dayLength, 10, 10, 10),
+//		new THREE.MeshBasicMaterial({color: boxcolor, transparent: false, opacity: boxopacity})
+//	);
+//	sunrisebox.position.x = -this._dayWidth / 2 + sunrisewid / 2;
+//	sunrisebox.position.y = this._dayHeight / 2;
+//	sunrisebox.position.z = posday;
+//	this._container.add(sunrisebox);
+//
+//	// sunset box
+//	var sunsetwid = (this._dayWidth / 2) - postime2;
+//	var sunsetbox = new THREE.Mesh(
+//		new THREE.BoxGeometry(sunsetwid, this._dayHeight, this._dayLength, 10, 10, 10),
+//		new THREE.MeshBasicMaterial({color: boxcolor, transparent: false, opacity: boxopacity})
+//	);
+//	sunsetbox.position.x = postime2 + sunsetwid / 2;
+//	sunsetbox.position.y = this._dayHeight / 2;
+//	sunsetbox.position.z = posday;
+//	this._container.add(sunsetbox);
+//}
 
 PowerView.prototype._drawSunriseSunsetByMonth = function()
 {
@@ -283,7 +390,7 @@ PowerView.prototype._drawSunriseSunsetByMonth = function()
 			.rangeRound([-this._dayWidth / 2, this._dayWidth / 2]);
 
 		// day pos
-		var daypos = this._dayLength * i;
+		var daypos = this._dayLength * i - this._dayLength / 2;
 
 		// sunrise
 		var sunrise = new Date(this._sunDataArr[i].sunrise);
@@ -327,17 +434,18 @@ PowerView.prototype._drawSunriseSunsetByMonth = function()
 		side: THREE.FrontSide } );
 	var mesh = new THREE.Mesh( geometry, material );
 	mesh.rotation.x = -Math.PI / 2;
-	this._scene.add( mesh );
+	this._animateIn(mesh);
 
+	return mesh;
 }
 
-PowerView.prototype._drawWeatherByMonth = function()
+PowerView.prototype._genWeatherByMonth = function()
 {
 	// shape
-	var ptsClear = new Array();
-	var ptsCloud = new Array();
-	var ptsRain = new Array();
-	var ptsSnow = new Array();
+	this._ptsClear = new Array();
+	this._ptsCloud = new Array();
+	this._ptsRain = new Array();
+	this._ptsSnow = new Array();
 
 	for(var i = 0; i < this._dayList.length-1; i++) {
 
@@ -395,15 +503,16 @@ PowerView.prototype._drawWeatherByMonth = function()
 						_tmppnts.push(lt);
 
 						if(_tmpconds.indexOf("CLEAR") != -1) {
-							ptsClear.push(_tmppnts);
+							this._ptsClear.push(_tmppnts);
 						} else if(_tmpconds.indexOf("CLOUDY") != -1) {
-							ptsCloud.push(_tmppnts);
+							this._ptsCloud.push(_tmppnts);
 						} else if(_tmpconds.indexOf("RAIN") != -1) {
-							ptsRain.push(_tmppnts);
+							this._ptsRain.push(_tmppnts);
 						} else if(_tmpconds.indexOf("SNOW") != -1) {
-							ptsSnow.push(_tmppnts);
+							this._ptsSnow.push(_tmppnts);
 						} else {
 							console.log(_tmpconds);
+							break;
 						}
 
 						_tmppnts = new Array();
@@ -421,13 +530,13 @@ PowerView.prototype._drawWeatherByMonth = function()
 						_tmppnts.push(lt);
 
 						if(_tmpconds.indexOf("CLEAR") != -1) {
-							ptsClear.push(_tmppnts);
+							this._ptsClear.push(_tmppnts);
 						} else if(_tmpconds.indexOf("CLOUDY") != -1) {
-							ptsCloud.push(_tmppnts);
+							this._ptsCloud.push(_tmppnts);
 						} else if(_tmpconds.indexOf("RAIN") != -1) {
-							ptsRain.push(_tmppnts);
+							this._ptsRain.push(_tmppnts);
 						} else if(_tmpconds.indexOf("SNOW") != -1) {
-							ptsSnow.push(_tmppnts);
+							this._ptsSnow.push(_tmppnts);
 						} else {
 							console.log(_tmpconds);
 						}
@@ -444,12 +553,54 @@ PowerView.prototype._drawWeatherByMonth = function()
 			}
 		}
 	}
+}
 
-	// Draw Weather
-	//this._drawWeatherBox(ptsClear, 0xd6aa95);
-	//this._drawWeatherBox(ptsCloud, 0x4f5f64);
-	//this._drawWeatherBox(ptsRain, 0x3d8db8);
-	//this._drawWeatherBox(ptsSnow, 0xffffff);
+PowerView.prototype._drawWeather = function()
+{
+	// ------------------------------------
+	//  Draw weather box
+	// ------------------------------------
+	switch(this._view_state.weather) {
+		case POWER_MENU_CLEAR:
+			if(this._meshClear == null) {
+				this._meshClear = this._drawWeatherBox(this._ptsClear, this._weatherColors[0]);
+			} else {
+				this._animateIn(this._meshClear);
+			}
+			break;
+		case POWER_MENU_CLOUD:
+			if(this._meshCloud == null) {
+				this._meshCloud = this._drawWeatherBox(this._ptsCloud, this._weatherColors[1]);
+			} else {
+				this._animateIn(this._meshCloud);
+			}
+			break;
+		case POWER_MENU_RAIN:
+			if(this._meshRain == null) {
+				this._meshRain = this._drawWeatherBox(this._ptsRain, this._weatherColors[2]);
+			} else {
+				this._animateIn(this._meshRain);
+			}
+			break;
+		case POWER_MENU_SNOW:
+			if(this._meshSnow == null) {
+				this._meshSnow = this._drawWeatherBox(this._ptsSnow, this._weatherColors[3]);
+			} else {
+				this._animateIn(this._meshSnow);
+			}
+			break;
+		default :
+			break;
+	}
+}
+
+PowerView.prototype._clearWeather = function()
+{
+	this._animateOut(this._meshClear);
+	this._animateOut(this._meshCloud);
+	this._animateOut(this._meshRain);
+	this._animateOut(this._meshSnow);
+	this._animateOut(this._meshSunrise);
 }
 
 PowerView.prototype._drawWeatherBox = function(pts, color)
@@ -474,7 +625,9 @@ PowerView.prototype._drawWeatherBox = function(pts, color)
 		side: THREE.FrontSide } );
 	var mesh = new THREE.Mesh( geometry, material );
 	mesh.rotation.x = -Math.PI / 2;
-	this._scene.add( mesh );
+	this._animateIn(mesh);
+
+	return mesh;
 }
 
 PowerView.prototype._getSunTime = function(year, month, day)
@@ -497,6 +650,28 @@ PowerView.prototype._getSunTime = function(year, month, day)
 }
 
 // --------------------------------------------------------------
+//  Animation
+// --------------------------------------------------------------
+PowerView.prototype._animateIn = function(obj3d)
+{
+	obj3d.scale.z = 0.001;
+	this._container.add(obj3d);
+	TweenMax.to(obj3d.scale, 1.3, {z:1, ease:Expo.easeOut});
+	TweenMax.to(obj3d.material, 1, {opacity:0.5, ease:Expo.easeOut});
+}
+
+PowerView.prototype._animateOut = function(obj3d)
+{
+	var self = this;
+	if(obj3d) {
+		TweenMax.to(obj3d.material, 0.6, {opacity:0, ease:Expo.easeOut});
+		TweenMax.to(obj3d.scale, 0.6, {z:0.001, ease:Expo.easeOut, onComplete:function() {
+			self._container.remove(obj3d);
+		}});
+	}
+}
+
+// --------------------------------------------------------------
 //  将不同的气象描述词语归纳成四种状态：CLEAR, CLOUDY, SNOW, RAIN
 // --------------------------------------------------------------
 PowerView.prototype._rollupConds = function(conds)
@@ -515,6 +690,9 @@ PowerView.prototype._rollupConds = function(conds)
 		newconds = "RAIN";
 	} else if(conds.indexOf("Snow") != -1) {
 		newconds = "SNOW";
+	} else {
+		//console.log(conds);
+		newconds = "UNKNOWN";
 	}
 
 	return newconds;
