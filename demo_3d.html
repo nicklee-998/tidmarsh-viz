@@ -41,6 +41,7 @@
 
 	var container, scene, renderer, camera, controls, sw, sh;
 	var powermenu;
+	var activeCamera;
 
 	$(document).ready(function() {
 		init3d();
@@ -59,7 +60,7 @@
 		renderer.sortObjects = true;
 
 		// Setup the camera
-		camera = new THREE.PerspectiveCamera(45, sw / sh, 0.1, 10000);
+		camera = new THREE.PerspectiveCamera(45, sw / sh, 0.1, 10000000);
 		camera.position.x = 1669;
 		camera.position.y = 1505;
 		camera.position.z = 2497;
@@ -103,10 +104,13 @@
 //		scene.add(box);
 
 
-		var powerview = new PowerView(scene);
+		var powerview = new PowerView(scene, camera);
 
 		jQuery.subscribe(POWERMENU_CHANGE, function(e, d) {
 			powerview.genMonthGraph(d);
+		});
+		jQuery.subscribe(POWERMENU_2D_3D, function(e, d) {
+			powerview.changeView(d);
 		});
 		powermenu = new UiPowerViewMenu("submenu");
 	}
@@ -130,21 +134,27 @@
 	function onKeyboardDown()
 	{
 		// 返回键退出
+		console.log(d3.event.keyCode);
 		if(d3.event.keyCode == 68) 	// D:
 		{
 			var obj = scene.getObjectByName("power_container");
 
 			console.log("= Camera Info =================================");
 			console.log(camera.position);
+			console.log(camera.rotation);
 			console.log("Polar Angle = " + controls.getPolarAngle());
 			console.log("Azimuthal Angle = " + controls.getAzimuthalAngle());
 			console.log(obj.position);
+			console.log(obj.rotation);
 			console.log("===============================================");
 
-		} else if(d3.event.keyCode == 69) {
+		} else if(d3.event.keyCode == 69) // e
+		{
 			var obj = scene.getObjectByName("power_container");
 			console.log(obj.position);
-		} else if(d3.event.keyCode == 70) {
+		}
+		else if(d3.event.keyCode == 70) // f
+		{
 			camera.lookAt(new THREE.Vector3(0, 0, 0));
 		}
 		else if(d3.event.keyCode == 49)	// 1
@@ -171,11 +181,43 @@
 		{
 			var obj = scene.getObjectByName("power_container");
 			obj.position.z += 10;
+			//obj.rotation.y += 0.1;
 		}
 		else if(d3.event.keyCode == 54)	// 6
 		{
 			var obj = scene.getObjectByName("power_container");
 			obj.position.z -= 10;
+			//obj.rotation.y -= 0.1;
+		}
+		else if(d3.event.keyCode == 55)	// 7
+		{
+			var obj = scene.getObjectByName("power_container");
+			obj.rotation.z += 0.1;
+		}
+		else if(d3.event.keyCode == 56)	// 8
+		{
+			var obj = scene.getObjectByName("power_container");
+			obj.rotation.z -= 0.1;
+		}
+		else if(d3.event.keyCode == 57)	// 9
+		{
+			var obj = scene.getObjectByName("power_container");
+			obj.rotation.x += 0.1;
+		}
+		else if(d3.event.keyCode == 48)	// 0
+		{
+			var obj = scene.getObjectByName("power_container");
+			obj.rotation.x -= 0.1;
+		}
+		else if(d3.event.keyCode == 74)	// j
+		{
+			camera.fov = 1;
+			camera.updateProjectionMatrix();
+		}
+		else if(d3.event.keyCode == 75)	// k
+		{
+			//camera.fov = 45;
+			///camera.updateProjectionMatrix();
 		}
 	}
 	d3.select("body").on("keydown", onKeyboardDown);

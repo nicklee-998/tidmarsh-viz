@@ -80,3 +80,4 @@ var MAINMENU_POWER_LEAVE = "main_menu_power_leave";
  * POWER MENU EVENT
  ***********************************/
 var POWERMENU_CHANGE = "power_menu_change";
+var POWERMENU_2D_3D = "power_menu_2d_3d";

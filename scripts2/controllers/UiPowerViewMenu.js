@@ -144,8 +144,30 @@ function UiPowerViewMenu(cname)
 		}
 	}
 
-	$(window).resize(function() {
+	// 2D/3D button
+	$("#powermenu_container").append("<div id='pmenu_2d3d' class='powermenu_2d3d'>2D</div>");
+	$("#pmenu_2d3d").css("top", window.innerHeight-240);
+	$("#pmenu_2d3d").click(function() {
 
+		var newtype;
+		var newlabel;
+		if($("#pmenu_2d3d").html() == "3D") {
+			newtype = "3D";
+			newlabel = "2D";
+		} else {
+			newtype = "2D";
+			newlabel = "3D";
+		}
+		$("#pmenu_2d3d").text(newlabel);
+
+		// ------------------------
+		// Send menu change event
+		// ------------------------
+		jQuery.publish(POWERMENU_2D_3D, newtype);
+	});
+
+	$(window).resize(function() {
+		$("#pmenu_2d3d").css("top", window.innerHeight-240);
 	});
 
 	// ------------------------
