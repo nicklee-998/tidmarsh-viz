@@ -46,6 +46,10 @@ function PowerView(scene, camera, tooltipid)
 	this._meshRain = null;
 	this._meshSnow = null;
 	this._meshSunrise = null;
+	this._meshVisibility = null;
+	this._meshTemprature = null;
+	this._meshCharging = null;
+	this._meshRunning = null;
 
 	// graph buffer
 	this._charging_lines;
@@ -84,7 +88,15 @@ function PowerView(scene, camera, tooltipid)
 		year: 0,
 		month: 0,
 		type: "",
-		weather: "",
+		weather: {
+			sunrisesunset: 0,
+			clear: 0,
+			cloud: 0,
+			rain: 0,
+			snow: 0,
+			visibility: 0,
+			temprature: 0
+		},
 		view: "3d"      // 默认是3d视角
 	};
 }
@@ -119,7 +131,6 @@ PowerView.prototype.genMonthGraph = function(cobj)
 		this._view_state.year = cobj.year;
 		this._view_state.month = cobj.month;
 		this._view_state.type = cobj.type;
-		this._view_state.weather = cobj.weather;
 
 		// clear
 		this.dispose();
@@ -175,68 +186,50 @@ PowerView.prototype.genMonthGraph = function(cobj)
 					}
 				}
 			}
-			self._drawDayLine(cobj.type);
-
-			// Draw box
-			//self._drawWeatherBox(self._ptsRunning, 0xff0000);
+			self._drawChargingRunningGraph(cobj.type);
 		});
 
 		// loading sunrise & sunset csv
 		d3.csv(suncsvfile, function(csv) {
 			// save sunrise & sunset infomation
 			self._sunDataArr = csv;
-			self._meshSunrise = self._drawSunriseSunsetByMonth();
-			self._meshSunrise.material.opacity = 0.3;
-			self._meshSunrise.scale.z = 0.001;
-			self._container.add(self._meshSunrise);
+			self._meshSunrise = self._genSunriseSunsetByMonth();
+
+			// 根据menu state，决定显示否
+			if(cobj.weather.sunrisesunset) {
+				self._animateIn(self._meshSunrise);
+			}
 		});
 
 		// loading weather csv
 		d3.csv(weathercsvfile, function(csv) {
 			// save weather information
 			self._weatherDataArr = csv;
-			self._genWeatherByMonth();
 
-			if(self._view_state.weather != POWER_MENU_NONE &&
-				self._view_state.weather != POWER_MENU_SUNRISE_SUNSET) {
-				self._drawWeather();
-			}
+			// 根据menu state，显示weather效果
+			self._drawWeatherByMenu(cobj);
 
-			var planes = self._genWeatherPlane(self._ptsTemp);
-			//var planes = self._genWeatherPlane(self._ptsVis);
-			for(var i = 0; i < planes.length; i++) {
-				self._container.add(planes[i]);
-			}
+			//if(self._view_state.weather != POWER_MENU_NONE &&
+			//	self._view_state.weather != POWER_MENU_SUNRISE_SUNSET) {
+			//	self._drawWeather();
+			//}
+			//
+			//var planes = self._genWeatherPlane(self._ptsTemp);
+			////var planes = self._genWeatherPlane(self._ptsVis);
+			//for(var i = 0; i < planes.length; i++) {
+			//	self._container.add(planes[i]);
+			//}
 		});
 	} else {
 
 		// Charging & Running
 		if(cobj.type != this._view_state.type) {
 			this._view_state.type = cobj.type;
-			this._drawDayLine(cobj.type);
+			this._drawChargingRunningGraph(cobj.type);
 		}
 
 		// Weather
-		if(cobj.weather != this._view_state.weather) {
-			this._view_state.weather = cobj.weather;
-
-			// clear weather
-			this._clearWeather();
-
-			if(this._view_state.weather == POWER_MENU_NONE) {
-
-			} else if(this._view_state.weather == POWER_MENU_SUNRISE_SUNSET) {
-				//  draw monthly sunrise & sunset
-				if(this._meshSunrise == null) {
-					this._meshSunrise = self._drawSunriseSunsetByMonth();
-				} else {
-					this._animateIn(this._meshSunrise);
-				}
-			} else {
-				// draw weather
-				this._drawWeather();
-			}
-		}
+		this._drawWeatherByMenu(cobj);
 	}
 }
 
@@ -303,6 +296,11 @@ PowerView.prototype.dispose = function()
 	this._meshRain = null;
 	this._meshSnow = null;
 	this._meshSunrise = null;
+	this._meshVisibility = null;
+	this._meshTemprature = null;
+
+	this._meshCharging = null;
+	this._meshRunning = null;
 }
 
 PowerView.prototype.update = function(mouse)
@@ -374,6 +372,96 @@ PowerView.prototype.update = function(mouse)
 // ---------------------------------------------------
 // --- PRIVATE METHOD --------------------------------
 // ---------------------------------------------------
+
+PowerView.prototype._drawWeatherByMenu = function(menu_state)
+{
+	if(menu_state.weather.sunrisesunset != this._view_state.weather.sunrisesunset) {
+		if(menu_state.weather.sunrisesunset == 1) {
+			this._animateIn(this._meshSunrise);
+		} else {
+			this._animateOut(this._meshSunrise);
+		}
+		this._view_state.weather.sunrisesunset = menu_state.weather.sunrisesunset;
+	}
+
+	// Clear
+	if(menu_state.weather.clear != this._view_state.weather.clear) {
+		if(menu_state.weather.clear == 1) {
+			if(this._meshClear == null) {
+				this._meshClear = this._genWeatherByName("CLEAR", this._weatherColors[0]);
+			}
+			this._animateIn(this._meshClear);
+		} else {
+			this._animateOut(this._meshClear);
+		}
+		this._view_state.weather.clear = menu_state.weather.clear;
+	}
+
+	// Cloud
+	if(menu_state.weather.cloud != this._view_state.weather.cloud) {
+		if(menu_state.weather.cloud == 1) {
+			if(this._meshCloud == null) {
+				this._meshCloud = this._genWeatherByName("CLOUDY", this._weatherColors[1]);
+			}
+			this._animateIn(this._meshCloud);
+		} else {
+			this._animateOut(this._meshCloud);
+		}
+		this._view_state.weather.cloud = menu_state.weather.cloud;
+	}
+
+	// Rain
+	if(menu_state.weather.rain != this._view_state.weather.rain) {
+		if(menu_state.weather.rain == 1) {
+			if(this._meshRain == null) {
+				this._meshRain = this._genWeatherByName("RAIN", this._weatherColors[2]);
+			}
+			this._animateIn(this._meshRain);
+		} else {
+			this._animateOut(this._meshRain);
+		}
+		this._view_state.weather.rain = menu_state.weather.rain;
+	}
+
+	// Snow
+	if(menu_state.weather.snow != this._view_state.weather.snow) {
+		if(menu_state.weather.snow == 1) {
+			if(this._meshSnow == null) {
+				this._meshSnow = this._genWeatherByName("SNOW", this._weatherColors[3]);
+			}
+			this._animateIn(this._meshSnow);
+		} else {
+			this._animateOut(this._meshSnow);
+		}
+		this._view_state.weather.snow = menu_state.weather.snow;
+	}
+
+	// Visibility
+	if(menu_state.weather.visibility != this._view_state.weather.visibility) {
+		if(menu_state.weather.visibility == 1) {
+			if(this._meshVisibility == null) {
+				this._meshVisibility = this._genWeatherByName("visibility", this._weatherColors[4]);
+			}
+			this._animateIn(this._meshVisibility);
+		} else {
+			this._animateOut(this._meshVisibility);
+		}
+		this._view_state.weather.visibility = menu_state.weather.visibility;
+	}
+
+	// Temprature
+	if(menu_state.weather.temprature != this._view_state.weather.temprature) {
+		if(menu_state.weather.temprature == 1) {
+			if(this._meshTemprature == null) {
+				this._meshTemprature = this._genWeatherByName("temprature", this._weatherColors[5]);
+			}
+			this._animateIn(this._meshTemprature);
+		} else {
+			this._animateOut(this._meshTemprature);
+		}
+		this._view_state.weather.temprature = menu_state.weather.temprature;
+	}
+}
 
 PowerView.prototype._genDayLine = function(datset, idx, date)
 {
@@ -482,7 +570,10 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 				if(i == (datset.length - 2)) {
 					_tmppnts1.push(lb);
 					_tmppnts1.push(lt);
-					this._ptsRunning.push(_tmppnts1);
+					this._ptsRunning.push({
+						pos: _tmppnts1,
+						value: obj1.battery_voltage
+					});
 				}
 			}
 
@@ -515,7 +606,44 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 				line1.visible = false;
 				this._container.add(line1);
 				this._charging_lines.push(line1);
+
+				// -------------------------
+				//  For charging box
+				// -------------------------
+				var lt = new THREE.Vector2(postime1, (-posday) + this._dayLength / 2);
+				var lb = new THREE.Vector2(postime1, (-posday) - this._dayLength / 2);
+
+				if(_tmppnts2.length == 0) {
+					_tmppnts2.push(lt);
+					_tmppnts2.push(lb);
+				} else {
+					if(i == (datset.length - 2)) {
+						_tmppnts2.push(lb);
+						_tmppnts2.push(lt);
+						this._ptsCharging.push({
+							pos: _tmppnts2,
+							value: obj1.charge_current
+						});
+					}
+				}
+			} else {
+				// -------------------------
+				//  For charging box
+				// -------------------------
+				if(_tmppnts2.length > 0) {
+					var lt = new THREE.Vector2(postime1, -posday + this._dayLength / 2);
+					var lb = new THREE.Vector2(postime1, -posday - this._dayLength / 2);
+					_tmppnts2.push(lb);
+					_tmppnts2.push(lt);
+
+					this._ptsCharging.push({
+						pos: _tmppnts2,
+						value: obj1.charge_current
+					});
+					_tmppnts2 = new Array();
+				}
 			}
+
 		} else {
 
 			// -------------------------
@@ -527,14 +655,80 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 				_tmppnts1.push(lb);
 				_tmppnts1.push(lt);
 
-				this._ptsRunning.push(_tmppnts1);
+				this._ptsRunning.push({
+					pos: _tmppnts1,
+					value: obj1.battery_voltage
+				});
 				_tmppnts1 = new Array();
 			}
+
+
 		}
 	}
 }
 
-PowerView.prototype._drawDayLine = function(type)
+PowerView.prototype._genChargingRunningBox = function(type, color)
+{
+	var parr = new Array();
+	var _pts = null;
+	var scaleColor = null;
+	var scaleHeight = null;
+	var scaleOpacity = null;
+
+	if(type == POWER_MENU_CHARGING) {
+		_pts = this._ptsCharging;
+
+	} else if(type == POWER_MENU_RUNNING) {
+		_pts = this._ptsRunning;
+
+	}
+
+	for(var k = 0; k < _pts.length; k++) {
+
+		var obj = _pts[k];
+		var wid = obj.pos[3].x - obj.pos[0].x;
+		var clr;
+		if(scaleColor == null) {
+			clr = color;
+		} else {
+			clr = scaleColor(obj.value);
+		}
+		var hei;
+		if(scaleHeight == null) {
+			hei = 0.1;
+		} else {
+			hei = scaleHeight(obj.value);
+		}
+		var opacity;
+		if(scaleOpacity == null) {
+			opacity = 0.3;
+		} else {
+			opacity = scaleOpacity(obj.value);
+		}
+
+		var p = new THREE.Mesh(
+			new THREE.BoxGeometry(wid, this._dayLength, hei),
+			new THREE.MeshBasicMaterial({
+				color: clr,
+				transparent: true,
+				opacity: opacity,
+				depthTest: false,
+				depthWrite: false,
+				side: THREE.FrontSide
+			})
+		);
+		p.position.x = obj.pos[0].x + wid / 2;
+		p.position.y = hei / 2;
+		p.position.z = -obj.pos[0].y + this._dayLength / 2;
+		p.rotation.x = -Math.PI / 2;
+
+		parr.push(p);
+	}
+
+	return parr;
+}
+
+PowerView.prototype._drawChargingRunningGraph = function(type)
 {
 	if(type == POWER_MENU_CHARGING) {
 		for(var i = 0; i < this._charging_lines.length; i++) {
@@ -545,6 +739,17 @@ PowerView.prototype._drawDayLine = function(type)
 			var line = this._running_lines[i];
 			line.visible = false;
 		}
+
+		// show running box in background
+		if(this._meshRunning == null) {
+			this._meshRunning = this._genChargingRunningBox(POWER_MENU_RUNNING, 0xff0000);
+		}
+		this._animateIn(this._meshRunning);
+
+		if(this._meshCharging != null) {
+			this._animateOut(this._meshCharging);
+		}
+
 	} else {
 		for(var i = 0; i < this._charging_lines.length; i++) {
 			var line = this._charging_lines[i];
@@ -554,11 +759,21 @@ PowerView.prototype._drawDayLine = function(type)
 			var line = this._running_lines[i];
 			line.visible = true;
 		}
+
+		// show charging box in background
+		if(this._meshCharging == null) {
+			this._meshCharging = this._genChargingRunningBox(POWER_MENU_CHARGING, 0x00ff00);
+		}
+		this._animateIn(this._meshCharging);
+
+		if(this._meshRunning != null) {
+			this._animateOut(this._meshRunning);
+		}
 	}
 }
 
 // --------------------------------------------------
-//  Draw Day box
+//  Draw Day box, 暂时没用
 // --------------------------------------------------
 PowerView.prototype._drawDayBox = function(posday)
 {
@@ -730,7 +945,7 @@ PowerView.prototype._genTextMesh = function(str)
 //	this._container.add(sunsetbox);
 //}
 
-PowerView.prototype._drawSunriseSunsetByMonth = function()
+PowerView.prototype._genSunriseSunsetByMonth = function()
 {
 	// draw sunrise and sunset graph
 	var sunrise_pts = new Array();
@@ -818,15 +1033,9 @@ PowerView.prototype._drawSunriseSunsetByMonth = function()
 	return mesh;
 }
 
-PowerView.prototype._genWeatherByMonth = function()
+PowerView.prototype._genWeatherByName = function(wname, color)
 {
-	// shape
-	this._ptsClear = new Array();
-	this._ptsCloud = new Array();
-	this._ptsRain = new Array();
-	this._ptsSnow = new Array();
-	this._ptsTemp = new Array();
-	this._ptsVis = new Array();
+	var _pts = new Array();
 
 	for(var i = 0; i < this._dayList.length-1; i++) {
 
@@ -840,8 +1049,6 @@ PowerView.prototype._genWeatherByMonth = function()
 			.domain([date1, date2])
 			.rangeRound([-this._dayWidth / 2, this._dayWidth / 2]);
 
-		var _tmpconds = "";
-		var _tmppnts = new Array();
 		for(var j = 0; j < this._weatherDataArr.length-1; j++) {
 
 			var wdate1 = new Date(
@@ -876,57 +1083,27 @@ PowerView.prototype._genWeatherByMonth = function()
 					var rt = new THREE.Vector2(pos2, daypos + this._dayLength / 2);
 					var rb = new THREE.Vector2(pos2, daypos - this._dayLength / 2);
 
-					// for temperture
-					this._ptsTemp.push({
-						pos: [lt, lb, rb, rt],
-						value: this._weatherDataArr[j].temp
-					});
-
-					// for vis
-					this._ptsVis.push({
-						pos: [lt, lb, rb, rt],
-						value: this._weatherDataArr[j].vis
-					});
-
-					// for conds
-					if(this._rollupConds(this._weatherDataArr[j].conds) != _tmpconds ||
-						j == (this._weatherDataArr.length - 2)) {
-
-						if(_tmppnts.length == 0) {
-							_tmppnts.push(lt);
-							_tmppnts.push(lb);
-
-							_tmpconds = this._rollupConds(this._weatherDataArr[j].conds);
-						} else {
-							_tmppnts.push(lb);
-							_tmppnts.push(lt);
-
-							if(_tmpconds.indexOf("CLEAR") != -1) {
-								this._ptsClear.push(_tmppnts);
-							} else if(_tmpconds.indexOf("CLOUDY") != -1) {
-								this._ptsCloud.push(_tmppnts);
-							} else if(_tmpconds.indexOf("RAIN") != -1) {
-								this._ptsRain.push(_tmppnts);
-							} else if(_tmpconds.indexOf("SNOW") != -1) {
-								this._ptsSnow.push(_tmppnts);
-							} else {
-								console.log(_tmpconds);
-								break;
-							}
-
-							_tmppnts = new Array();
-							_tmppnts.push(lt);
-							_tmppnts.push(lb);
-
-							_tmpconds = this._rollupConds(this._weatherDataArr[j].conds);
-						}
-
+					if(wname == "temprature") {
+						// for temperture
+						_pts.push({
+							pos: [lt, lb, rb, rt],
+							value: this._weatherDataArr[j].temp
+						});
+					} else if(wname == "visibility") {
+						// for vis
+						_pts.push({
+							pos: [lt, lb, rb, rt],
+							value: this._weatherDataArr[j].vis
+						});
 					} else {
-						if(_tmppnts.length == 0) {
-							_tmppnts.push(lt);
-							_tmppnts.push(lb);
-						} else {
-							_tmppnts.push(lb);
+						// for conds
+						var _tmpconds = this._rollupConds(this._weatherDataArr[j].conds);
+						if(_tmpconds == wname) {
+
+							_pts.push({
+								pos: [lt, lb, rb, rt],
+								value: this._weatherDataArr[j].precip
+							});
 						}
 					}
 
@@ -940,46 +1117,259 @@ PowerView.prototype._genWeatherByMonth = function()
 			}
 		}
 	}
+
+	var parr = new Array();
+	var scaleColor = null;
+	var scaleHeight = null;
+	var scaleOpacity = null;
+
+	if(wname == "temprature") {
+
+		var c1 = "hsl(0, 100%, 100%)";
+		var c2 = "hsl(0, 100%, 50%)";
+		scaleColor = d3.scale.sqrt()
+			//.linear()
+			.domain([-50, 30])
+			.range([c1, c2])
+			.interpolate(d3.interpolateHsl);
+
+	} else if(wname == "visibility") {
+
+		var c3 = "hsl(0, 0%, 50%)";
+		var c4 = "hsl(0, 0%, 100%)";
+		scaleColor = d3.scale.sqrt()
+			//.linear()
+			.domain([0, 17])
+			.range([c3, c4])
+			.interpolate(d3.interpolateHsl);
+		scaleOpacity = d3.scale.linear()
+			.domain([0, 17])
+			.range([0.7, 0]);
+
+	} else {
+
+		scaleHeight = d3.scale.linear()
+			.domain([0, 5])
+			.range([0, this._dayHeight]);
+
+	}
+
+	for(var k = 0; k < _pts.length; k++) {
+
+		var obj = _pts[k];
+		var wid = obj.pos[3].x - obj.pos[0].x;
+		var clr;
+		if(scaleColor == null) {
+			clr = color;
+		} else {
+			clr = scaleColor(obj.value);
+		}
+		var hei;
+		if(scaleHeight == null) {
+			hei = 0.1;
+		} else {
+			if(obj.value == -9999) {
+				hei = 0.1;
+			} else {
+				hei = scaleHeight(obj.value);
+			}
+		}
+		var opacity;
+		if(scaleOpacity == null) {
+			opacity = 0.7;
+		} else {
+			opacity = scaleOpacity(obj.value);
+		}
+
+		var p = new THREE.Mesh(
+			new THREE.BoxGeometry(wid, this._dayLength, hei),
+			new THREE.MeshBasicMaterial({
+				color: clr,
+				transparent: true,
+				opacity: opacity,
+				depthTest: false,
+				depthWrite: false,
+				side: THREE.FrontSide
+			})
+		);
+		p.position.x = obj.pos[0].x + wid / 2;
+		p.position.y = hei / 2;
+		p.position.z = -obj.pos[0].y + this._dayLength / 2;
+		p.rotation.x = -Math.PI / 2;
+
+		parr.push(p);
+	}
+
+	return parr;
 }
 
-PowerView.prototype._drawWeather = function()
-{
-	// ------------------------------------
-	//  Draw weather box
-	// ------------------------------------
-	switch(this._view_state.weather) {
-		case POWER_MENU_CLEAR:
-			if(this._meshClear == null) {
-				this._meshClear = this._drawWeatherBox(this._ptsClear, this._weatherColors[0]);
-			} else {
-				this._animateIn(this._meshClear);
-			}
-			break;
-		case POWER_MENU_CLOUD:
-			if(this._meshCloud == null) {
-				this._meshCloud = this._drawWeatherBox(this._ptsCloud, this._weatherColors[1]);
-			} else {
-				this._animateIn(this._meshCloud);
-			}
-			break;
-		case POWER_MENU_RAIN:
-			if(this._meshRain == null) {
-				this._meshRain = this._drawWeatherBox(this._ptsRain, this._weatherColors[2]);
-			} else {
-				this._animateIn(this._meshRain);
-			}
-			break;
-		case POWER_MENU_SNOW:
-			if(this._meshSnow == null) {
-				this._meshSnow = this._drawWeatherBox(this._ptsSnow, this._weatherColors[3]);
-			} else {
-				this._animateIn(this._meshSnow);
-			}
-			break;
-		default :
-			break;
-	}
-}
+//PowerView.prototype._genWeatherByMonth = function()
+//{
+//	// shape
+//	this._ptsClear = new Array();
+//	this._ptsCloud = new Array();
+//	this._ptsRain = new Array();
+//	this._ptsSnow = new Array();
+//	this._ptsTemp = new Array();
+//	this._ptsVis = new Array();
+//
+//	for(var i = 0; i < this._dayList.length-1; i++) {
+//
+//		// day position
+//		var daypos = this._dayLength * i;
+//
+//		// time scale
+//		var date1 = this._dayList[i];
+//		var date2 = this._dayList[i+1];
+//		var _scaleTime = d3.time.scale()
+//			.domain([date1, date2])
+//			.rangeRound([-this._dayWidth / 2, this._dayWidth / 2]);
+//
+//		var _tmpconds = "";
+//		var _tmppnts = new Array();
+//		for(var j = 0; j < this._weatherDataArr.length-1; j++) {
+//
+//			var wdate1 = new Date(
+//				this._weatherDataArr[j].year,
+//				this._weatherDataArr[j].month-1,
+//				this._weatherDataArr[j].day,
+//				this._weatherDataArr[j].hour,
+//				this._weatherDataArr[j].minute,
+//				this._weatherDataArr[j].second
+//			);
+//			// 用于判断是否为当天最后一个值
+//			var wdate2 = new Date(
+//				this._weatherDataArr[j+1].year,
+//				this._weatherDataArr[j+1].month-1,
+//				this._weatherDataArr[j+1].day,
+//				this._weatherDataArr[j+1].hour,
+//				this._weatherDataArr[j+1].minute,
+//				this._weatherDataArr[j+1].second
+//			);
+//
+//			if(wdate1 > date1 && wdate1 < date2) {
+//
+//				if(wdate2 < date2) {
+//					// ------------------------------------------------------------------
+//					//  如果下一个时间在当天，一切正常
+//					// ------------------------------------------------------------------
+//					var pos1 = _scaleTime(wdate1);
+//					var pos2 = _scaleTime(wdate2);
+//
+//					var lt = new THREE.Vector2(pos1, daypos + this._dayLength /2);
+//					var lb = new THREE.Vector2(pos1, daypos - this._dayLength / 2);
+//					var rt = new THREE.Vector2(pos2, daypos + this._dayLength / 2);
+//					var rb = new THREE.Vector2(pos2, daypos - this._dayLength / 2);
+//
+//					// for temperture
+//					this._ptsTemp.push({
+//						pos: [lt, lb, rb, rt],
+//						value: this._weatherDataArr[j].temp
+//					});
+//
+//					// for vis
+//					this._ptsVis.push({
+//						pos: [lt, lb, rb, rt],
+//						value: this._weatherDataArr[j].vis
+//					});
+//
+//					// for conds
+//					this._ptsClear.push({
+//						pos: [lt, lb, rb, rt],
+//						value: this._weatherDataArr[j].precip
+//					});
+//					this._ptsCloud.push({
+//						pos: [lt, lb, rb, rt],
+//						value: this._weatherDataArr[j].precip
+//					});
+//					this._ptsRain.push({
+//						pos: [lt, lb, rb, rt],
+//						value: this._weatherDataArr[j].precip
+//					});
+//					this._ptsSnow.push({
+//						pos: [lt, lb, rb, rt],
+//						value: this._weatherDataArr[j].precip
+//					});
+//
+//
+//					//if(this._rollupConds(this._weatherDataArr[j].conds) != _tmpconds ||
+//					//	j == (this._weatherDataArr.length - 2)) {
+//					//
+//					//	if(_tmppnts.length == 0) {
+//					//		_tmppnts.push(lt);
+//					//		_tmppnts.push(lb);
+//					//
+//					//		_tmpconds = this._rollupConds(this._weatherDataArr[j].conds);
+//					//	} else {
+//					//		_tmppnts.push(lb);
+//					//		_tmppnts.push(lt);
+//					//
+//					//		if(_tmpconds.indexOf("CLEAR") != -1) {
+//					//			this._ptsClear.push(_tmppnts);
+//					//		} else if(_tmpconds.indexOf("CLOUDY") != -1) {
+//					//			this._ptsCloud.push(_tmppnts);
+//					//		} else if(_tmpconds.indexOf("RAIN") != -1) {
+//					//			this._ptsRain.push(_tmppnts);
+//					//		} else if(_tmpconds.indexOf("SNOW") != -1) {
+//					//			this._ptsSnow.push(_tmppnts);
+//					//		} else {
+//					//			console.log(_tmpconds);
+//					//			break;
+//					//		}
+//					//
+//					//		_tmppnts = new Array();
+//					//		_tmppnts.push(lt);
+//					//		_tmppnts.push(lb);
+//					//
+//					//		_tmpconds = this._rollupConds(this._weatherDataArr[j].conds);
+//					//	}
+//					//
+//					//} else {
+//					//	if(_tmppnts.length == 0) {
+//					//		_tmppnts.push(lt);
+//					//		_tmppnts.push(lb);
+//					//	} else {
+//					//		_tmppnts.push(lb);
+//					//	}
+//					//}
+//
+//				} else {
+//
+//					// ------------------------------------------------------------------
+//					//  如果下一个时间超出了当天，图形上就要把加入当天剩下的，和第二天多的一点
+//					//  Fixme: 现在暂时没有处理
+//					// ------------------------------------------------------------------
+//				}
+//			}
+//		}
+//	}
+//
+//	var parr = new Array();
+//	var c3 = "hsl(50, 100%, 100%)";
+//	var c4 = "hsl(50, 100%, 50%)";
+//	var scaleColor = d3.scale.sqrt()
+//		//.linear()
+//		.domain([-50, 30])
+//		.range([c3, c4])
+//		.interpolate(d3.interpolateHsl);
+//	for(var k = 0; k < pts.length; k++) {
+//		var obj = pts[k];
+//		var wid = obj.pos[3].x - obj.pos[0].x;
+//		var color = scaleColor(obj.value);
+//		var p = new THREE.Mesh(
+//			new THREE.PlaneBufferGeometry(wid, this._dayLength),
+//			new THREE.MeshBasicMaterial({
+//				color: color
+//			})
+//		);
+//		p.position.x = obj.pos[0].x + wid / 2;
+//		p.position.z = -obj.pos[0].y + this._dayLength / 2;
+//		p.rotation.x = -Math.PI / 2;
+//
+//		parr.push(p);
+//	}
+//	return parr;
+//}
 
 PowerView.prototype._clearWeather = function()
 {
@@ -1066,33 +1456,59 @@ PowerView.prototype._getSunTime = function(year, month, day)
 }
 
 // --------------------------------------------------------------
-//  Gen, Draw, Animate charging and running box
-// --------------------------------------------------------------
-
-
-// --------------------------------------------------------------
 //  Animation
 // --------------------------------------------------------------
-PowerView.prototype._animateIn = function(obj3d)
+PowerView.prototype._animateIn = function(obj3d, time)
 {
-	obj3d.scale.z = 0.001;
-	this._container.add(obj3d);
-	TweenMax.to(obj3d.scale, 1.3, {z:1, ease:Expo.easeOut});
-	TweenMax.to(obj3d.material, 1, {opacity:0.5, ease:Expo.easeOut});
+	time = typeof time !== 'undefined' ? time : 1.2;
+
+	if(Object.prototype.toString.call( obj3d ) === '[object Array]') {
+
+		for(var i = 0; i < obj3d.length; i++) {
+			var obj = obj3d[i];
+			obj.scale.z = 0.001;
+			this._container.add(obj);
+			TweenMax.to(obj.scale, time, {z:1, ease:Expo.easeOut});
+		}
+
+	} else {
+		if(obj3d.name == "sunrisesunset") {
+			obj3d.material.opacity = 0.3;
+			obj3d.scale.z = 0.001;
+			this._container.add(obj3d);
+			TweenMax.to(obj3d.material, time, {opacity:0.5, ease:Expo.easeOut});
+
+		} else {
+			obj3d.scale.z = 0.001;
+			this._container.add(obj3d);
+			TweenMax.to(obj3d.scale, time, {z:1, ease:Expo.easeOut});
+			TweenMax.to(obj3d.material, time, {opacity:0.5, ease:Expo.easeOut});
+		}
+	}
 }
 
-PowerView.prototype._animateOut = function(obj3d)
+PowerView.prototype._animateOut = function(obj3d, time)
 {
-	var self = this;
-	if(obj3d) {
-		if(obj3d.name == "sunrisesunset") {
-			TweenMax.to(obj3d.material, 0.6, {opacity:0.3, ease:Expo.easeOut});
-			TweenMax.to(obj3d.scale, 0.6, {z:0.001, ease:Expo.easeOut});
-		} else {
-			TweenMax.to(obj3d.material, 0.6, {opacity:0, ease:Expo.easeOut});
-			TweenMax.to(obj3d.scale, 0.6, {z:0.001, ease:Expo.easeOut, onComplete:function() {
-				self._container.remove(obj3d);
-			}});
+	time = typeof time !== 'undefined' ? time : 1.2;
+
+	if(Object.prototype.toString.call( obj3d ) === '[object Array]') {
+
+		for(var i = 0; i < obj3d.length; i++) {
+			var obj = obj3d[i];
+			this._container.remove(obj);
+		}
+
+	} else {
+		var self = this;
+		if(obj3d) {
+			if(obj3d.name == "sunrisesunset") {
+				TweenMax.to(obj3d.material, time, {opacity:0.3, ease:Expo.easeOut});
+			} else {
+				TweenMax.to(obj3d.material, time, {opacity:0, ease:Expo.easeOut});
+				TweenMax.to(obj3d.scale, time, {z:0.001, ease:Expo.easeOut, onComplete:function() {
+					self._container.remove(obj3d);
+				}});
+			}
 		}
 	}
 }
