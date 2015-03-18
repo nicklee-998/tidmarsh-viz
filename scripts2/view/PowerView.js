@@ -2,8 +2,16 @@
  * Created by marian_mcpartland on 15/3/4.
  */
 
-function PowerView(scene, camera)
+function PowerView(scene, camera, tooltipid)
 {
+	// ---------------------------
+	//  Public Variables
+	// ---------------------------
+	this.minChargingCurrent = 0;
+	this.maxChargingCurrent = 8;
+	this.minRunningVoltage = 11;
+	this.maxRunningVoltage = 15;
+
 	this._container = new THREE.Object3D();
 	this._container.name = "power_container";
 	this._container.position.x = 0;
@@ -27,6 +35,11 @@ function PowerView(scene, camera)
 	this._ptsCloud;
 	this._ptsRain;
 	this._ptsSnow;
+	this._ptsTemp;
+	this._ptsVis;
+
+	this._ptsCharging;
+	this._ptsRunning;
 
 	this._meshClear = null;
 	this._meshCloud = null;
@@ -42,13 +55,37 @@ function PowerView(scene, camera)
 	this._axisDateLines = null;
 	this._axisTimeLines = null;
 
+	// For interactive
+	this._raycaster = new THREE.Raycaster();
+	this._raycaster.linePrecision = 3;
+	this._currentIntersected;
+
+	this._sphereInter = new THREE.Mesh(
+		new THREE.SphereGeometry( 30 ),
+		new THREE.MeshBasicMaterial({
+			color: 0xff0000,
+			transparent: true,
+			depthTest: false,
+			depthWrite: false,
+			opacity: 0.5
+		})
+	);
+	this._sphereInter.visible = false;
+	scene.add( this._sphereInter );
+
+	// mouse tooltip
+	this._tooltipid = tooltipid;
+
+	// 气象颜色
 	this._weatherColors = [0xd6aa95, 0x4f5f64, 0x3d8db8, 0xffffff];
 
+	// 运行状态
 	this._view_state = {
 		year: 0,
 		month: 0,
 		type: "",
-		weather: ""
+		weather: "",
+		view: "3d"      // 默认是3d视角
 	};
 }
 
@@ -86,16 +123,22 @@ PowerView.prototype.genMonthGraph = function(cobj)
 		// clear
 		this.dispose();
 
+		// 坐标轴标尺
+		this._axisDateLines = new Array();
+		this._axisTimeLines = new Array();
+
 		// If date if not the same, clear and redraw
 		d3.csv(csvfile, function(csv) {
 
 			if(csv.length == 0)
 				return;
 
+			// for line
 			self._charging_lines = new Array();
 			self._running_lines = new Array();
-			self._axisDateLines = new Array();
-			self._axisTimeLines = new Array();
+			// for box
+			self._ptsCharging = new Array();
+			self._ptsRunning = new Array();
 
 			var date = new Date(csv[0].date);
 			var currday = date.getDate();
@@ -122,9 +165,10 @@ PowerView.prototype.genMonthGraph = function(cobj)
 					//	break;
 				}
 			}
-
-			// draw line
 			self._drawDayLine(cobj.type);
+
+			// Draw box
+			//self._drawWeatherBox(self._ptsRunning, 0xff0000);
 		});
 
 		// loading sunrise & sunset csv
@@ -146,6 +190,12 @@ PowerView.prototype.genMonthGraph = function(cobj)
 			if(self._view_state.weather != POWER_MENU_NONE &&
 				self._view_state.weather != POWER_MENU_SUNRISE_SUNSET) {
 				self._drawWeather();
+			}
+
+			var planes = self._genWeatherPlane(self._ptsTemp);
+			//var planes = self._genWeatherPlane(self._ptsVis);
+			for(var i = 0; i < planes.length; i++) {
+				self._container.add(planes[i]);
 			}
 		});
 	} else {
@@ -185,24 +235,22 @@ PowerView.prototype.changeView = function(type)
 	var self = this;
 	if(type == "2D") {
 
+		this._view_state.view = "2D";
+
 		this._camera.fov = 1;
 		this._camera.position.x = 0;
-		this._camera.position.y = 165679.2914268898;
+		this._camera.position.y = 174399.25413348092;
 		this._camera.position.z = 0;
 		this._camera.updateProjectionMatrix();
 
 		//this._container.rotation.x = 1.1;
 		//this._container.rotation.y = 0.3;
 		//this._container.rotation.z = -0.5;
-		this._container.position.x = 200;
-		this._container.position.y = -580;
-		this._container.position.z = 1090;
+		this._container.position.x = 440;
+		this._container.position.y = -570;
+		this._container.position.z = 1340;
 
-		for(var i = 0; i < this._axisDateLines.length; i++) {
-			var mesh = this._axisDateLines[i];
-			mesh.rotation.x = -1.3;
-		}
-
+		this._setAxisMarkerView();
 
 		//TweenMax.from(this._container, 1, {opacity:0, ease:Quart.easeIn});
 		//TweenMax.to(this._container.position, 1, {x:200, y:-580, z:1090, ease:Quart.easeIn, onComplete:function() {
@@ -210,6 +258,8 @@ PowerView.prototype.changeView = function(type)
 		//}});
 
 	} else if(type == "3D") {
+
+		this._view_state.view = "3D";
 
 		this._camera.fov = 45;
 		this._camera.position.x = 1668;
@@ -224,10 +274,7 @@ PowerView.prototype.changeView = function(type)
 		this._container.position.y = -560;
 		this._container.position.z = 510;
 
-		for(var i = 0; i < this._axisDateLines.length; i++) {
-			var mesh = this._axisDateLines[i];
-			mesh.rotation.x = 0;
-		}
+		this._setAxisMarkerView();
 	}
 }
 
@@ -248,6 +295,72 @@ PowerView.prototype.dispose = function()
 	this._meshSunrise = null;
 }
 
+PowerView.prototype.update = function(mouse)
+{
+	this._raycaster.setFromCamera( mouse, this._camera );
+	var intersects;
+	if(this._view_state.type == POWER_MENU_CHARGING) {
+		intersects = this._raycaster.intersectObjects( this._charging_lines, true);
+	} else {
+		intersects = this._raycaster.intersectObjects( this._running_lines, true);
+	}
+
+	if ( intersects.length > 0 ) {
+
+		if ( this._currentIntersected !== undefined ) {
+			this._currentIntersected.material.linewidth = 5;
+		}
+
+		this._currentIntersected = intersects[ 0 ].object;
+		this._currentIntersected.material.linewidth = 20;
+
+		this._sphereInter.visible = true;
+		this._sphereInter.position.copy( intersects[ 0 ].point );
+
+		// Tooltip
+		if(this._tooltipid != null) {
+
+			var str;
+			if(this._view_state.type == POWER_MENU_CHARGING) {
+				// current scale
+				var scalecurrent = d3.scale.linear()
+					.domain([0, this._dayHeight])
+					.range([this.minChargingCurrent, this.maxChargingCurrent]);
+				str = scalecurrent(this._sphereInter.position.y - this._container.position.y);
+				str = str.toFixed(2) + "A";
+
+			} else {
+				// voltage scale
+				var scalevoltage = d3.scale.linear()
+					.domain([0, this._dayHeight])
+					.range([this.minRunningVoltage, this.maxRunningVoltage]);
+				str = scalevoltage(this._sphereInter.position.y - this._container.position.y);
+				str = str.toFixed(2) + "V";
+
+			}
+
+			$("#" + this._tooltipid).text(str);
+			$("#" + this._tooltipid).css("visibility", "visible");
+			$("#" + this._tooltipid).css("left", (mouse.x + 1) / 2 * window.innerWidth + 10);
+			$("#" + this._tooltipid).css("top", (-(mouse.y - 1) / 2) * window.innerHeight - 30);
+		}
+
+	} else {
+
+		if ( this._currentIntersected !== undefined ) {
+			this._currentIntersected.material.linewidth = 5;
+		}
+
+		this._currentIntersected = undefined;
+		this._sphereInter.visible = false;
+
+		// Tooltip
+		if(this._tooltipid != null) {
+			$("#" + this._tooltipid).css("visibility", "hidden");
+		}
+	}
+}
+
 // ---------------------------------------------------
 // --- PRIVATE METHOD --------------------------------
 // ---------------------------------------------------
@@ -262,11 +375,11 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 		.rangeRound([-this._dayWidth / 2, this._dayWidth / 2]);
 	// current scale
 	var _scaleCurrent = d3.scale.linear()
-		.domain([0, 8])
-		.rangeRound([0, 500]);
+		.domain([this.minChargingCurrent, this.maxChargingCurrent])
+		.range([0, this._dayHeight]);
 	// voltage scale
 	var _scaleVoltage = d3.scale.linear()
-		.domain([8, 15])
+		.domain([this.minRunningVoltage, this.maxRunningVoltage])
 		.range([0, this._dayHeight]);
 
 	var c1 = "hsl(0, 100%, 100%)";
@@ -289,13 +402,14 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 		.range([c3, c4])
 		.interpolate(d3.interpolateHsl);
 
-	// day position
+	// Day position
 	var posday = -this._dayLength * idx;
-	// Draw Day Box
+
+	// -------------------------
+	//  Draw Axis
+	// -------------------------
 	this._drawDayBox(posday);
-	// Draw Axis Date Line
 	this._drawAxisDateLine(posday, date);
-	// Draw Axis Time
 	if(idx == 0) {
 		this._drawAxisTime();
 	}
@@ -303,23 +417,25 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 	// -------------------------
 	//  Draw Graph
 	// -------------------------
+	var _tmppnts1 = new Array();
+	var _tmppnts2 = new Array();
 	for(var i = 0; i < datset.length-1; i++) {
+
 		var obj1 = datset[i];
 		var obj2 = datset[i+1];
+
+		// time
+		var postime1 = _scaleTime(new Date(obj1.date));
+		var postime2 = _scaleTime(new Date(obj2.date));
 
 		if(obj1.battery_voltage != "null" && obj2.battery_voltage != "null") {
 
 			// -------------------------
-			//  For running
+			//  For running line
 			// -------------------------
-
 			// voltage
 			var posv1 = _scaleVoltage(obj1.battery_voltage);
 			var posv2 = _scaleVoltage(obj2.battery_voltage);
-
-			// time
-			var postime1 = _scaleTime(new Date(obj1.date));
-			var postime2 = _scaleTime(new Date(obj2.date));
 
 			// temprature
 			var tcolor = _scaleTemprature(obj1.battery_temperature);
@@ -342,6 +458,23 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 			line.visible = false;
 			this._container.add(line);
 			this._running_lines.push(line);
+
+			// -------------------------
+			//  For running box
+			// -------------------------
+			var lt = new THREE.Vector2(postime1, (-posday) + this._dayLength / 2);
+			var lb = new THREE.Vector2(postime1, (-posday) - this._dayLength / 2);
+
+			if(_tmppnts1.length == 0) {
+				_tmppnts1.push(lt);
+				_tmppnts1.push(lb);
+			} else {
+				if(i == (datset.length - 2)) {
+					_tmppnts1.push(lb);
+					_tmppnts1.push(lt);
+					this._ptsRunning.push(_tmppnts1);
+				}
+			}
 
 			// -------------------------
 			//  For charging
@@ -372,6 +505,20 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 				line1.visible = false;
 				this._container.add(line1);
 				this._charging_lines.push(line1);
+			}
+		} else {
+
+			// -------------------------
+			//  For running box
+			// -------------------------
+			if(_tmppnts1.length > 0) {
+				var lt = new THREE.Vector2(postime1, -posday + this._dayLength / 2);
+				var lb = new THREE.Vector2(postime1, -posday - this._dayLength / 2);
+				_tmppnts1.push(lb);
+				_tmppnts1.push(lt);
+
+				this._ptsRunning.push(_tmppnts1);
+				_tmppnts1 = new Array();
 			}
 		}
 	}
@@ -446,14 +593,12 @@ PowerView.prototype._drawAxisDateLine = function(posday, date)
 	mesh.position.x = this._dayWidth / 2 + 80;
 	mesh.position.y = 18;
 	mesh.position.z = posday - 20;
-	//mesh.rotation.x = -0.5;
-	mesh.rotation.y = 0.5;
 	this._container.add(mesh);
 	this._axisDateLines.push(mesh);
 }
 
 // --------------------------------------------------
-//  Draw Axis Time
+//  Draw Axis Time - start, sunrise, sunset
 // --------------------------------------------------
 PowerView.prototype._drawAxisTime = function()
 {
@@ -461,8 +606,59 @@ PowerView.prototype._drawAxisTime = function()
 	mesh1.position.x = -this._dayWidth / 2;
 	mesh1.position.y = 18;
 	mesh1.position.z = 70;
-	mesh1.rotation.y = 0.5;
 	this._container.add(mesh1);
+	this._axisTimeLines.push(mesh1);
+}
+
+PowerView.prototype._drawAxisSunriseSunsetTime = function(prise, pset)
+{
+	var meshr = this._genTextMesh("sunrise");
+	meshr.position.x = prise;
+	meshr.position.y = 18;
+	meshr.position.z = 70;
+	this._container.add(meshr);
+	this._axisTimeLines.push(meshr);
+
+	var meshs = this._genTextMesh("sunset");
+	meshs.position.x = pset;
+	meshs.position.y = 18;
+	meshs.position.z = 70;
+	this._container.add(meshs);
+	this._axisTimeLines.push(meshs);
+}
+
+// --------------------------------------------------
+//  Set Axis Marker View
+// --------------------------------------------------
+PowerView.prototype._setAxisMarkerView = function()
+{
+	if(this._view_state.view == "2D") {
+		for(var i = 0; i < this._axisDateLines.length; i++) {
+			var mesh = this._axisDateLines[i];
+			mesh.rotation.x = -1.3;
+			mesh.rotation.y = 0;
+		}
+		for(var j = 0; j < this._axisTimeLines.length; j++) {
+			var mesh = this._axisTimeLines[j];
+			mesh.rotation.x = -1.3;
+			mesh.rotation.y = 0;
+		}
+		//console.log("view 2d " + this._axisTimeLines.length);
+
+	} else {
+		for(var i = 0; i < this._axisDateLines.length; i++) {
+			var mesh = this._axisDateLines[i];
+			mesh.rotation.x = 0;
+			mesh.rotation.y = 0.5;
+		}
+		for(var j = 0; j < this._axisTimeLines.length; j++) {
+			var mesh = this._axisTimeLines[j];
+			mesh.rotation.x = 0;
+			mesh.rotation.y = 0.5;
+		}
+		//console.log("view 3d " + this._axisTimeLines.length);
+
+	}
 }
 
 // --------------------------------------------------
@@ -566,19 +762,7 @@ PowerView.prototype._drawSunriseSunsetByMonth = function()
 
 		// draw "sunrise" and "sunset" text, when first run
 		if(i == 0) {
-			var meshr = this._genTextMesh("sunrise");
-			meshr.position.x = sunrise_pos2;
-			meshr.position.y = 18;
-			meshr.position.z = 70;
-			meshr.rotation.y = 0.5;
-			this._container.add(meshr);
-
-			var meshs = this._genTextMesh("sunset");
-			meshs.position.x = sunset_pos1;
-			meshs.position.y = 18;
-			meshs.position.z = 70;
-			meshs.rotation.y = 0.5;
-			this._container.add(meshs);
+			this._drawAxisSunriseSunsetTime(sunrise_pos2, sunset_pos1);
 		}
 
 		//console.log(postime1 + ", " + postime2);
@@ -614,6 +798,8 @@ PowerView.prototype._genWeatherByMonth = function()
 	this._ptsCloud = new Array();
 	this._ptsRain = new Array();
 	this._ptsSnow = new Array();
+	this._ptsTemp = new Array();
+	this._ptsVis = new Array();
 
 	for(var i = 0; i < this._dayList.length-1; i++) {
 
@@ -649,16 +835,29 @@ PowerView.prototype._genWeatherByMonth = function()
 				this._weatherDataArr[j+1].second
 			);
 
-			if(wdate1 < date2 && wdate1 > date1) {
+			if(wdate1 > date1 && wdate1 < date2) {
 
 				var pos1 = _scaleTime(wdate1);
-				//var pos2 = _scaleTime(wdate2);
+				var pos2 = _scaleTime(wdate2);
 
 				var lt = new THREE.Vector2(pos1, daypos + this._dayLength /2);
 				var lb = new THREE.Vector2(pos1, daypos - this._dayLength / 2);
-				//var rt = new THREE.Vector2(pos2, daypos + this._dayLength / 2);
-				//var rb = new THREE.Vector2(pos2, daypos - this._dayLength / 2);
+				var rt = new THREE.Vector2(pos2, daypos + this._dayLength / 2);
+				var rb = new THREE.Vector2(pos2, daypos - this._dayLength / 2);
 
+				// for temperture
+				this._ptsTemp.push({
+					pos: [lt, lb, rb, rt],
+					value: this._weatherDataArr[j].temp
+				});
+
+				// for vis
+				this._ptsVis.push({
+					pos: [lt, lb, rb, rt],
+					value: this._weatherDataArr[j].vis
+				});
+
+				// for conds
 				if(this._rollupConds(this._weatherDataArr[j].conds) != _tmpconds) {
 
 					if(_tmppnts.length == 0) {
@@ -798,6 +997,35 @@ PowerView.prototype._drawWeatherBox = function(pts, color)
 	return mesh;
 }
 
+PowerView.prototype._genWeatherPlane = function(pts)
+{
+	var parr = new Array();
+	var c3 = "hsl(50, 100%, 100%)";
+	var c4 = "hsl(50, 100%, 50%)";
+	var scaleColor = d3.scale.sqrt()
+		//.linear()
+		.domain([-50, 30])
+		.range([c3, c4])
+		.interpolate(d3.interpolateHsl);
+	for(var k = 0; k < pts.length; k++) {
+		var obj = pts[k];
+		var wid = obj.pos[3].x - obj.pos[0].x;
+		var color = scaleColor(obj.value);
+		var p = new THREE.Mesh(
+			new THREE.PlaneBufferGeometry(wid, this._dayLength),
+			new THREE.MeshBasicMaterial({
+				color: color
+			})
+		);
+		p.position.x = obj.pos[0].x + wid / 2;
+		p.position.z = -obj.pos[0].y + this._dayLength / 2;
+		p.rotation.x = -Math.PI / 2;
+
+		parr.push(p);
+	}
+	return parr;
+}
+
 PowerView.prototype._getSunTime = function(year, month, day)
 {
 	var obj = {};
@@ -816,6 +1044,11 @@ PowerView.prototype._getSunTime = function(year, month, day)
 
 	return obj;
 }
+
+// --------------------------------------------------------------
+//  Gen, Draw, Animate charging and running box
+// --------------------------------------------------------------
+
 
 // --------------------------------------------------------------
 //  Animation
