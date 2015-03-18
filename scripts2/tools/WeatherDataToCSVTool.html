@@ -15,8 +15,9 @@
 	var url01 = "http://api.wunderground.com/api/2f66729e5667f166/history_";
 	var url02 = "/q/MA/manomet.json";
 
-	var _start = new Date(2014, 8, 1);
-	var _end = new Date(2014, 9, 1);	// not include this one
+	var _month = 10;		// from 1 - 12
+	var _start = new Date(2014, _month-1, 1);
+	var _end = new Date(2014, _month, 1);	// not include this one
 	var _daylist;
 	var _idx;
 
@@ -46,8 +47,9 @@
 			firstline += '"snow",';
 			firstline += '"thunder",';
 			firstline += '"tornado",';
-			firstline += '"temp",';
-			firstline += '"vis",';
+			firstline += '"temp",';		// temp in C
+			firstline += '"vis",';		// visibility in Km
+			firstline += '"precip",';	// precipitation in mm
 			firstline += '"date",';
 			firstline += '"year",';
 			firstline += '"month",';
@@ -70,6 +72,7 @@
 				linestr += item.tornado + ",";
 				linestr += item.tempm + ",";
 				linestr += item.vism + ",";
+				linestr += item.precipm + ",";
 				linestr += dstr + ",";
 				linestr += item.date.year + ",";
 				linestr += item.date.mon + ",";

@@ -3,9 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="7d4f2cda-708d-45cd-96e4-586ac0f7b141" name="Default" comment="1. Added tooltip in data history mode&#10;2. Adjusted some effect of data history graph">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/PowerView.js" afterPath="$PROJECT_DIR$/scripts2/view/PowerView.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo_3d.html" afterPath="$PROJECT_DIR$/demo_3d.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/css/pagemenu.css" afterPath="$PROJECT_DIR$/scripts2/css/pagemenu.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/libs/three.min.js" afterPath="$PROJECT_DIR$/libs/three.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/data_power/weather_2014_10.csv" afterPath="$PROJECT_DIR$/res/data_power/weather_2014_10.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/data_power/weather_2014_11.csv" afterPath="$PROJECT_DIR$/res/data_power/weather_2014_11.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/data_power/weather_2014_12.csv" afterPath="$PROJECT_DIR$/res/data_power/weather_2014_12.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/data_power/weather_2015_1.csv" afterPath="$PROJECT_DIR$/res/data_power/weather_2015_1.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/data_power/weather_2015_2.csv" afterPath="$PROJECT_DIR$/res/data_power/weather_2015_2.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="tidmarsh-viz.iws" />
@@ -66,7 +69,7 @@
       <file leaf-file-name="demo_3d.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/demo_3d.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-12.5" vertical-offset="75" max-vertical-offset="3675">
+            <state vertical-scroll-proportion="26.875" vertical-offset="1020" max-vertical-offset="3675">
               <caret line="25" column="35" selection-start-line="25" selection-start-column="35" selection-end-line="25" selection-end-column="35" />
               <folding />
             </state>
@@ -76,18 +79,8 @@
       <file leaf-file-name="PowerView.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts2/view/PowerView.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.15532544" vertical-offset="14760" max-vertical-offset="17100">
-              <caret line="991" column="37" selection-start-line="991" selection-start-column="37" selection-end-line="991" selection-end-column="37" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NodeNetwork.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-13.740741" vertical-offset="17434" max-vertical-offset="21480">
-              <caret line="1187" column="75" selection-start-line="1187" selection-start-column="75" selection-end-line="1187" selection-end-column="75" />
+            <state vertical-scroll-proportion="0.33333334" vertical-offset="12934" max-vertical-offset="17400">
+              <caret line="877" column="0" selection-start-line="877" selection-start-column="0" selection-end-line="877" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -96,8 +89,8 @@
       <file leaf-file-name="UiPowerViewMenu.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1847" max-vertical-offset="2850">
-              <caret line="165" column="55" selection-start-line="165" selection-start-column="55" selection-end-line="165" selection-end-column="55" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1757" max-vertical-offset="2850">
+              <caret line="156" column="24" selection-start-line="156" selection-start-column="24" selection-end-line="156" selection-end-column="24" />
               <folding>
                 <element signature="n#!!doc;n#UiPowerViewMenu#0" expanded="false" />
               </folding>
@@ -181,13 +174,13 @@
         <option value="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" />
         <option value="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" />
         <option value="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" />
-        <option value="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/scripts2/global/GlobalVars.js" />
         <option value="$PROJECT_DIR$/scripts2/global/CustomEvent.js" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js" />
         <option value="$PROJECT_DIR$/demo_3d.html" />
         <option value="$PROJECT_DIR$/scripts2/css/pagemenu.css" />
+        <option value="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" />
         <option value="$PROJECT_DIR$/scripts2/view/PowerView.js" />
       </list>
     </option>
@@ -590,12 +583,12 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32831737" sideWeight="0.49964765" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27222982" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27222982" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32965517" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -789,14 +782,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.2927928" vertical-offset="345" max-vertical-offset="2190">
           <caret line="36" column="106" selection-start-line="36" selection-start-column="106" selection-end-line="36" selection-end-column="106" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="60" max-vertical-offset="2340">
-          <caret line="4" column="47" selection-start-line="4" selection-start-column="47" selection-end-line="4" selection-end-column="47" />
         </state>
       </provider>
     </entry>
@@ -804,7 +789,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.527027" vertical-offset="219" max-vertical-offset="5475">
           <caret line="38" column="40" selection-start-line="38" selection-start-column="40" selection-end-line="38" selection-end-column="40" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -869,7 +853,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="420">
           <caret line="22" column="42" selection-start-line="22" selection-start-column="42" selection-end-line="22" selection-end-column="42" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -898,7 +881,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.47297296" vertical-offset="390" max-vertical-offset="15120">
           <caret line="5" column="69" selection-start-line="5" selection-start-column="69" selection-end-line="5" selection-end-column="69" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -937,17 +919,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33284023" vertical-offset="1785" max-vertical-offset="10080">
           <caret line="140" column="26" selection-start-line="140" selection-start-column="16" selection-end-line="140" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1847" max-vertical-offset="2850">
-          <caret line="165" column="55" selection-start-line="165" selection-start-column="55" selection-end-line="165" selection-end-column="55" />
-          <folding>
-            <element signature="n#!!doc;n#UiPowerViewMenu#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -975,9 +946,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.15765765" vertical-offset="0" max-vertical-offset="2385">
+          <caret line="7" column="68" selection-start-line="7" selection-start-column="68" selection-end-line="7" selection-end-column="68" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1757" max-vertical-offset="2850">
+          <caret line="156" column="24" selection-start-line="156" selection-start-column="24" selection-end-line="156" selection-end-column="24" />
+          <folding>
+            <element signature="n#!!doc;n#UiPowerViewMenu#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.740741" vertical-offset="17434" max-vertical-offset="21480">
+        <state vertical-scroll-proportion="0.53768116" vertical-offset="17434" max-vertical-offset="21480">
           <caret line="1187" column="75" selection-start-line="1187" selection-start-column="75" selection-end-line="1187" selection-end-column="75" />
           <folding />
         </state>
@@ -985,7 +974,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/demo_3d.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-12.5" vertical-offset="75" max-vertical-offset="3675">
+        <state vertical-scroll-proportion="26.875" vertical-offset="1020" max-vertical-offset="3675">
           <caret line="25" column="35" selection-start-line="25" selection-start-column="35" selection-end-line="25" selection-end-column="35" />
           <folding />
         </state>
@@ -993,8 +982,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/view/PowerView.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.15532544" vertical-offset="14760" max-vertical-offset="17100">
-          <caret line="991" column="37" selection-start-line="991" selection-start-column="37" selection-end-line="991" selection-end-column="37" />
+        <state vertical-scroll-proportion="0.33333334" vertical-offset="12934" max-vertical-offset="17400">
+          <caret line="877" column="0" selection-start-line="877" selection-start-column="0" selection-end-line="877" selection-end-column="0" />
           <folding />
         </state>
       </provider>

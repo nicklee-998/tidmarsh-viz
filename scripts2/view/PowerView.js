@@ -110,7 +110,8 @@ PowerView.prototype.genMonthGraph = function(cobj)
 	var csvfile = "./res/data_power/tidbase4_" + cobj.year + "_" + cobj.month + ".csv";
 	var self = this;
 
-	this._dayList = d3.time.days(new Date(cobj.year, cobj.month-1, 1), new Date(cobj.year, cobj.month, 1));
+	// 后面时间设置为2，要不然list中会少最后一天
+	this._dayList = d3.time.days(new Date(cobj.year, cobj.month-1, 1), new Date(cobj.year, cobj.month, 2));
 
 	// Draw monthly charging & running graph
 	if(cobj.year != this._view_state.year || cobj.month != this._view_state.month) {
@@ -141,6 +142,8 @@ PowerView.prototype.genMonthGraph = function(cobj)
 			self._ptsRunning = new Array();
 
 			var date = new Date(csv[0].date);
+			var curryear = date.getFullYear();
+			var currmonth = date.getMonth();
 			var currday = date.getDate();
 			var arr = new Array();
 			var dayidx = 0;
@@ -149,20 +152,27 @@ PowerView.prototype.genMonthGraph = function(cobj)
 				date = new Date(obj.date);
 				//console.log(date);
 
-				if(currday == date.getDate()) {
-					arr.push(obj);
+				if(i == (csv.length - 1)) {
+					// 生成最后一根日线
+					self._genDayLine(arr, dayidx, new Date(curryear, currmonth, currday));
 				} else {
-					// 生成日线
-					self._genDayLine(arr, dayidx, date);
+					if(currday == date.getDate()) {
+						arr.push(obj);
+					} else {
+						// 生成日线
+						self._genDayLine(arr, dayidx, new Date(curryear, currmonth, currday));
 
-					arr = new Array();
-					arr.push(obj);
-					currday = date.getDate();
-					dayidx++;
+						arr = new Array();
+						arr.push(obj);
+						curryear = date.getFullYear();
+						currmonth = date.getMonth();
+						currday = date.getDate();
+						dayidx++;
 
-					// FOR DEBUG
-					//if(dayidx == 3)
-					//	break;
+						// FOR DEBUG
+						//if(dayidx == 3)
+						//	break;
+					}
 				}
 			}
 			self._drawDayLine(cobj.type);
@@ -737,7 +747,7 @@ PowerView.prototype._drawSunriseSunsetByMonth = function()
 			.rangeRound([-this._dayWidth / 2, this._dayWidth / 2]);
 
 		// day pos
-		var daypos = this._dayLength * i - this._dayLength / 2;
+		var daypos = this._dayLength * i;
 
 		// sunrise
 		var sunrise = new Date(this._sunDataArr[i].sunrise);
@@ -749,16 +759,33 @@ PowerView.prototype._drawSunriseSunsetByMonth = function()
 
 		ii--;
 
-		sunrise_pts[ii] = new THREE.Vector2(sunrise_pos1, daypos);
-		sunrise_pts[i] = new THREE.Vector2(sunrise_pos2, daypos);
+		// 为了延长两端的长度，达到一致的视觉效果
+		if(i == 0) {
+			sunrise_pts[ii] = new THREE.Vector2(sunrise_pos1, daypos - this._dayLength / 2);
+			sunrise_pts[i] = new THREE.Vector2(sunrise_pos2, daypos - this._dayLength / 2);
+		} else if(i == (this._sunDataArr.length - 1)) {
+			sunrise_pts[ii] = new THREE.Vector2(sunrise_pos1, daypos + this._dayLength / 2);
+			sunrise_pts[i] = new THREE.Vector2(sunrise_pos2, daypos + this._dayLength / 2);
+		} else {
+			sunrise_pts[ii] = new THREE.Vector2(sunrise_pos1, daypos);
+			sunrise_pts[i] = new THREE.Vector2(sunrise_pos2, daypos);
+		}
 
 		// sunset
 		var sunset = new Date(this._sunDataArr[i].sunset);
 		var sunset_pos1 = _scaleTime(sunset);
 		var sunset_pos2 = this._dayWidth / 2;
 
-		sunset_pts[ii] = new THREE.Vector2(sunset_pos1, daypos);
-		sunset_pts[i] = new THREE.Vector2(sunset_pos2, daypos);
+		if(i == 0) {
+			sunset_pts[ii] = new THREE.Vector2(sunset_pos1, daypos - this._dayLength / 2);
+			sunset_pts[i] = new THREE.Vector2(sunset_pos2, daypos - this._dayLength / 2);
+		} else if(i == (this._sunDataArr.length - 1)) {
+			sunset_pts[ii] = new THREE.Vector2(sunset_pos1, daypos + this._dayLength / 2);
+			sunset_pts[i] = new THREE.Vector2(sunset_pos2, daypos + this._dayLength / 2);
+		} else {
+			sunset_pts[ii] = new THREE.Vector2(sunset_pos1, daypos);
+			sunset_pts[i] = new THREE.Vector2(sunset_pos2, daypos);
+		}
 
 		// draw "sunrise" and "sunset" text, when first run
 		if(i == 0) {
@@ -837,75 +864,61 @@ PowerView.prototype._genWeatherByMonth = function()
 
 			if(wdate1 > date1 && wdate1 < date2) {
 
-				var pos1 = _scaleTime(wdate1);
-				var pos2 = _scaleTime(wdate2);
+				if(wdate2 < date2) {
+					// ------------------------------------------------------------------
+					//  如果下一个时间在当天，一切正常
+					// ------------------------------------------------------------------
+					var pos1 = _scaleTime(wdate1);
+					var pos2 = _scaleTime(wdate2);
 
-				var lt = new THREE.Vector2(pos1, daypos + this._dayLength /2);
-				var lb = new THREE.Vector2(pos1, daypos - this._dayLength / 2);
-				var rt = new THREE.Vector2(pos2, daypos + this._dayLength / 2);
-				var rb = new THREE.Vector2(pos2, daypos - this._dayLength / 2);
+					var lt = new THREE.Vector2(pos1, daypos + this._dayLength /2);
+					var lb = new THREE.Vector2(pos1, daypos - this._dayLength / 2);
+					var rt = new THREE.Vector2(pos2, daypos + this._dayLength / 2);
+					var rb = new THREE.Vector2(pos2, daypos - this._dayLength / 2);
 
-				// for temperture
-				this._ptsTemp.push({
-					pos: [lt, lb, rb, rt],
-					value: this._weatherDataArr[j].temp
-				});
+					// for temperture
+					this._ptsTemp.push({
+						pos: [lt, lb, rb, rt],
+						value: this._weatherDataArr[j].temp
+					});
 
-				// for vis
-				this._ptsVis.push({
-					pos: [lt, lb, rb, rt],
-					value: this._weatherDataArr[j].vis
-				});
+					// for vis
+					this._ptsVis.push({
+						pos: [lt, lb, rb, rt],
+						value: this._weatherDataArr[j].vis
+					});
 
-				// for conds
-				if(this._rollupConds(this._weatherDataArr[j].conds) != _tmpconds) {
+					// for conds
+					if(this._rollupConds(this._weatherDataArr[j].conds) != _tmpconds ||
+						j == (this._weatherDataArr.length - 2)) {
 
-					if(_tmppnts.length == 0) {
-						_tmppnts.push(lt);
-						_tmppnts.push(lb);
+						if(_tmppnts.length == 0) {
+							_tmppnts.push(lt);
+							_tmppnts.push(lb);
 
-						_tmpconds = this._rollupConds(this._weatherDataArr[j].conds);
-					} else {
-						_tmppnts.push(lb);
-						_tmppnts.push(lt);
-
-						if(_tmpconds.indexOf("CLEAR") != -1) {
-							this._ptsClear.push(_tmppnts);
-						} else if(_tmpconds.indexOf("CLOUDY") != -1) {
-							this._ptsCloud.push(_tmppnts);
-						} else if(_tmpconds.indexOf("RAIN") != -1) {
-							this._ptsRain.push(_tmppnts);
-						} else if(_tmpconds.indexOf("SNOW") != -1) {
-							this._ptsSnow.push(_tmppnts);
+							_tmpconds = this._rollupConds(this._weatherDataArr[j].conds);
 						} else {
-							console.log(_tmpconds);
-							break;
-						}
+							_tmppnts.push(lb);
+							_tmppnts.push(lt);
 
-						_tmppnts = new Array();
-						_tmppnts.push(lt);
-						_tmppnts.push(lb);
+							if(_tmpconds.indexOf("CLEAR") != -1) {
+								this._ptsClear.push(_tmppnts);
+							} else if(_tmpconds.indexOf("CLOUDY") != -1) {
+								this._ptsCloud.push(_tmppnts);
+							} else if(_tmpconds.indexOf("RAIN") != -1) {
+								this._ptsRain.push(_tmppnts);
+							} else if(_tmpconds.indexOf("SNOW") != -1) {
+								this._ptsSnow.push(_tmppnts);
+							} else {
+								console.log(_tmpconds);
+								break;
+							}
 
-						_tmpconds = this._rollupConds(this._weatherDataArr[j].conds);
-					}
+							_tmppnts = new Array();
+							_tmppnts.push(lt);
+							_tmppnts.push(lb);
 
-				} else {
-
-					// 如何下一个日子是第二天了，就保存图形数组
-					if(wdate2 > date2) {
-						_tmppnts.push(lb);
-						_tmppnts.push(lt);
-
-						if(_tmpconds.indexOf("CLEAR") != -1) {
-							this._ptsClear.push(_tmppnts);
-						} else if(_tmpconds.indexOf("CLOUDY") != -1) {
-							this._ptsCloud.push(_tmppnts);
-						} else if(_tmpconds.indexOf("RAIN") != -1) {
-							this._ptsRain.push(_tmppnts);
-						} else if(_tmpconds.indexOf("SNOW") != -1) {
-							this._ptsSnow.push(_tmppnts);
-						} else {
-							console.log(_tmpconds);
+							_tmpconds = this._rollupConds(this._weatherDataArr[j].conds);
 						}
 
 					} else {
@@ -916,6 +929,13 @@ PowerView.prototype._genWeatherByMonth = function()
 							_tmppnts.push(lb);
 						}
 					}
+
+				} else {
+
+					// ------------------------------------------------------------------
+					//  如果下一个时间超出了当天，图形上就要把加入当天剩下的，和第二天多的一点
+					//  Fixme: 现在暂时没有处理
+					// ------------------------------------------------------------------
 				}
 			}
 		}
