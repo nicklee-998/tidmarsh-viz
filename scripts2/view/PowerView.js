@@ -2,7 +2,7 @@
  * Created by marian_mcpartland on 15/3/4.
  */
 
-function PowerView(scene, camera, tooltipid)
+function PowerView(scene, scene2, scene3, camera, tooltipid)
 {
 	// ---------------------------
 	//  Public Variables
@@ -12,12 +12,29 @@ function PowerView(scene, camera, tooltipid)
 	this.minRunningVoltage = 11;
 	this.maxRunningVoltage = 15;
 
-	this._container = new THREE.Object3D();
-	this._container.name = "power_container";
-	this._container.position.x = 0;
-	this._container.position.y = -560;
-	this._container.position.z = 510;
-	scene.add(this._container);
+	// for Axis and Sunrise/Sunset
+	this._axisCont = new THREE.Object3D();
+	this._axisCont.name = "axis_container";
+	this._axisCont.position.x = 0;
+	this._axisCont.position.y = -560;
+	this._axisCont.position.z = 510;
+	scene.add(this._axisCont);
+
+	// for Weather
+	this._wCont = new THREE.Object3D();
+	this._wCont.name = "weather_container";
+	this._wCont.position.x = 0;
+	this._wCont.position.y = -560;
+	this._wCont.position.z = 510;
+	scene2.add(this._wCont);
+
+	// for Charging and Running
+	this._crCont = new THREE.Object3D();
+	this._crCont.name = "charging_container";
+	this._crCont.position.x = 0;
+	this._crCont.position.y = -560;
+	this._crCont.position.z = 510;
+	scene3.add(this._crCont);
 
 	this._camera = camera;
 
@@ -139,6 +156,18 @@ PowerView.prototype.genMonthGraph = function(cobj)
 		this._axisDateLines = new Array();
 		this._axisTimeLines = new Array();
 
+		// loading sunrise & sunset csv
+		d3.csv(suncsvfile, function(csv) {
+			// save sunrise & sunset infomation
+			self._sunDataArr = csv;
+			self._meshSunrise = self._genSunriseSunsetByMonth();
+
+			// 根据menu state，决定显示否
+			if(cobj.weather.sunrisesunset) {
+				self._animateIn(self._axisCont, self._meshSunrise);
+			}
+		});
+
 		// If date if not the same, clear and redraw
 		d3.csv(csvfile, function(csv) {
 
@@ -189,18 +218,6 @@ PowerView.prototype.genMonthGraph = function(cobj)
 			self._drawChargingRunningGraph(cobj.type);
 		});
 
-		// loading sunrise & sunset csv
-		d3.csv(suncsvfile, function(csv) {
-			// save sunrise & sunset infomation
-			self._sunDataArr = csv;
-			self._meshSunrise = self._genSunriseSunsetByMonth();
-
-			// 根据menu state，决定显示否
-			if(cobj.weather.sunrisesunset) {
-				self._animateIn(self._meshSunrise);
-			}
-		});
-
 		// loading weather csv
 		d3.csv(weathercsvfile, function(csv) {
 			// save weather information
@@ -208,17 +225,6 @@ PowerView.prototype.genMonthGraph = function(cobj)
 
 			// 根据menu state，显示weather效果
 			self._drawWeatherByMenu(cobj);
-
-			//if(self._view_state.weather != POWER_MENU_NONE &&
-			//	self._view_state.weather != POWER_MENU_SUNRISE_SUNSET) {
-			//	self._drawWeather();
-			//}
-			//
-			//var planes = self._genWeatherPlane(self._ptsTemp);
-			////var planes = self._genWeatherPlane(self._ptsVis);
-			//for(var i = 0; i < planes.length; i++) {
-			//	self._container.add(planes[i]);
-			//}
 		});
 	} else {
 
@@ -249,9 +255,18 @@ PowerView.prototype.changeView = function(type)
 		//this._container.rotation.x = 1.1;
 		//this._container.rotation.y = 0.3;
 		//this._container.rotation.z = -0.5;
-		this._container.position.x = 440;
-		this._container.position.y = -570;
-		this._container.position.z = 1340;
+
+		this._axisCont.position.x = 440;
+		this._axisCont.position.y = -570;
+		this._axisCont.position.z = 1340;
+
+		this._wCont.position.x = 440;
+		this._wCont.position.y = -570;
+		this._wCont.position.z = 1340;
+
+		this._crCont.position.x = 440;
+		this._crCont.position.y = -570;
+		this._crCont.position.z = 1340;
 
 		this._setAxisMarkerView();
 
@@ -273,9 +288,18 @@ PowerView.prototype.changeView = function(type)
 		//this._container.rotation.x = 1.1;
 		//this._container.rotation.y = 0.3;
 		//this._container.rotation.z = -0.5;
-		this._container.position.x = 200;
-		this._container.position.y = -560;
-		this._container.position.z = 510;
+
+		this._axisCont.position.x = 200;
+		this._axisCont.position.y = -560;
+		this._axisCont.position.z = 510;
+
+		this._wCont.position.x = 200;
+		this._wCont.position.y = -560;
+		this._wCont.position.z = 510;
+
+		this._crCont.position.x = 200;
+		this._crCont.position.y = -560;
+		this._crCont.position.z = 510;
 
 		this._setAxisMarkerView();
 	}
@@ -284,9 +308,21 @@ PowerView.prototype.changeView = function(type)
 PowerView.prototype.dispose = function()
 {
 	var obj, i;
-	for ( i = this._container.children.length - 1; i >= 0 ; i -- ) {
-		obj = this._container.children[ i ];
-		this._container.remove(obj);
+	for ( i = this._axisCont.children.length - 1; i >= 0 ; i -- ) {
+		obj = this._axisCont.children[ i ];
+		this._axisCont.remove(obj);
+		obj.geometry.dispose();
+		obj.material.dispose();
+	}
+	for ( i = this._wCont.children.length - 1; i >= 0 ; i -- ) {
+		obj = this._wCont.children[ i ];
+		this._wCont.remove(obj);
+		obj.geometry.dispose();
+		obj.material.dispose();
+	}
+	for ( i = this._crCont.children.length - 1; i >= 0 ; i -- ) {
+		obj = this._crCont.children[ i ];
+		this._crCont.remove(obj);
 		obj.geometry.dispose();
 		obj.material.dispose();
 	}
@@ -334,7 +370,7 @@ PowerView.prototype.update = function(mouse)
 				var scalecurrent = d3.scale.linear()
 					.domain([0, this._dayHeight])
 					.range([this.minChargingCurrent, this.maxChargingCurrent]);
-				str = scalecurrent(this._sphereInter.position.y - this._container.position.y);
+				str = scalecurrent(this._sphereInter.position.y - this._axisCont.position.y);
 				str = str.toFixed(2) + "A";
 
 			} else {
@@ -342,7 +378,7 @@ PowerView.prototype.update = function(mouse)
 				var scalevoltage = d3.scale.linear()
 					.domain([0, this._dayHeight])
 					.range([this.minRunningVoltage, this.maxRunningVoltage]);
-				str = scalevoltage(this._sphereInter.position.y - this._container.position.y);
+				str = scalevoltage(this._sphereInter.position.y - this._axisCont.position.y);
 				str = str.toFixed(2) + "V";
 
 			}
@@ -377,7 +413,7 @@ PowerView.prototype._drawWeatherByMenu = function(menu_state)
 {
 	if(menu_state.weather.sunrisesunset != this._view_state.weather.sunrisesunset) {
 		if(menu_state.weather.sunrisesunset == 1) {
-			this._animateIn(this._meshSunrise);
+			this._animateIn(this._axisCont, this._meshSunrise);
 		} else {
 			this._animateOut(this._meshSunrise);
 		}
@@ -390,7 +426,7 @@ PowerView.prototype._drawWeatherByMenu = function(menu_state)
 			if(this._meshClear == null) {
 				this._meshClear = this._genWeatherByName("CLEAR", this._weatherColors[0]);
 			}
-			this._animateIn(this._meshClear);
+			this._animateIn(this._wCont, this._meshClear);
 		} else {
 			this._animateOut(this._meshClear);
 		}
@@ -403,7 +439,7 @@ PowerView.prototype._drawWeatherByMenu = function(menu_state)
 			if(this._meshCloud == null) {
 				this._meshCloud = this._genWeatherByName("CLOUDY", this._weatherColors[1]);
 			}
-			this._animateIn(this._meshCloud);
+			this._animateIn(this._wCont, this._meshCloud);
 		} else {
 			this._animateOut(this._meshCloud);
 		}
@@ -416,7 +452,7 @@ PowerView.prototype._drawWeatherByMenu = function(menu_state)
 			if(this._meshRain == null) {
 				this._meshRain = this._genWeatherByName("RAIN", this._weatherColors[2]);
 			}
-			this._animateIn(this._meshRain);
+			this._animateIn(this._wCont, this._meshRain);
 		} else {
 			this._animateOut(this._meshRain);
 		}
@@ -429,7 +465,7 @@ PowerView.prototype._drawWeatherByMenu = function(menu_state)
 			if(this._meshSnow == null) {
 				this._meshSnow = this._genWeatherByName("SNOW", this._weatherColors[3]);
 			}
-			this._animateIn(this._meshSnow);
+			this._animateIn(this._wCont, this._meshSnow);
 		} else {
 			this._animateOut(this._meshSnow);
 		}
@@ -442,7 +478,7 @@ PowerView.prototype._drawWeatherByMenu = function(menu_state)
 			if(this._meshVisibility == null) {
 				this._meshVisibility = this._genWeatherByName("visibility", this._weatherColors[4]);
 			}
-			this._animateIn(this._meshVisibility);
+			this._animateIn(this._wCont, this._meshVisibility);
 		} else {
 			this._animateOut(this._meshVisibility);
 		}
@@ -455,7 +491,7 @@ PowerView.prototype._drawWeatherByMenu = function(menu_state)
 			if(this._meshTemprature == null) {
 				this._meshTemprature = this._genWeatherByName("temprature", this._weatherColors[5]);
 			}
-			this._animateIn(this._meshTemprature);
+			this._animateIn(this._wCont, this._meshTemprature);
 		} else {
 			this._animateOut(this._meshTemprature);
 		}
@@ -554,7 +590,7 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 
 			var line = new THREE.Line(geometry, material, THREE.LineStrip);
 			line.visible = false;
-			this._container.add(line);
+			this._crCont.add(line);
 			this._running_lines.push(line);
 
 			// -------------------------
@@ -604,7 +640,7 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 
 				var line1 = new THREE.Line(geometry1, material1, THREE.LineStrip);
 				line1.visible = false;
-				this._container.add(line1);
+				this._crCont.add(line1);
 				this._charging_lines.push(line1);
 
 				// -------------------------
@@ -712,8 +748,8 @@ PowerView.prototype._genChargingRunningBox = function(type, color)
 				color: clr,
 				transparent: true,
 				opacity: opacity,
-				depthTest: false,
-				depthWrite: false,
+				//depthTest: false,
+				//depthWrite: false,
 				side: THREE.FrontSide
 			})
 		);
@@ -744,7 +780,7 @@ PowerView.prototype._drawChargingRunningGraph = function(type)
 		if(this._meshRunning == null) {
 			this._meshRunning = this._genChargingRunningBox(POWER_MENU_RUNNING, 0xff0000);
 		}
-		this._animateIn(this._meshRunning);
+		this._animateIn(this._wCont, this._meshRunning);
 
 		if(this._meshCharging != null) {
 			this._animateOut(this._meshCharging);
@@ -764,7 +800,7 @@ PowerView.prototype._drawChargingRunningGraph = function(type)
 		if(this._meshCharging == null) {
 			this._meshCharging = this._genChargingRunningBox(POWER_MENU_CHARGING, 0x00ff00);
 		}
-		this._animateIn(this._meshCharging);
+		this._animateIn(this._wCont, this._meshCharging);
 
 		if(this._meshRunning != null) {
 			this._animateOut(this._meshRunning);
@@ -784,7 +820,7 @@ PowerView.prototype._drawDayBox = function(posday)
 	daybox.position.x = 0;
 	daybox.position.y = this._dayHeight / 2;
 	daybox.position.z = posday;
-	this._container.add(daybox);
+	this._crCont.add(daybox);
 }
 
 // --------------------------------------------------
@@ -810,7 +846,7 @@ PowerView.prototype._drawAxisDateLine = function(posday, date)
 	);
 
 	var line = new THREE.Line(geometry, material, THREE.LineStrip);
-	this._container.add(line);
+	this._axisCont.add(line);
 
 	// draw date text
 	var dstr = date.getFullYear() + "/" + (date.getMonth()+1) + "/" + date.getDate();
@@ -818,7 +854,7 @@ PowerView.prototype._drawAxisDateLine = function(posday, date)
 	mesh.position.x = this._dayWidth / 2 + 80;
 	mesh.position.y = 18;
 	mesh.position.z = posday - 20;
-	this._container.add(mesh);
+	this._axisCont.add(mesh);
 	this._axisDateLines.push(mesh);
 }
 
@@ -831,7 +867,7 @@ PowerView.prototype._drawAxisTime = function()
 	mesh1.position.x = -this._dayWidth / 2;
 	mesh1.position.y = 18;
 	mesh1.position.z = 70;
-	this._container.add(mesh1);
+	this._axisCont.add(mesh1);
 	this._axisTimeLines.push(mesh1);
 }
 
@@ -841,14 +877,14 @@ PowerView.prototype._drawAxisSunriseSunsetTime = function(prise, pset)
 	meshr.position.x = prise;
 	meshr.position.y = 18;
 	meshr.position.z = 70;
-	this._container.add(meshr);
+	this._axisCont.add(meshr);
 	this._axisTimeLines.push(meshr);
 
 	var meshs = this._genTextMesh("sunset");
 	meshs.position.x = pset;
 	meshs.position.y = 18;
 	meshs.position.z = 70;
-	this._container.add(meshs);
+	this._axisCont.add(meshs);
 	this._axisTimeLines.push(meshs);
 }
 
@@ -1176,7 +1212,7 @@ PowerView.prototype._genWeatherByName = function(wname, color)
 		}
 		var opacity;
 		if(scaleOpacity == null) {
-			opacity = 0.7;
+			opacity = 0.6;
 		} else {
 			opacity = scaleOpacity(obj.value);
 		}
@@ -1187,13 +1223,13 @@ PowerView.prototype._genWeatherByName = function(wname, color)
 				color: clr,
 				transparent: true,
 				opacity: opacity,
-				depthTest: false,
-				depthWrite: false,
+				//depthTest: false,
+				//depthWrite: false,
 				side: THREE.FrontSide
 			})
 		);
 		p.position.x = obj.pos[0].x + wid / 2;
-		p.position.y = hei / 2;
+		p.position.y = hei / 2 + 10;
 		p.position.z = -obj.pos[0].y + this._dayLength / 2;
 		p.rotation.x = -Math.PI / 2;
 
@@ -1371,41 +1407,41 @@ PowerView.prototype._genWeatherByName = function(wname, color)
 //	return parr;
 //}
 
-PowerView.prototype._clearWeather = function()
-{
-	this._animateOut(this._meshClear);
-	this._animateOut(this._meshCloud);
-	this._animateOut(this._meshRain);
-	this._animateOut(this._meshSnow);
-	this._animateOut(this._meshSunrise);
-}
-
-PowerView.prototype._drawWeatherBox = function(pts, color)
-{
-	var extrudeSettings = {
-		amount: 500,
-		steps: 20,
-		bevelEnabled: false
-	};
-
-	var shapes = new Array();
-	for(var k = 0; k < pts.length; k++) {
-		shapes.push(new THREE.Shape(pts[k]));
-	}
-	var geometry = new THREE.ExtrudeGeometry( shapes, extrudeSettings );
-	var material = new THREE.MeshBasicMaterial( {
-		color: color,
-		transparent: true,
-		opacity: 0.5,
-		depthTest: false,
-		depthWrite: false,
-		side: THREE.FrontSide } );
-	var mesh = new THREE.Mesh( geometry, material );
-	mesh.rotation.x = -Math.PI / 2;
-	this._animateIn(mesh);
-
-	return mesh;
-}
+//PowerView.prototype._clearWeather = function()
+//{
+//	this._animateOut(this._meshClear);
+//	this._animateOut(this._meshCloud);
+//	this._animateOut(this._meshRain);
+//	this._animateOut(this._meshSnow);
+//	this._animateOut(this._meshSunrise);
+//}
+//
+//PowerView.prototype._drawWeatherBox = function(pts, color)
+//{
+//	var extrudeSettings = {
+//		amount: 500,
+//		steps: 20,
+//		bevelEnabled: false
+//	};
+//
+//	var shapes = new Array();
+//	for(var k = 0; k < pts.length; k++) {
+//		shapes.push(new THREE.Shape(pts[k]));
+//	}
+//	var geometry = new THREE.ExtrudeGeometry( shapes, extrudeSettings );
+//	var material = new THREE.MeshBasicMaterial( {
+//		color: color,
+//		transparent: true,
+//		opacity: 0.5,
+//		depthTest: false,
+//		depthWrite: false,
+//		side: THREE.FrontSide } );
+//	var mesh = new THREE.Mesh( geometry, material );
+//	mesh.rotation.x = -Math.PI / 2;
+//	this._animateIn(mesh);
+//
+//	return mesh;
+//}
 
 PowerView.prototype._genWeatherPlane = function(pts)
 {
@@ -1458,7 +1494,7 @@ PowerView.prototype._getSunTime = function(year, month, day)
 // --------------------------------------------------------------
 //  Animation
 // --------------------------------------------------------------
-PowerView.prototype._animateIn = function(obj3d, time)
+PowerView.prototype._animateIn = function(cont, obj3d, time)
 {
 	time = typeof time !== 'undefined' ? time : 1.2;
 
@@ -1467,7 +1503,7 @@ PowerView.prototype._animateIn = function(obj3d, time)
 		for(var i = 0; i < obj3d.length; i++) {
 			var obj = obj3d[i];
 			obj.scale.z = 0.001;
-			this._container.add(obj);
+			cont.add(obj);
 			TweenMax.to(obj.scale, time, {z:1, ease:Expo.easeOut});
 		}
 
@@ -1475,12 +1511,12 @@ PowerView.prototype._animateIn = function(obj3d, time)
 		if(obj3d.name == "sunrisesunset") {
 			obj3d.material.opacity = 0.3;
 			obj3d.scale.z = 0.001;
-			this._container.add(obj3d);
+			cont.add(obj3d);
 			TweenMax.to(obj3d.material, time, {opacity:0.5, ease:Expo.easeOut});
 
 		} else {
 			obj3d.scale.z = 0.001;
-			this._container.add(obj3d);
+			cont.add(obj3d);
 			TweenMax.to(obj3d.scale, time, {z:1, ease:Expo.easeOut});
 			TweenMax.to(obj3d.material, time, {opacity:0.5, ease:Expo.easeOut});
 		}
@@ -1495,18 +1531,20 @@ PowerView.prototype._animateOut = function(obj3d, time)
 
 		for(var i = 0; i < obj3d.length; i++) {
 			var obj = obj3d[i];
-			this._container.remove(obj);
+			var parent = obj.parent;
+			parent.remove(obj);
 		}
 
 	} else {
 		var self = this;
 		if(obj3d) {
 			if(obj3d.name == "sunrisesunset") {
-				TweenMax.to(obj3d.material, time, {opacity:0.3, ease:Expo.easeOut});
+				TweenMax.to(obj3d.material, time, {opacity:0, ease:Expo.easeOut});
 			} else {
 				TweenMax.to(obj3d.material, time, {opacity:0, ease:Expo.easeOut});
 				TweenMax.to(obj3d.scale, time, {z:0.001, ease:Expo.easeOut, onComplete:function() {
-					self._container.remove(obj3d);
+					var parent = obj3d.parent;
+					parent.remove(obj3d);
 				}});
 			}
 		}

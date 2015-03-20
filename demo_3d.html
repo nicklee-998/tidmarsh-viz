@@ -44,9 +44,16 @@
 	var powermenu, powerview;
 	var mouse = new THREE.Vector2();
 
+	var scene2, scene3;
+
 	$(document).ready(function() {
 		init3d();
 	});
+
+	// 不让网页文字选中
+	document.onselectstart = function() {
+		return false;
+	}
 
 	function init3d()
 	{
@@ -58,7 +65,9 @@
 		renderer = new THREE.WebGLRenderer({ antialias:true });
 		renderer.setSize(sw, sh);
 		renderer.setClearColor( 0x202428, 1 );
-		renderer.sortObjects = true;
+		//renderer.sortObjects = true;
+		renderer.autoClear = false;
+		container.append(renderer.domElement);
 
 		// Setup the camera
 		camera = new THREE.PerspectiveCamera(45, sw / sh, 0.1, 10000000);
@@ -69,8 +78,10 @@
 		// Setup the scene
 		scene = new THREE.Scene();
 		//scene.fog = new THREE.Fog(0xffffff, 4000, 4000);
-		scene.add(camera);
-		container.append(renderer.domElement);
+		//scene.add(camera);
+
+		scene2 = new THREE.Scene();
+		scene3 = new THREE.Scene();
 
 		// STATS
 		stats = new Stats();
@@ -112,7 +123,7 @@
 //		scene.add(box);
 
 
-		powerview = new PowerView(scene, camera, "voltage_tooltip");
+		powerview = new PowerView(scene, scene2, scene3, camera, "voltage_tooltip");
 
 		jQuery.subscribe(POWERMENU_CHANGE, function(e, d) {
 			powerview.genMonthGraph(d);
@@ -132,7 +143,13 @@
 
 	function render()
 	{
+		renderer.clear();
 		renderer.render(scene, camera);
+		renderer.clearDepth();
+		renderer.render(scene2, camera);
+		renderer.clearDepth();
+		renderer.render(scene3, camera);
+
 		controls.update();
 
 		if(powerview) {
