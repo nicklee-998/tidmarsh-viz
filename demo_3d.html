@@ -125,13 +125,19 @@
 
 		powerview = new PowerView(scene, scene2, scene3, camera, "voltage_tooltip");
 
+
 		jQuery.subscribe(POWERMENU_CHANGE, function(e, d) {
 			powerview.genMonthGraph(d);
 		});
 		jQuery.subscribe(POWERMENU_2D_3D, function(e, d) {
 			powerview.changeView(d);
 		});
+		jQuery.subscribe(POWERMENU_STATISTIC_DATA, function(e, d) {
+			powermenu.showStatisticData(d);
+		});
+
 		powermenu = new UiPowerViewMenu("submenu");
+
 	}
 
 	function animate()

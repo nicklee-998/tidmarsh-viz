@@ -208,6 +208,15 @@ function UiPowerViewMenu(cname)
 		jQuery.publish(POWERMENU_2D_3D, newtype);
 	});
 
+	// Statistic Data Panel
+	$("#powermenu_container").append("<div id='pmenu_statistic'></div>");
+	$("#pmenu_statistic").append("<p id='sta_daynight'></p>")
+	$("#pmenu_statistic").append("<p id='sta_charge_day'></p>");
+	$("#pmenu_statistic").append("<p id='sta_charge_clear'></p>");
+	$("#pmenu_statistic").append("<p id='sta_charge_cloudy'></p>");
+	$("#pmenu_statistic").append("<p id='sta_charge_rain'></p>");
+	$("#pmenu_statistic").append("<p id='sta_charge_snow'></p>");
+
 	$(window).resize(function() {
 		$("#pmenu_2d3d").css("top", window.innerHeight-240);
 	});
@@ -218,6 +227,23 @@ function UiPowerViewMenu(cname)
 	$("#pmenu_sunrise_sunset").toggleClass("powermenu_weather_selected");
 	menu_state.weather.sunrisesunset = 1;
 	jQuery.publish(POWERMENU_CHANGE, menu_state);
+}
+
+UiPowerViewMenu.prototype.showStatisticData = function(dobj)
+{
+	var str = "Daytime: " + (dobj.daytime * 100).toFixed(2) + "%, Nighttime: " + (dobj.nighttime * 100).toFixed(2) + "%";
+	$("#sta_daynight").text(str);
+	str = "Charging happened in DAYTIME: " + (dobj.charge_day * 100).toFixed(2) + "%";
+	$("#sta_charge_day").text(str);
+	str = "Charging in CLEAR: " + (dobj.charge_clear * 100).toFixed(2) + "%";
+	$("#sta_charge_clear").text(str);
+	str = "Charging in CLOUDY: " + (dobj.charge_cloudy * 100).toFixed(2) + "%";
+	$("#sta_charge_cloudy").text(str);
+	str = "Charging in RAIN: " + (dobj.charge_rain * 100).toFixed(2) + "%";
+	$("#sta_charge_rain").text(str);
+	str = "Charging in SNOW: " + (dobj.charge_snow * 100).toFixed(2) + "%";
+	$("#sta_charge_snow").text(str);
+
 }
 
 UiPowerViewMenu.prototype.showMe = function()

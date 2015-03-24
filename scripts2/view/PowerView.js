@@ -12,6 +12,19 @@ function PowerView(scene, scene2, scene3, camera, tooltipid)
 	this.minRunningVoltage = 11;
 	this.maxRunningVoltage = 15;
 
+	// 统计数据
+	this._statisticData = {
+		daytime: 0,
+		nighttime: 0,
+		charge_clear: 0,
+		charge_cloudy: 0,
+		charge_rain: 0,
+		charge_snow: 0,
+		charge_day: 0
+	};
+	this._statisticBuffer;
+	this._statisticIsReady = 0;      // 计数到3，说明更新好可以发送了，发送完毕后数值清零
+
 	// for Axis and Sunrise/Sunset
 	this._axisCont = new THREE.Object3D();
 	this._axisCont.name = "axis_container";
@@ -45,7 +58,8 @@ function PowerView(scene, scene2, scene3, camera, tooltipid)
 
 	// data buffer
 	this._dayList;
-	this._sunDataArr;
+	this._crDataArr = null;
+	this._sunDataArr = null;
 	this._weatherDataArr = null;
 
 	this._ptsClear;
@@ -156,11 +170,18 @@ PowerView.prototype.genMonthGraph = function(cobj)
 		this._axisDateLines = new Array();
 		this._axisTimeLines = new Array();
 
+		// 统计数据
+		this._statisticBuffer = new Array();
+
 		// loading sunrise & sunset csv
 		d3.csv(suncsvfile, function(csv) {
 			// save sunrise & sunset infomation
 			self._sunDataArr = csv;
 			self._meshSunrise = self._genSunriseSunsetByMonth();
+
+			// 计算统计数据
+			self._statisticIsReady++;
+			self._genStatisticData();
 
 			// 根据menu state，决定显示否
 			if(cobj.weather.sunrisesunset) {
@@ -168,8 +189,27 @@ PowerView.prototype.genMonthGraph = function(cobj)
 			}
 		});
 
+		// loading weather csv
+		d3.csv(weathercsvfile, function(csv) {
+			// save weather information
+			self._weatherDataArr = csv;
+
+			// 计算统计数据
+			self._statisticIsReady++;
+			self._genStatisticData();
+
+			// 根据menu state，显示weather效果
+			self._drawWeatherByMenu(cobj);
+		});
+
 		// If date if not the same, clear and redraw
 		d3.csv(csvfile, function(csv) {
+
+			self._crDataArr = csv;
+
+			// 计算统计数据
+			self._statisticIsReady++;
+			self._genStatisticData();
 
 			if(csv.length == 0)
 				return;
@@ -218,14 +258,6 @@ PowerView.prototype.genMonthGraph = function(cobj)
 			self._drawChargingRunningGraph(cobj.type);
 		});
 
-		// loading weather csv
-		d3.csv(weathercsvfile, function(csv) {
-			// save weather information
-			self._weatherDataArr = csv;
-
-			// 根据menu state，显示weather效果
-			self._drawWeatherByMenu(cobj);
-		});
 	} else {
 
 		// Charging & Running
@@ -518,6 +550,11 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 
 	var c1 = "hsl(0, 100%, 100%)";
 	var c2 = "hsl(0, 100%, 50%)";
+	var _scaleVoltage2 = d3.scale.sqrt()
+		.domain([this.minRunningVoltage, this.maxRunningVoltage])
+		.range([c1, c2])
+		.interpolate(d3.interpolateHsl);
+
 	//var min = this._getMinTemperature(datset);
 	//var max = this._getMaxTemperature(datset);
 	var min = -10;
@@ -571,10 +608,15 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 			var posv1 = _scaleVoltage(obj1.battery_voltage);
 			var posv2 = _scaleVoltage(obj2.battery_voltage);
 
-			// temprature
-			var tcolor = _scaleTemprature(obj1.battery_temperature);
+			// voltage height
+			var tcolor = _scaleVoltage2(obj2.battery_voltage);
 			tcolor = tcolor.substring(1);
 			var cstr = "0x" + tcolor;
+
+			// temprature
+			//var tcolor = _scaleTemprature(obj1.battery_temperature);
+			//tcolor = tcolor.substring(1);
+			//var cstr = "0x" + tcolor;
 
 			// draw line
 			var material = new THREE.LineBasicMaterial({
@@ -1045,6 +1087,7 @@ PowerView.prototype._genSunriseSunsetByMonth = function()
 
 		//console.log(postime1 + ", " + postime2);
 	}
+
 
 	var extrudeSettings = {
 		amount: 500,
@@ -1549,6 +1592,180 @@ PowerView.prototype._animateOut = function(obj3d, time)
 			}
 		}
 	}
+}
+
+// --------------------------------------------------
+//  计算统计数据，发送统计数据事件
+// --------------------------------------------------
+PowerView.prototype._genStatisticData = function()
+{
+	if(this._statisticIsReady == 3) {
+		// 把统计数据清零
+		this._statisticIsReady = 0;
+
+		var date = new Date(this._crDataArr[0].date);
+		var curryear = date.getFullYear();
+		var currmonth = date.getMonth();
+
+		// time scale
+		var date1 = new Date(curryear, currmonth, 1);
+		var date2 = new Date(curryear, currmonth+1, 1);
+		var _scaleTime = d3.time.scale()
+			.domain([date1, date2])
+			.rangeRound([0, 10000]);
+
+		var tempCharging = 0;   // 总的charging长度
+		var tempClear = 0;
+		var tempCloudy = 0;
+		var tempRain = 0;
+		var tempSnow = 0;
+		var tempDaytime = 0;
+		var tempDaytime2 = 0;
+
+		var chargingSeg = {
+			st: -1,
+			ed: -1
+		};
+		for(var i = 0; i < this._crDataArr.length; i++) {
+
+			var crObj = this._crDataArr[i];
+
+			if(crObj.charge_current > 0) {
+				if(chargingSeg.st == -1) {
+					chargingSeg.st = _scaleTime(new Date(crObj.date));
+				}
+			} else {
+				if(chargingSeg.st != -1) {
+					chargingSeg.ed = _scaleTime(new Date(crObj.date));
+
+					// 统计charing长度
+					tempCharging += (chargingSeg.ed - chargingSeg.st);
+				}
+			}
+
+			// 计算
+			if(chargingSeg.st != -1 && chargingSeg.ed != -1) {
+				//console.log(chargingSeg);
+
+				for(var k = 0; k < this._sunDataArr.length; k++) {
+					// sunrise
+					var sunrise = new Date(this._sunDataArr[k].sunrise);
+					var sunrise_pos = _scaleTime(sunrise);
+					// sunset
+					var sunset = new Date(this._sunDataArr[k].sunset);
+					var sunset_pos = _scaleTime(sunset);
+
+					var dSeg = {
+						st: sunrise_pos,
+						ed: sunset_pos
+					};
+					var overlap = this._caculateOverlap(chargingSeg, dSeg);
+					tempDaytime += overlap;
+				}
+
+				// weather
+				for(var j = 0; j < this._weatherDataArr.length-1; j++) {
+					var wdate1 = new Date(
+						this._weatherDataArr[j].year,
+						this._weatherDataArr[j].month-1,
+						this._weatherDataArr[j].day,
+						this._weatherDataArr[j].hour,
+						this._weatherDataArr[j].minute,
+						this._weatherDataArr[j].second
+					);
+					var wdate2 = new Date(
+						this._weatherDataArr[j+1].year,
+						this._weatherDataArr[j+1].month-1,
+						this._weatherDataArr[j+1].day,
+						this._weatherDataArr[j+1].hour,
+						this._weatherDataArr[j+1].minute,
+						this._weatherDataArr[j+1].second
+					);
+
+					var _tmpconds = this._rollupConds(this._weatherDataArr[j].conds);
+					var wSeg = {
+						st: _scaleTime(wdate1),
+						ed: _scaleTime(wdate2)
+					};
+					var overlap = 0;
+					if(_tmpconds == "CLEAR") {
+						overlap = this._caculateOverlap(chargingSeg, wSeg);
+						tempClear += overlap;
+					} else if(_tmpconds == "CLOUDY") {
+						overlap = this._caculateOverlap(chargingSeg, wSeg);
+						tempCloudy += overlap;
+					} else if(_tmpconds == "RAIN") {
+						overlap = this._caculateOverlap(chargingSeg, wSeg);
+						tempRain += overlap;
+					} else if(_tmpconds == "SNOW") {
+						overlap = this._caculateOverlap(chargingSeg, wSeg);
+						tempSnow += overlap;
+					}
+				}
+
+				chargingSeg.st = -1;
+				chargingSeg.ed = -1;
+			}
+		}
+
+		// 单独计算白天和黑夜的时间
+		for(var k = 0; k < this._sunDataArr.length; k++) {
+			// sunrise
+			var sunrise = new Date(this._sunDataArr[k].sunrise);
+			var sunrise_pos = _scaleTime(sunrise);
+			// sunset
+			var sunset = new Date(this._sunDataArr[k].sunset);
+			var sunset_pos = _scaleTime(sunset);
+
+			var dSeg = {
+				st: sunrise_pos,
+				ed: sunset_pos
+			};
+
+			var long = sunset_pos - sunrise_pos;
+			tempDaytime2 += long;
+		}
+
+		this._statisticData.daytime = tempDaytime2 / 10000;
+		this._statisticData.nighttime = 1 - (tempDaytime2 / 10000);
+		this._statisticData.charge_day = tempDaytime / tempCharging;
+		this._statisticData.charge_clear = tempClear / tempCharging;
+		this._statisticData.charge_cloudy = tempCloudy / tempCharging;
+		this._statisticData.charge_rain = tempRain / tempCharging;
+		this._statisticData.charge_snow = tempSnow / tempCharging;
+
+		//console.log(this._statisticData);
+
+		// -------------------------------
+		// Send statistic data event
+		// -------------------------------
+		jQuery.publish(POWERMENU_STATISTIC_DATA, this._statisticData);
+	}
+}
+
+PowerView.prototype._caculateOverlap = function(seg1, seg2)
+{
+	var overlap;        // 重叠部分的值
+	var start, end;
+
+	if(seg1.st > seg2.st) {
+		start = seg1.st;
+	} else {
+		start = seg2.st;
+	}
+
+	if(seg1.ed < seg2.ed) {
+		end = seg1.ed;
+	} else {
+		end = seg2.ed;
+	}
+
+	overlap = end - start;
+	if(overlap < 0) {
+		overlap = 0;
+	}
+
+	return overlap;
 }
 
 // --------------------------------------------------------------
