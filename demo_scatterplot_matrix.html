@@ -4,6 +4,10 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 	<style type="text/css">
 
+		html {
+			background-color: rgba(32, 36, 40, 1);
+		}
+
 		svg {
 			font-size: 14px;
 		}
@@ -38,29 +42,8 @@
 			fill-opacity: .5;
 		}
 
-		.legend circle {
-			fill-opacity: 1;
-		}
-
-		.legend text {
-			font-size: 18px;
-			font-style: oblique;
-		}
-
 		.cell text {
 			pointer-events: none;
-		}
-
-		.setosa {
-			fill: #800;
-		}
-
-		.versicolor {
-			fill: #080;
-		}
-
-		.virginica {
-			fill: #008;
 		}
 
 	</style>
@@ -85,11 +68,18 @@
 	var x = {}, y = {};
 
 	// scatter plot parameters
-	var start_time = new Date(2014, 7, 10);
-	var end_time = new Date(2014, 7, 15);
-	var dataset;
+	var start_time = new Date(2014, 3, 10);
+	var end_time = new Date(2014, 3, 15);
 	var sensors = ["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity"];
 	var sensorColorTable;
+	var selectedDataset;
+	var selectedDevices = ["0x8114"];
+
+	// scatter plot svg
+	var scatterplot_svg;
+	var scatterplot_bursh;
+	var scatterplot_axis;
+
 
 	$(document).ready(function() {
 		loadDataset();
@@ -120,6 +110,7 @@
 	{
 		if(csvidx >= devices.length) {
 			// 绘制散点图
+			updateDateset();
 			drawScatterPlot();
 
 			return;
@@ -137,78 +128,70 @@
 
 	function drawScatterPlot()
 	{
-		// Select the dataset
-		dataset = new Array();
-
-		for (var i in csvobj) {
-			var arr = csvobj[i];
-			if(arr != null) {
-				for(var j = 0; j < arr.length; j++) {
-					var item = arr[j];
-					var date = new Date(item.date);
-					if(date > start_time && date < end_time && parseInt(item["sht_temperature"]) != -999) {
-						dataset.push(item);
-					}
-				}
-			}
-		}
-
-		sensors.forEach(function(sensor) {
-
-			// Coerce values to numbers.
-			dataset.forEach(function(d) {
-				d[sensor] = +d[sensor];
-			});
-
-			var value = function(d) { return d[sensor] };
-			var domain = [d3.min(dataset, value), d3.max(dataset, value)];
-			var range = [padding / 2, size - padding / 2];
-
-			x[sensor] = d3.scale.linear().domain(domain).range(range);
-			y[sensor] = d3.scale.linear().domain(domain).range(range.reverse());
-		});
-
 		// Axes.
-		var axis = d3.svg.axis()
+		scatterplot_axis = d3.svg.axis()
 			.ticks(5)
 			.tickSize(size * n);
 
 		// Brush.
-		var brush = d3.svg.brush()
+		scatterplot_bursh = d3.svg.brush()
 			.on("brushstart", brushstart)
 			.on("brush", brush)
 			.on("brushend", brushend);
 
 		// Root panel.
-		var svg = d3.select("body").append("svg:svg")
+		scatterplot_svg = d3.select("body").append("svg:svg")
 			.attr("width", 1280)
 			.attr("height", 800)
 			.append("svg:g")
 			.attr("transform", "translate(359.5,69.5)");
 
 		// X-axis.
-		svg.selectAll("g.x.axis")
+		scatterplot_svg.selectAll("g.x.axis")
 			.data(sensors)
 			.enter().append("svg:g")
 			.attr("class", "x axis")
 			.attr("transform", function(d, i) { return "translate(" + i * size + ",0)"; })
-			.each(function(d) { d3.select(this).call(axis.scale(x[d]).orient("bottom")); });
+			.each(function(d) { d3.select(this).call(scatterplot_axis.scale(x[d]).orient("bottom")); });
 
 		// Y-axis.
-		svg.selectAll("g.y.axis")
+		scatterplot_svg.selectAll("g.y.axis")
 			.data(sensors)
 			.enter().append("svg:g")
 			.attr("class", "y axis")
 			.attr("transform", function(d, i) { return "translate(0," + i * size + ")"; })
-			.each(function(d) { d3.select(this).call(axis.scale(y[d]).orient("right")); });
+			.each(function(d) { d3.select(this).call(scatterplot_axis.scale(y[d]).orient("right")); });
 
 		// Cell and plot.
-		var cell = svg.selectAll("g.cell")
+		var cell = scatterplot_svg.selectAll("g.cell")
 			.data(cross(sensors, sensors))
 			.enter().append("svg:g")
 			.attr("class", "cell")
 			.attr("transform", function(d) { return "translate(" + d.i * size + "," + d.j * size + ")"; })
-			.each(plot);
+			.each(function(p) {
+				var cell = d3.select(this);
+
+				// Plot frame.
+				cell.append("svg:rect")
+					.attr("class", "frame")
+					.attr("x", padding / 2)
+					.attr("y", padding / 2)
+					.attr("width", size - padding)
+					.attr("height", size - padding);
+
+				// Plot dots.
+				cell.selectAll("circle")
+					.data(selectedDataset)
+					.enter()
+					.append("svg:circle")
+					.style("fill", function(d) { return sensorColorTable[d.did]; })
+					.attr("cx", function(d) { return x[p.x](d[p.x]); })
+					.attr("cy", function(d) { return y[p.y](d[p.y]); })
+					.attr("r", 3);
+
+				// Plot brush.
+				cell.call(scatterplot_bursh.x(x[p.x]).y(y[p.y]));
+			});
 
 		// Titles for the diagonal.
 		cell.filter(function(d) { return d.i == d.j; }).append("svg:text")
@@ -217,45 +200,18 @@
 			.attr("dy", ".71em")
 			.text(function(d) { return d.x; });
 
-		function plot(p) {
-			var cell = d3.select(this);
-
-			// Plot frame.
-			cell.append("svg:rect")
-				.attr("class", "frame")
-				.attr("x", padding / 2)
-				.attr("y", padding / 2)
-				.attr("width", size - padding)
-				.attr("height", size - padding);
-
-			// Plot dots.
-			cell.selectAll("circle")
-				.data(dataset.filter(function(d) {
-					return d["sht_temperature"] != -999;
-				}))
-				.enter()
-				.append("svg:circle")
-				.style("fill", function(d) { return sensorColorTable[d.did]; })
-				.attr("cx", function(d) { return x[p.x](d[p.x]); })
-				.attr("cy", function(d) { return y[p.y](d[p.y]); })
-				.attr("r", 3);
-
-			// Plot brush.
-			cell.call(brush.x(x[p.x]).y(y[p.y]));
-		}
-
 		// Clear the previously-active brush, if any.
 		function brushstart(p) {
-			if (brush.data !== p) {
-				cell.call(brush.clear());
-				brush.x(x[p.x]).y(y[p.y]).data = p;
+			if (scatterplot_bursh.data !== p) {
+				cell.call(scatterplot_bursh.clear());
+				scatterplot_bursh.x(x[p.x]).y(y[p.y]).data = p;
 			}
 		}
 
 		// Highlight the selected circles.
 		function brush(p) {
-			var e = brush.extent();
-			svg.selectAll(".cell circle").style("fill", function(d) {
+			var e = scatterplot_bursh.extent();
+			scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
 				return e[0][0] <= d[p.x] && d[p.x] <= e[1][0]
 				&& e[0][1] <= d[p.y] && d[p.y] <= e[1][1]
 					? sensorColorTable[d.did] : null;
@@ -264,17 +220,140 @@
 
 		// If the brush is empty, select all circles.
 		function brushend() {
-			if (brush.empty()) svg.selectAll(".cell circle").style("fill", function(d) {
+			if (scatterplot_bursh.empty()) scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
 				return sensorColorTable[d.did];
 			});
 		}
 
 		function cross(a, b) {
 			var c = [], n = a.length, m = b.length, i, j;
-			for (i = -1; ++i < n;) for (j = -1; ++j < m;) c.push({x: a[i], i: i, y: b[j], j: j});
+			for (i = -1; ++i < n;) {
+				for (j = -1; ++j < m;) {
+					if(i <= j) {
+						c.push({x: a[i], i: i, y: b[j], j: j});
+					}
+				}
+			}
 			return c;
 		}
 	}
+
+	function updateDateset()
+	{
+		// Select the dataset
+		selectedDataset = new Array();
+		for (var i in csvobj) {
+			var arr = csvobj[i];
+			if(arr != null) {
+				for(var j = 0; j < arr.length; j++) {
+					var item = arr[j];
+					var date = new Date(item.date);
+					if(date > start_time && date < end_time && parseInt(item["sht_temperature"]) != -999) {
+						selectedDataset.push(item);
+					} else if(date >= end_time) {
+						break;
+					}
+				}
+			}
+		}
+
+		sensors.forEach(function(sensor) {
+			// Coerce values to numbers.
+			selectedDataset.forEach(function(d) {
+				d[sensor] = +d[sensor];
+			});
+
+			var value = function(d) { return d[sensor] };
+			var domain = [d3.min(selectedDataset, value), d3.max(selectedDataset, value)];
+			var range = [padding / 2, size - padding / 2];
+
+			x[sensor] = d3.scale.linear().domain(domain).range(range);
+			y[sensor] = d3.scale.linear().domain(domain).range(range.reverse());
+		});
+
+		console.log(selectedDataset.length);
+	}
+
+	function updateScatterPlot()
+	{
+		console.log("updateScatterPlot");
+
+		// X-axis.
+		scatterplot_svg.selectAll("g.x.axis")
+			.each(function(d) { d3.select(this).call(scatterplot_axis.scale(x[d]).orient("bottom")); });
+
+		// Y-axis.
+		scatterplot_svg.selectAll("g.y.axis")
+			.each(function(d) { d3.select(this).call(scatterplot_axis.scale(y[d]).orient("right")); });
+
+		// Cell and plot.
+		scatterplot_svg.selectAll("g.cell")
+			.each(function(p) {
+				var cell = d3.select(this);
+				// Plot dots.
+				cell = cell.selectAll("circle").data(selectedDataset);
+				cell.exit().remove();
+				cell.transition()
+					.duration(500)
+					.attr("cx", function(d) { return x[p.x](d[p.x]); })
+					.attr("cy", function(d) { return y[p.y](d[p.y]); });
+				cell.enter()
+					.append("svg:circle")
+					.style("fill", function(d) { return sensorColorTable[d.did]; })
+					.attr("cx", function(d) { return x[p.x](d[p.x]); })
+					.attr("cy", function(d) { return y[p.y](d[p.y]); })
+					.attr("r", 3);
+			});
+	}
+
+	function selectScatterPlot()
+	{
+		// clear selected area
+		scatterplot_svg.selectAll("g.cell").call(scatterplot_bursh.clear());
+
+		// highlight selected devices circle
+		scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
+			var isfind = false;
+			for(var i = 0; i < selectedDevices.length; i++) {
+				if(selectedDevices[i] == d.did) {
+					isfind = true;
+					break;
+				}
+			}
+			return isfind ? sensorColorTable[d.did] : null;
+		});
+	}
+
+	/////////////////////////////////////////////
+	// FOR TEST
+	/////////////////////////////////////////////
+	function onKeyboardDown()
+	{
+		// 返回键退出
+		if(d3.event.keyCode == 37) 		// LEFT
+		{
+			start_time.setHours(start_time.getHours() - 240);
+			end_time.setHours(end_time.getHours() - 240);
+
+			console.log(start_time.toLocaleDateString() + " - " + end_time.toLocaleDateString());
+			updateDateset();
+			updateScatterPlot();
+		}
+		else if(d3.event.keyCode == 39) 	// RIGHT
+		{
+			start_time.setHours(start_time.getHours() + 240);
+			end_time.setHours(end_time.getHours() + 240);
+
+			console.log(start_time.toLocaleDateString() + " - " + end_time.toLocaleDateString());
+			updateDateset();
+			updateScatterPlot();
+		}
+		else if(d3.event.keyCode == 38)
+		{
+			selectScatterPlot();
+		}
+	}
+	d3.select("body").on("keydown", onKeyboardDown);
 
 	function getRandomColor()
 	{

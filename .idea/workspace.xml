@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7d4f2cda-708d-45cd-96e4-586ac0f7b141" name="Default" comment="1. Added tooltip in data history mode&#10;2. Adjusted some effect of data history graph">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/demo_scatterplot_matrix.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo_scatterplot_matrix.html" afterPath="$PROJECT_DIR$/demo_scatterplot_matrix.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="tidmarsh-viz.iws" />
@@ -34,11 +34,31 @@
       <file leaf-file-name="demo_scatterplot_matrix.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/demo_scatterplot_matrix.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.24427481" vertical-offset="1595" max-vertical-offset="4455">
-              <caret line="117" column="0" selection-start-line="117" selection-start-column="0" selection-end-line="117" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.7621951" vertical-offset="4165" max-vertical-offset="5640">
+              <caret line="311" column="83" selection-start-line="311" selection-start-column="83" selection-end-line="311" selection-end-column="83" />
               <folding>
                 <element signature="n#style#0;n#h2#0;n#body#0;n#html#0;n#!!top" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SensorToCSVTool.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-9.196078" vertical-offset="6701" max-vertical-offset="8070">
+              <caret line="478" column="45" selection-start-line="478" selection-start-column="45" selection-end-line="478" selection-end-column="45" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="demo_3d.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/demo_3d.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-16.25" vertical-offset="600" max-vertical-offset="4020">
+              <caret line="66" column="48" selection-start-line="66" selection-start-column="40" selection-end-line="66" selection-end-column="48" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -121,7 +141,7 @@
     <option name="x" value="-1" />
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="824" />
+    <option name="height" value="825" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -228,18 +248,8 @@
               <option name="myItemId" value="scripts2" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-          </PATH>
-          <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="tidmarsh-viz" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tidmarsh-viz" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
+              <option name="myItemId" value="tools" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -253,11 +263,21 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
+              <option name="myItemId" value="scripts2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="data_sensor" />
+              <option name="myItemId" value="res" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -449,7 +469,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1" y="23" width="1440" height="824" extended-state="6" />
+    <frame x="-1" y="23" width="1440" height="825" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3255814" sideWeight="0.49964765" order="12" side_tool="false" content_ui="tabs" />
@@ -611,13 +631,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2927928" vertical-offset="345" max-vertical-offset="2190">
-          <caret line="36" column="106" selection-start-line="36" selection-start-column="106" selection-end-line="36" selection-end-column="106" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiDataMenu.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="2.4324324" vertical-offset="0" max-vertical-offset="3510">
@@ -723,13 +736,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.15765765" vertical-offset="0" max-vertical-offset="2385">
-          <caret line="7" column="68" selection-start-line="7" selection-start-column="68" selection-end-line="7" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.95732576" vertical-offset="542" max-vertical-offset="1305">
@@ -772,13 +778,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.28718704" vertical-offset="1770" max-vertical-offset="5865">
-          <caret line="131" column="61" selection-start-line="131" selection-start-column="61" selection-end-line="131" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/tools/CountDeviceHealth.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.42792794" vertical-offset="0" max-vertical-offset="7575">
@@ -811,7 +810,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.3191801" vertical-offset="37" max-vertical-offset="720">
           <caret line="17" column="16" selection-start-line="5" selection-start-column="8" selection-end-line="17" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -819,31 +817,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="707">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/demo_3d.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.4281524" vertical-offset="1694" max-vertical-offset="4020">
-          <caret line="48" column="8" selection-start-line="48" selection-start-column="8" selection-end-line="50" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index_version_1.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.6950673" vertical-offset="540" max-vertical-offset="15120">
-          <caret line="5" column="69" selection-start-line="5" selection-start-column="69" selection-end-line="5" selection-end-column="69" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.18224299" vertical-offset="6243" max-vertical-offset="7620">
-          <caret line="424" column="39" selection-start-line="424" selection-start-column="39" selection-end-line="424" selection-end-column="39" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -851,14 +824,61 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-6.4459457" vertical-offset="9138" max-vertical-offset="21480">
           <caret line="323" column="10" selection-start-line="323" selection-start-column="4" selection-end-line="323" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_3d.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-16.25" vertical-offset="600" max-vertical-offset="4020">
+          <caret line="66" column="48" selection-start-line="66" selection-start-column="40" selection-end-line="66" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.61347" vertical-offset="3750" max-vertical-offset="5865">
+          <caret line="131" column="61" selection-start-line="131" selection-start-column="61" selection-end-line="131" selection-end-column="61" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index_version_1.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7089552" vertical-offset="12260" max-vertical-offset="15120">
+          <caret line="849" column="64" selection-start-line="820" selection-start-column="16" selection-end-line="849" selection-end-column="64" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.31343284" vertical-offset="315" max-vertical-offset="2385">
+          <caret line="7" column="68" selection-start-line="7" selection-start-column="68" selection-end-line="7" selection-end-column="68" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.51492536" vertical-offset="720" max-vertical-offset="2190">
+          <caret line="71" column="32" selection-start-line="71" selection-start-column="32" selection-end-line="76" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.196078" vertical-offset="6701" max-vertical-offset="8070">
+          <caret line="478" column="45" selection-start-line="478" selection-start-column="45" selection-end-line="478" selection-end-column="45" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/demo_scatterplot_matrix.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.24427481" vertical-offset="1595" max-vertical-offset="4455">
-          <caret line="117" column="0" selection-start-line="117" selection-start-column="0" selection-end-line="117" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.7621951" vertical-offset="4165" max-vertical-offset="5640">
+          <caret line="311" column="83" selection-start-line="311" selection-start-column="83" selection-end-line="311" selection-end-column="83" />
           <folding>
             <element signature="n#style#0;n#h2#0;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
