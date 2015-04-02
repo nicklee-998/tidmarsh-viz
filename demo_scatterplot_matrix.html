@@ -2,94 +2,30 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+	<link rel="stylesheet" type="text/css" href="./scripts2/css/scatter_plot_matrix.css"/>
 	<style type="text/css">
 
 		html {
 			background-color: rgba(32, 36, 40, 1);
 		}
 
-		svg {
-			font-size: 14px;
-		}
-
-		.axis {
-			shape-rendering: crispEdges;
-		}
-
-		.axis line {
-			stroke: #ddd;
-			stroke-width: .5px;
-		}
-
-		.axis path {
-			display: none;
-		}
-
-		rect.extent {
-			fill: #000;
-			fill-opacity: .125;
-			stroke: #fff;
-		}
-
-		rect.frame {
-			fill: #fff;
-			fill-opacity: .7;
-			stroke: #aaa;
-		}
-
-		circle {
-			fill: #ccc;
-			fill-opacity: .5;
-		}
-
-		.cell text {
-			pointer-events: none;
-		}
-
 	</style>
 </head>
 <body>
 <h2 style="font-size:24px;">Tidmarsh Sensor Scatterplot</h2>
+<div id="scatterplot_cont"></div>
+
 <script src="./libs/jquery-1.11.1.min.js"></script>
 <script src="./libs/d3.js"></script>
+<script src="scripts2/view/ScatterPlotGraph.js"></script>
 <script>
 
 	const SITE_URL = "http://chain-api.media.mit.edu/devices/?site_id=7";
 
 	var devices;
-	var csvidx, csvobj;
-
-	// Size parameters.
-	var size = 140;
-	var padding = 10;
-	var n = 4;
-
-	// Position scales.
-	var x = {}, y = {};
-
-	// scatter plot parameters
-	var start_time = new Date(2014, 3, 10);
-	var end_time = new Date(2014, 3, 15);
-	var sensors = ["sht_temperature", "illuminance", "bmp_pressure", "sht_humidity"];
-	var sensorColorTable;
-	var selectedDataset;
-	var selectedDevices = ["0x8114"];
-
-	// scatter plot svg
-	var scatterplot_svg;
-	var scatterplot_bursh;
-	var scatterplot_axis;
-
+	var graph;
 
 	$(document).ready(function() {
-		loadDataset();
-	});
-
-	// -----------------------------------------
-	//  Load dataset
-	// -----------------------------------------
-	function loadDataset()
-	{
 		$.getJSON(SITE_URL, function(dat) {
 
 			// TODO: That's use a little trick way to get all sensors from on request, maybe change the way in future...
@@ -97,273 +33,40 @@
 			$.getJSON(url, function(dat2) {
 				devices = dat2["_links"]["items"];
 
-				// start loading csv files
-				csvidx = 0;
-				csvobj = {};
-				sensorColorTable = {};
-				startCSVQueue();
+				graph = new ScatterPlotGraph();
+				graph.initDataset(devices, "2014");
 			});
 		});
-	}
-
-	function startCSVQueue()
-	{
-		if(csvidx >= devices.length) {
-			// 绘制散点图
-			updateDateset();
-			drawScatterPlot();
-
-			return;
-		}
-
-		var url = "./res/data_sensor/" + devices[csvidx].title + "_2014.csv";
-		d3.csv(url, function(dataset) {
-			console.log(url);
-			csvobj[devices[csvidx].title] = dataset;
-			sensorColorTable[devices[csvidx].title] = getRandomColor();
-			csvidx++;
-			startCSVQueue();
-		});
-	}
-
-	function drawScatterPlot()
-	{
-		// Axes.
-		scatterplot_axis = d3.svg.axis()
-			.ticks(5)
-			.tickSize(size * n);
-
-		// Brush.
-		scatterplot_bursh = d3.svg.brush()
-			.on("brushstart", brushstart)
-			.on("brush", brush)
-			.on("brushend", brushend);
-
-		// Root panel.
-		scatterplot_svg = d3.select("body").append("svg:svg")
-			.attr("width", 1280)
-			.attr("height", 800)
-			.append("svg:g")
-			.attr("transform", "translate(359.5,69.5)");
-
-		// X-axis.
-		scatterplot_svg.selectAll("g.x.axis")
-			.data(sensors)
-			.enter().append("svg:g")
-			.attr("class", "x axis")
-			.attr("transform", function(d, i) { return "translate(" + i * size + ",0)"; })
-			.each(function(d) { d3.select(this).call(scatterplot_axis.scale(x[d]).orient("bottom")); });
-
-		// Y-axis.
-		scatterplot_svg.selectAll("g.y.axis")
-			.data(sensors)
-			.enter().append("svg:g")
-			.attr("class", "y axis")
-			.attr("transform", function(d, i) { return "translate(0," + i * size + ")"; })
-			.each(function(d) { d3.select(this).call(scatterplot_axis.scale(y[d]).orient("right")); });
-
-		// Cell and plot.
-		var cell = scatterplot_svg.selectAll("g.cell")
-			.data(cross(sensors, sensors))
-			.enter().append("svg:g")
-			.attr("class", "cell")
-			.attr("transform", function(d) { return "translate(" + d.i * size + "," + d.j * size + ")"; })
-			.each(function(p) {
-				var cell = d3.select(this);
-
-				// Plot frame.
-				cell.append("svg:rect")
-					.attr("class", "frame")
-					.attr("x", padding / 2)
-					.attr("y", padding / 2)
-					.attr("width", size - padding)
-					.attr("height", size - padding);
-
-				// Plot dots.
-				cell.selectAll("circle")
-					.data(selectedDataset)
-					.enter()
-					.append("svg:circle")
-					.style("fill", function(d) { return sensorColorTable[d.did]; })
-					.attr("cx", function(d) { return x[p.x](d[p.x]); })
-					.attr("cy", function(d) { return y[p.y](d[p.y]); })
-					.attr("r", 3);
-
-				// Plot brush.
-				cell.call(scatterplot_bursh.x(x[p.x]).y(y[p.y]));
-			});
-
-		// Titles for the diagonal.
-		cell.filter(function(d) { return d.i == d.j; }).append("svg:text")
-			.attr("x", padding)
-			.attr("y", padding)
-			.attr("dy", ".71em")
-			.text(function(d) { return d.x; });
-
-		// Clear the previously-active brush, if any.
-		function brushstart(p) {
-			if (scatterplot_bursh.data !== p) {
-				cell.call(scatterplot_bursh.clear());
-				scatterplot_bursh.x(x[p.x]).y(y[p.y]).data = p;
-			}
-		}
-
-		// Highlight the selected circles.
-		function brush(p) {
-			var e = scatterplot_bursh.extent();
-			scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
-				return e[0][0] <= d[p.x] && d[p.x] <= e[1][0]
-				&& e[0][1] <= d[p.y] && d[p.y] <= e[1][1]
-					? sensorColorTable[d.did] : null;
-			});
-		}
-
-		// If the brush is empty, select all circles.
-		function brushend() {
-			if (scatterplot_bursh.empty()) scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
-				return sensorColorTable[d.did];
-			});
-		}
-
-		function cross(a, b) {
-			var c = [], n = a.length, m = b.length, i, j;
-			for (i = -1; ++i < n;) {
-				for (j = -1; ++j < m;) {
-					if(i <= j) {
-						c.push({x: a[i], i: i, y: b[j], j: j});
-					}
-				}
-			}
-			return c;
-		}
-	}
-
-	function updateDateset()
-	{
-		// Select the dataset
-		selectedDataset = new Array();
-		for (var i in csvobj) {
-			var arr = csvobj[i];
-			if(arr != null) {
-				for(var j = 0; j < arr.length; j++) {
-					var item = arr[j];
-					var date = new Date(item.date);
-					if(date > start_time && date < end_time && parseInt(item["sht_temperature"]) != -999) {
-						selectedDataset.push(item);
-					} else if(date >= end_time) {
-						break;
-					}
-				}
-			}
-		}
-
-		sensors.forEach(function(sensor) {
-			// Coerce values to numbers.
-			selectedDataset.forEach(function(d) {
-				d[sensor] = +d[sensor];
-			});
-
-			var value = function(d) { return d[sensor] };
-			var domain = [d3.min(selectedDataset, value), d3.max(selectedDataset, value)];
-			var range = [padding / 2, size - padding / 2];
-
-			x[sensor] = d3.scale.linear().domain(domain).range(range);
-			y[sensor] = d3.scale.linear().domain(domain).range(range.reverse());
-		});
-
-		console.log(selectedDataset.length);
-	}
-
-	function updateScatterPlot()
-	{
-		console.log("updateScatterPlot");
-
-		// X-axis.
-		scatterplot_svg.selectAll("g.x.axis")
-			.each(function(d) { d3.select(this).call(scatterplot_axis.scale(x[d]).orient("bottom")); });
-
-		// Y-axis.
-		scatterplot_svg.selectAll("g.y.axis")
-			.each(function(d) { d3.select(this).call(scatterplot_axis.scale(y[d]).orient("right")); });
-
-		// Cell and plot.
-		scatterplot_svg.selectAll("g.cell")
-			.each(function(p) {
-				var cell = d3.select(this);
-				// Plot dots.
-				cell = cell.selectAll("circle").data(selectedDataset);
-				cell.exit().remove();
-				cell.transition()
-					.duration(500)
-					.attr("cx", function(d) { return x[p.x](d[p.x]); })
-					.attr("cy", function(d) { return y[p.y](d[p.y]); });
-				cell.enter()
-					.append("svg:circle")
-					.style("fill", function(d) { return sensorColorTable[d.did]; })
-					.attr("cx", function(d) { return x[p.x](d[p.x]); })
-					.attr("cy", function(d) { return y[p.y](d[p.y]); })
-					.attr("r", 3);
-			});
-	}
-
-	function selectScatterPlot()
-	{
-		// clear selected area
-		scatterplot_svg.selectAll("g.cell").call(scatterplot_bursh.clear());
-
-		// highlight selected devices circle
-		scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
-			var isfind = false;
-			for(var i = 0; i < selectedDevices.length; i++) {
-				if(selectedDevices[i] == d.did) {
-					isfind = true;
-					break;
-				}
-			}
-			return isfind ? sensorColorTable[d.did] : null;
-		});
-	}
+	});
 
 	/////////////////////////////////////////////
 	// FOR TEST
 	/////////////////////////////////////////////
 	function onKeyboardDown()
 	{
-		// 返回键退出
+//		// 返回键退出
 		if(d3.event.keyCode == 37) 		// LEFT
 		{
-			start_time.setHours(start_time.getHours() - 240);
-			end_time.setHours(end_time.getHours() - 240);
+			graph._start_time.setHours(graph._start_time.getHours() - 240);
+			graph._end_time.setHours(graph._end_time.getHours() - 240);
 
-			console.log(start_time.toLocaleDateString() + " - " + end_time.toLocaleDateString());
-			updateDateset();
-			updateScatterPlot();
+			console.log(graph._start_time.toLocaleDateString() + " - " + graph._end_time.toLocaleDateString());
+			graph.resetDate(graph._start_time, graph._end_time);
 		}
 		else if(d3.event.keyCode == 39) 	// RIGHT
 		{
-			start_time.setHours(start_time.getHours() + 240);
-			end_time.setHours(end_time.getHours() + 240);
+			graph._start_time.setHours(graph._start_time.getHours() + 240);
+			graph._end_time.setHours(graph._end_time.getHours() + 240);
 
-			console.log(start_time.toLocaleDateString() + " - " + end_time.toLocaleDateString());
-			updateDateset();
-			updateScatterPlot();
+			console.log(graph._start_time.toLocaleDateString() + " - " + graph._end_time.toLocaleDateString());
+			graph.resetDate(graph._start_time, graph._end_time);
 		}
 		else if(d3.event.keyCode == 38)
 		{
-			selectScatterPlot();
+			graph.highlightDevices(["0x8114"]);
 		}
 	}
 	d3.select("body").on("keydown", onKeyboardDown);
-
-	function getRandomColor()
-	{
-		var letters = '0123456789ABCDEF'.split('');
-		var color = '#';
-		for (var i = 0; i < 6; i++ ) {
-			color += letters[Math.floor(Math.random() * 16)];
-		}
-		return color;
-	}
 
 </script>
 </body>

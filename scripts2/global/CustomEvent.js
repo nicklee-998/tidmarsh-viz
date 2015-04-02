@@ -82,3 +82,8 @@ var MAINMENU_POWER_LEAVE = "main_menu_power_leave";
 var POWERMENU_CHANGE = "power_menu_change";
 var POWERMENU_2D_3D = "power_menu_2d_3d";
 var POWERMENU_STATISTIC_DATA = "power_menu_statistic_data";
+
+/***********************************
+ * SCATTER PLOT EVENT
+ ***********************************/
+var SCATTER_PLOT_SELECTED = "scatter_plot_selected";

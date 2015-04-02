@@ -1,0 +1,36 @@
+#scatterplot_cont {
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	font-size: 8px;
+}
+
+.axis line {
+	stroke: rgba(171, 171, 171, 0);
+	stroke-width: .5px;
+}
+
+.axis path {
+	display: none;
+}
+
+rect.extent {
+	fill: #000;
+	fill-opacity: .125;
+	stroke: #fff;
+}
+
+rect.frame {
+	fill: #fff;
+	fill-opacity: .3;
+	stroke: #aaa;
+}
+
+circle {
+	fill: #ccc;
+	fill-opacity: .5;
+}
+
+.cell text {
+	pointer-events: none;
+}

@@ -2,8 +2,84 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7d4f2cda-708d-45cd-96e4-586ac0f7b141" name="Default" comment="1. Added tooltip in data history mode&#10;2. Adjusted some effect of data history graph">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts2/controllers/UiScatterplotMatrix.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x0005_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x0006_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x111E_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x1150_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x115F_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x810A_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x810B_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x810D_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8110_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8112_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8113_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8114_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8115_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8116_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8117_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x811B_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x811F_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8124_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8126_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8128_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x812A_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x812B_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x812E_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8133_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8135_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8136_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8137_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8138_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8139_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x813B_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x813D_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8140_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8141_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8143_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8144_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8145_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8146_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8147_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8148_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8149_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x814B_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x814C_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x814D_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x814F_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8151_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8152_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8153_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8154_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8155_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8156_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8157_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8158_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8159_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x815A_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x815B_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x815C_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x815E_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8160_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8161_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8162_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8163_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8164_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8165_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8167_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8168_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x8169_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x816A_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x816B_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x816C_2014.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/0x816E_2014.csv" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/global/CustomEvent.js" afterPath="$PROJECT_DIR$/scripts2/global/CustomEvent.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/Main.js" afterPath="$PROJECT_DIR$/scripts2/view/Main.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo_scatterplot_matrix.html" afterPath="$PROJECT_DIR$/demo_scatterplot_matrix.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="tidmarsh-viz.iws" />
@@ -31,11 +107,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="demo_scatterplot_matrix.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="demo_scatterplot_matrix.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/demo_scatterplot_matrix.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7621951" vertical-offset="4165" max-vertical-offset="5640">
-              <caret line="311" column="83" selection-start-line="311" selection-start-column="83" selection-end-line="311" selection-end-column="83" />
+            <state vertical-scroll-proportion="-15.625" vertical-offset="480" max-vertical-offset="1185">
+              <caret line="57" column="24" selection-start-line="57" selection-start-column="24" selection-end-line="61" selection-end-column="76" />
               <folding>
                 <element signature="n#style#0;n#h2#0;n#body#0;n#html#0;n#!!top" expanded="true" />
               </folding>
@@ -43,21 +119,41 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SensorToCSVTool.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.196078" vertical-offset="6701" max-vertical-offset="8070">
-              <caret line="478" column="45" selection-start-line="478" selection-start-column="45" selection-end-line="478" selection-end-column="45" />
+            <state vertical-scroll-proportion="-12.5" vertical-offset="915" max-vertical-offset="5925">
+              <caret line="81" column="25" selection-start-line="81" selection-start-column="25" selection-end-line="81" selection-end-column="25" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="demo_3d.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/demo_3d.html">
+      <file leaf-file-name="Main.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-16.25" vertical-offset="600" max-vertical-offset="4020">
-              <caret line="66" column="48" selection-start-line="66" selection-start-column="40" selection-end-line="66" selection-end-column="48" />
+            <state vertical-scroll-proportion="0.4009009" vertical-offset="6198" max-vertical-offset="18375">
+              <caret line="431" column="0" selection-start-line="431" selection-start-column="0" selection-end-line="431" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ScatterPlotGraph.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-12.222222" vertical-offset="2070" max-vertical-offset="5625">
+              <caret line="160" column="0" selection-start-line="160" selection-start-column="0" selection-end-line="160" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CustomEvent.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="659" max-vertical-offset="1380">
+              <caret line="88" column="52" selection-start-line="88" selection-start-column="52" selection-end-line="88" selection-end-column="52" />
               <folding />
             </state>
           </provider>
@@ -76,9 +172,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/demo/js/landscape_generator.js" />
-        <option value="$PROJECT_DIR$/demo/demo_3d_birds.html" />
-        <option value="$PROJECT_DIR$/js/SimulationRenderer.js" />
         <option value="$PROJECT_DIR$/scripts2/css/slider_bar_date.css" />
         <option value="$PROJECT_DIR$/css/datepicker.css" />
         <option value="$PROJECT_DIR$/scripts2/css/loading.css" />
@@ -88,7 +181,6 @@
         <option value="$PROJECT_DIR$/libs/EasePack.min.js" />
         <option value="$PROJECT_DIR$/scripts2/view/CalendarEffect.js" />
         <option value="$PROJECT_DIR$/demo/demo_3d_buffergeometry.html" />
-        <option value="$PROJECT_DIR$/scripts2/view/WeatherEffect.js" />
         <option value="$PROJECT_DIR$/demo_loader.html" />
         <option value="$PROJECT_DIR$/scripts2/view/SensorNode.js" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiNodeInfoPanel.js" />
@@ -113,20 +205,24 @@
         <option value="$PROJECT_DIR$/demo/webgl_geometry_colors_lookuptable.html" />
         <option value="$PROJECT_DIR$/demo/demo_3d_container.html" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiMainMenu.js" />
-        <option value="$PROJECT_DIR$/scripts2/view/Main.js" />
         <option value="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" />
         <option value="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" />
         <option value="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/scripts2/global/GlobalVars.js" />
         <option value="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" />
-        <option value="$PROJECT_DIR$/scripts2/global/CustomEvent.js" />
         <option value="$PROJECT_DIR$/scripts2/view/PowerView.js" />
         <option value="$PROJECT_DIR$/demo_3d.html" />
         <option value="$PROJECT_DIR$/scripts2/css/pagemenu.css" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js" />
         <option value="$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html" />
         <option value="$PROJECT_DIR$/demo_scatterplot_matrix.html" />
+        <option value="$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css" />
+        <option value="$PROJECT_DIR$/scripts2/controllers/UiScatterplotMatrix.js" />
+        <option value="$PROJECT_DIR$/scripts2/view/WeatherEffect.js" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/scripts2/global/CustomEvent.js" />
+        <option value="$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js" />
+        <option value="$PROJECT_DIR$/scripts2/view/Main.js" />
       </list>
     </option>
   </component>
@@ -138,10 +234,9 @@
     <detection-done>true</detection-done>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1" />
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="825" />
+    <option name="height" value="824" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -266,6 +361,60 @@
               <option name="myItemId" value="scripts2" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="global" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scripts2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controllers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -278,6 +427,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tidmarsh-viz" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="libs" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -469,7 +632,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1" y="23" width="1440" height="825" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="824" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3255814" sideWeight="0.49964765" order="12" side_tool="false" content_ui="tabs" />
@@ -519,83 +682,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/scripts2/css/slider_bar_date.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.16071428" vertical-offset="192" max-vertical-offset="1875">
-          <caret line="20" column="23" selection-start-line="20" selection-start-column="23" selection-end-line="20" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/datepicker.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1545">
-          <caret line="1" column="14" selection-start-line="1" selection-start-column="1" selection-end-line="1" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiSliderBar.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.14935988" vertical-offset="0" max-vertical-offset="2655">
-          <caret line="7" column="22" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/css/loader2.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="525">
-          <caret line="4" column="23" selection-start-line="4" selection-start-column="23" selection-end-line="4" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libs/jquery.easing.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.9347826" vertical-offset="0" max-vertical-offset="750">
-          <caret line="43" column="3601" selection-start-line="43" selection-start-column="3601" selection-end-line="43" selection-end-column="3601" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/libs/jQueryRotate.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="7.347826" vertical-offset="0" max-vertical-offset="5160">
-          <caret line="338" column="11" selection-start-line="338" selection-start-column="11" selection-end-line="338" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiNodeInfoPanel.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.57610244" vertical-offset="1725" max-vertical-offset="5550">
-          <caret line="142" column="34" selection-start-line="142" selection-start-column="34" selection-end-line="142" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/SensorNode.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.021337127" vertical-offset="45" max-vertical-offset="1380">
-          <caret line="4" column="1" selection-start-line="4" selection-start-column="1" selection-end-line="4" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/global/GraphConfig.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1815">
-          <caret line="21" column="26" selection-start-line="21" selection-start-column="9" selection-end-line="21" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/opening_loader.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.41304347" vertical-offset="360" max-vertical-offset="1095">
-          <caret line="43" column="0" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/data/APManager.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6376812" vertical-offset="250" max-vertical-offset="6375">
-          <caret line="46" column="30" selection-start-line="46" selection-start-column="30" selection-end-line="46" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/data/DataFactory.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="557" max-vertical-offset="1260">
@@ -680,13 +766,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/data/ChainManager.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5652174" vertical-offset="2010" max-vertical-offset="7620">
-          <caret line="160" column="40" selection-start-line="160" selection-start-column="40" selection-end-line="163" selection-end-column="92" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/global/GlobalVars.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="420">
@@ -722,13 +801,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controls/OrbitControls.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33284023" vertical-offset="1785" max-vertical-offset="10080">
-          <caret line="140" column="26" selection-start-line="140" selection-start-column="16" selection-end-line="140" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libs/three.min.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="1.6304348" vertical-offset="0" max-vertical-offset="12615">
@@ -736,38 +808,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.95732576" vertical-offset="542" max-vertical-offset="1305">
-          <caret line="83" column="57" selection-start-line="83" selection-start-column="57" selection-end-line="83" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/css/pagemenu.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.81223327" vertical-offset="839" max-vertical-offset="1575">
           <caret line="94" column="10" selection-start-line="94" selection-start-column="10" selection-end-line="94" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.53485066" vertical-offset="3029" max-vertical-offset="3900">
-          <caret line="229" column="1" selection-start-line="229" selection-start-column="1" selection-end-line="229" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/PowerView.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34139404" vertical-offset="25620" max-vertical-offset="27465">
-          <caret line="1724" column="60" selection-start-line="1724" selection-start-column="60" selection-end-line="1724" selection-end-column="60" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.46811596" vertical-offset="9487" max-vertical-offset="17730">
-          <caret line="654" column="20" selection-start-line="650" selection-start-column="16" selection-end-line="654" selection-end-column="20" />
         </state>
       </provider>
     </entry>
@@ -827,27 +871,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/demo_3d.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-16.25" vertical-offset="600" max-vertical-offset="4020">
-          <caret line="66" column="48" selection-start-line="66" selection-start-column="40" selection-end-line="66" selection-end-column="48" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.61347" vertical-offset="3750" max-vertical-offset="5865">
-          <caret line="131" column="61" selection-start-line="131" selection-start-column="61" selection-end-line="131" selection-end-column="61" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/index_version_1.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.7089552" vertical-offset="12260" max-vertical-offset="15120">
           <caret line="849" column="64" selection-start-line="820" selection-start-column="16" selection-end-line="849" selection-end-column="64" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -855,7 +882,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.31343284" vertical-offset="315" max-vertical-offset="2385">
           <caret line="7" column="68" selection-start-line="7" selection-start-column="68" selection-end-line="7" selection-end-column="68" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -863,25 +889,176 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.51492536" vertical-offset="720" max-vertical-offset="2190">
           <caret line="71" column="32" selection-start-line="71" selection-start-column="32" selection-end-line="76" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_3d.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5718475" vertical-offset="600" max-vertical-offset="4020">
+          <caret line="66" column="48" selection-start-line="66" selection-start-column="40" selection-end-line="66" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/blur.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.233766" vertical-offset="3627" max-vertical-offset="4320">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/Complicated.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.047619" vertical-offset="9042" max-vertical-offset="9735">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/d3.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="138570">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/jQueryRotate.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="7.316017" vertical-offset="0" max-vertical-offset="5160">
+          <caret line="338" column="11" selection-start-line="338" selection-start-column="11" selection-end-line="338" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/AudioObject.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="240" max-vertical-offset="2625">
+          <caret line="8" column="85" selection-start-line="8" selection-start-column="85" selection-end-line="8" selection-end-column="85" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controls/OrbitControls.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="9374" max-vertical-offset="10080">
+          <caret line="671" column="45" selection-start-line="671" selection-start-column="39" selection-end-line="671" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/PowerView.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.3611898" vertical-offset="1935" max-vertical-offset="27465">
+          <caret line="112" column="0" selection-start-line="112" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.063739374" vertical-offset="0" max-vertical-offset="706">
+          <caret line="3" column="12" selection-start-line="3" selection-start-column="12" selection-end-line="3" selection-end-column="12" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.196078" vertical-offset="6701" max-vertical-offset="8070">
-          <caret line="478" column="45" selection-start-line="478" selection-start-column="45" selection-end-line="478" selection-end-column="45" />
+        <state vertical-scroll-proportion="0.9192825" vertical-offset="0" max-vertical-offset="8070">
+          <caret line="41" column="34" selection-start-line="41" selection-start-column="34" selection-end-line="41" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.04249292" vertical-offset="465" max-vertical-offset="3930">
+          <caret line="33" column="8" selection-start-line="33" selection-start-column="8" selection-end-line="35" selection-end-column="82" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiScatterplotMatrix.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.19121814" vertical-offset="0" max-vertical-offset="706">
+          <caret line="9" column="92" selection-start-line="9" selection-start-column="92" selection-end-line="9" selection-end-column="92" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/data/WeatherManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="693">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-12.5" vertical-offset="915" max-vertical-offset="5925">
+          <caret line="81" column="25" selection-start-line="81" selection-start-column="25" selection-end-line="81" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/WeatherEffect.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.6804124" vertical-offset="5639" max-vertical-offset="7215">
+          <caret line="452" column="32" selection-start-line="452" selection-start-column="32" selection-end-line="452" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/data/APManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.995671" vertical-offset="0" max-vertical-offset="6375">
+          <caret line="46" column="30" selection-start-line="46" selection-start-column="30" selection-end-line="46" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/data/ChainManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3030303" vertical-offset="615" max-vertical-offset="7620">
+          <caret line="55" column="32" selection-start-line="55" selection-start-column="32" selection-end-line="58" selection-end-column="80" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="659" max-vertical-offset="1380">
+          <caret line="88" column="52" selection-start-line="88" selection-start-column="52" selection-end-line="88" selection-end-column="52" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/demo_scatterplot_matrix.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7621951" vertical-offset="4165" max-vertical-offset="5640">
-          <caret line="311" column="83" selection-start-line="311" selection-start-column="83" selection-end-line="311" selection-end-column="83" />
+        <state vertical-scroll-proportion="-15.625" vertical-offset="480" max-vertical-offset="1185">
+          <caret line="57" column="24" selection-start-line="57" selection-start-column="24" selection-end-line="61" selection-end-column="76" />
           <folding>
             <element signature="n#style#0;n#h2#0;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-12.222222" vertical-offset="2070" max-vertical-offset="5625">
+          <caret line="160" column="0" selection-start-line="160" selection-start-column="0" selection-end-line="160" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4009009" vertical-offset="6198" max-vertical-offset="18375">
+          <caret line="431" column="0" selection-start-line="431" selection-start-column="0" selection-end-line="431" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

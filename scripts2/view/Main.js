@@ -38,6 +38,10 @@ var network, chainManager, apManager;
 var calendar = null;
 var calendar_node = null;
 
+// scatter plot
+var scatterGraph = null;             // Scatter plot graph
+var menuScatterGraph = null;
+
 // interactive
 var raycaster;
 var mouse = new THREE.Vector2(), INTERSECTED;
@@ -121,6 +125,8 @@ $(document).ready(function() {
 	// --------------------------------
 	// Register all event
 	// --------------------------------
+	registerAllEvent();
+
 	// enter health mode
 	jQuery.subscribe(NETWORK_HEALTH_NODE_SELECTED, onNetworkNodeSelected);
 	jQuery.subscribe(NETWORK_HEALTH_NODE_DESELECTED, onNetworkNodeDeselected);
@@ -304,8 +310,8 @@ function init3d()
 			$("#weather_big").css("left", -bwid)
 
 			// Animal & Planet effect
-			apManager = new APManager();
-			apManager.init();
+			//apManager = new APManager();
+			//apManager.init();
 
 			// Todo: Can't rely on weather infomation to start all the web
 			animate();
@@ -418,6 +424,16 @@ function render()
 }
 
 /////////////////////////////////////////////
+// Register all event
+/////////////////////////////////////////////
+function registerAllEvent()
+{
+	jQuery.subscribe(SCATTER_PLOT_SELECTED, function(e, d) {
+
+	});
+}
+
+/////////////////////////////////////////////
 // MAIN MENU
 /////////////////////////////////////////////
 function onMainMenuClick(e)
@@ -426,7 +442,7 @@ function onMainMenuClick(e)
 		// 显示介绍文字
 		intro.showIntroPage();
 		// 显示动物和植物
-		apManager.showAP();
+		if(apManager) apManager.showAP();
 		// 显示天气
 		// Todo: Should refresh everytime reshow weather
 		weather.create(weather_today);
@@ -438,12 +454,19 @@ function onMainMenuClick(e)
 
 	} else if(e.type == MAINMENU_NETWORK) {
 		// 显示动物和植物
-		apManager.showAP();
-		// 显示天气
-		weather.create(weather_today);
-		// Show weather bar
+		if(apManager) apManager.showAP();
+		// 显示天气效果
+		if(weather) weather.create(weather_today);
+		// 显示气象数据
 		showWeatherBig(true);
-		showWeatherSmall(true);
+		showWeatherSmall(false);
+		// 显示scatter plot graph
+		if(scatterGraph == null) {
+			scatterGraph = new ScatterPlotGraph();
+			scatterGraph.initDataset(chainManager.devices, "2014");
+		} else {
+			scatterGraph.show();
+		}
 		// Enter normal mode
 		network.enterNormalMode();
 		// Set default sign
@@ -461,9 +484,9 @@ function onMainMenuClick(e)
 
 		//console.log("Mainmenu Data: " + mainmenu.currSelectSensorIdx + ", " + mainmenu.currSelectRH);
 		// 隐藏动物和植物
-		apManager.hideAP();
+		if(apManager) apManager.hideAP();
 		// 切换天气
-		weather.create("VORONOI");
+		if(weather) weather.create("VORONOI");
 		// Hide weather bar
 		showWeatherSmall(false);
 		// Hide line chart
@@ -537,7 +560,7 @@ function onMainMenuClick(e)
 	} else if(e.type == MAINMENU_HEALTH) {
 
 		// 隐藏动物和植物
-		apManager.hideAP();
+		if(apManager) apManager.hideAP();
 		// 关闭天气
 		weather.create("CLOUDY");
 		// weather big
@@ -560,7 +583,7 @@ function onMainMenuClick(e)
 	} else if(e.type == MAINMENU_POWER) {
 
 		// 隐藏动物和植物
-		apManager.hideAP();
+		if(apManager) apManager.hideAP();
 		// 关闭天气
 		weather.create("CLOUDY");
 		// weather big
@@ -597,6 +620,8 @@ function onMainMenuChange(e)
 				// weather big
 				showWeatherBig(false);
 			}
+			// 隐藏scatter plot graph
+			scatterGraph.hide();
 
 			// Unregister mouse event
 			jQuery.unsubscribe(NETWORK_NORMAL_SIGN_CLICK, onNetworkSignClicked);
@@ -830,7 +855,7 @@ function clearLoadingScreen()
 			"bottom": 0
 		}, 500);
 		// show ap
-		apManager.showAP();
+		if(apManager) apManager.showAP();
 		// show intro
 		intro.showIntroPage(1600);
 		// set control
@@ -1110,15 +1135,15 @@ function onKeyboardDown()
 	}
 	else if(d3.event.keyCode == 52)	// 4
 	{
-		//weather.create("SNOW");
+		weather.create("SNOW");
 
-		square.position.y -= 10;
+		//square.position.y -= 10;
 	}
 	else if(d3.event.keyCode == 53)	// 5
 	{
-		//weather.create("FOG");
+		weather.create("FOG");
 
-		square.position.y += 10;
+		//square.position.y += 10;
 	}
 	else if(d3.event.keyCode == 54)	// 6
 	{
@@ -1145,6 +1170,24 @@ function onKeyboardDown()
 
 		square.position.z += 10;
 	}
+	else if(d3.event.keyCode == 78)	// N:
+	{
+		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - 24);
+		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - 24);
+
+		console.log(scatterGraph._start_time.toLocaleDateString() + " - " + scatterGraph._end_time.toLocaleDateString());
+		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+	}
+	else if(d3.event.keyCode == 77)	// M:
+	{
+		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + 24);
+		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + 24);
+
+		console.log(scatterGraph._start_time.toLocaleDateString() + " - " + scatterGraph._end_time.toLocaleDateString());
+		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+	}
+
+	console.log(d3.event.keyCode);
 }
 d3.select("body").on("keydown", onKeyboardDown);
 
