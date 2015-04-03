@@ -80,6 +80,16 @@ SensorNode.prototype.online = function(val)
 	}
 }
 
+SensorNode.prototype.selected = function()
+{
+	this._mesh.material.color.setHex("0xff0000");
+}
+
+SensorNode.prototype.deselected = function()
+{
+	this._mesh.material.color.setHex("0x666666");
+}
+
 SensorNode.prototype.restore = function()
 {
 	this._mesh.material.color.setHex(this._normalColor);

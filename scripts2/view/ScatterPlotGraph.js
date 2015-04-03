@@ -5,8 +5,8 @@
 function ScatterPlotGraph()
 {
 	// scatter plot parameters
-	this._start_time = new Date(2014, 3, 10);
-	this._end_time = new Date(2014, 3, 15);
+	this._start_time = new Date(2014, 9, 10);
+	this._end_time = new Date(2014, 9, 15);
 
 	this._sensors = ["bmp_temperature", "illuminance", "bmp_pressure", "sht_humidity"];
 	this._sensorColorTable;

@@ -17,21 +17,24 @@ function NodeNetwork()
 	this.NETWORK_MODE_VORONOI_REALTIME = "network_mode_voronoi_realtime";
 	this.NETWORK_MODE_VORONOI_HISTORY = "network_mode_voronoi_history";
 	this.NETWORK_MODE_HEALTH = "network_mode_health";
+	this.NETWORK_MODE_SCATTER_PLOT = "network_mode_scatter_plot";
 
 	// Mouse Interaction
 	this.disableMouseEvent = false;         // 是否禁止鼠标交互
-
-	this._mode = this.NETWORK_MODE_NONE;
 
 	// Network
 	this.animatedObjects;
 	this.devices = new Array();
 	this.deviceBoxes = new Array();         // 不包括fake点的box
 
+	// Mode
+	this._mode = this.NETWORK_MODE_NONE;
+
 	// Voronoi
 	this.vertices;
 	this._voronoiContainer;
 	this._voronoiLabelContainer;
+
 	// cell label text
 	this._cellLabelTextFontSize = 30;
 	this._cellLabelTextColor = {r:70, g:70, b:70, a:0.7};
@@ -75,7 +78,6 @@ function NodeNetwork()
 	}, false );
 
 	document.addEventListener( 'mouseup', function() {
-
 		if(self._intersected) {
 			// Health mode click
 			if(self._mode == self.NETWORK_MODE_HEALTH) {
@@ -105,8 +107,8 @@ function NodeNetwork()
 					jQuery.publish(NETWORK_HEALTH_NODE_SELECTED, self._intersected.name);
 				}
 
-			} else if(self._mode == self.NETWORK_MODE_NORMAL) {
-
+			} else if(self._mode == self.NETWORK_MODE_NORMAL ||
+				self._mode == self.NETWORK_MODE_SCATTER_PLOT) {
 				if(self._intersected) {
 					if(self._intersected.name == "info_sign_plane") {
 						jQuery.publish(NETWORK_NORMAL_SIGN_CLICK, self._intersected);
@@ -203,13 +205,14 @@ NodeNetwork.prototype.createDevice = function(dInfo)
 	this.devices.push({
 		type: "cell",                   // 该设备的类型：'cell'表示实际的node，‘blank’表示假的node（用于填充vgraph用）
 		mesh: box,                      // 该设备的模型（目前为cylinder），node中包含同样的链接
-		node:node,                      // 该设备的模型（SensorNode Class）
-		healthBoxes:new Array(),        // 该设备的health shape，每天一个
+		node: node,                     // 该设备的模型（SensorNode Class）
+		healthBoxes: new Array(),       // 该设备的health shape，每天一个
 		id: dInfo.title,                // 该设备Id
 		cell: null,                     // voronoi graph中该设备对应的shape
 		cellLabel: null                 // voronoi graph中该设备对应shape的提示sprite
 	});
 	this.deviceBoxes.push(box);
+
 	// todo:
 	//if(dInfo.lastUpdated != null) {
 	//	node.isOnline(dInfo.lastUpdated);
@@ -298,6 +301,39 @@ NodeNetwork.prototype.growAnimation = function(d)
 		TweenMax.to(d.position, 1.2, {z:goalZ, ease:Expo.easeOut});
 	}});
 	//TweenMax.to(d.scale, 3, {x:1, z:1, ease:Elastic.easeOut});
+}
+
+// -------------------------------------------------------
+//  Scatter Plot State
+// -------------------------------------------------------
+NodeNetwork.prototype.enterScatterPlotMode = function()
+{
+	// Restore all buttons to origin color
+	// Make all nodes offline
+	for(var i = 0; i < this.devices.length; i++) {
+		var device = this.devices[i];
+		if(device.type != "blank") {
+			device.node.online(false);
+		}
+	}
+
+	this._mode = this.NETWORK_MODE_SCATTER_PLOT;
+}
+
+NodeNetwork.prototype.selectDevicesFromScatterPlot = function(darr)
+{
+	for(var i = 0; i < this.devices.length; i++) {
+		var device = this.devices[i];
+		if(device.type != "blank") {
+			device.node.deselected();
+			for(var j = 0; j < darr.length; j++) {
+				if(device.id == darr[j]) {
+					device.node.selected();
+					break;
+				}
+			}
+		}
+	}
 }
 
 // -------------------------------------------------------
@@ -1058,7 +1094,7 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value, date)
 			// change color
 			var clr = "0x" + String(mobj.color).substr(1);
 			device.cell.material.color.setHex(clr);
-			device.cell.material.ambient.setHex(clr);
+			//device.cell.material.ambient.setHex(clr);
 			device.cell.material.emissive.setHex(clr);
 			if(!device.cell.userData) {
 				device.cell.userData = {value: -998, unit: "", date:null, title: ""};

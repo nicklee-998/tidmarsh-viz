@@ -171,7 +171,7 @@ CalendarEffect.prototype.render = function(mx, my)
 {
 	var vector = new THREE.Vector3(mx, my, 1).unproject(this._camera);
 	this._raycaster.set(this._camera.position, vector.sub(this._camera.position).normalize());
-	var intersects = raycaster.intersectObjects(this._dayContainer.children, false);
+	var intersects = this._raycaster.intersectObjects(this._dayContainer.children, false);
 
 	if(intersects.length > 0) {
 		this._intersect = intersects[0].object;

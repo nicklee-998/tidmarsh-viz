@@ -2,6 +2,8 @@
  * Created by marian_mcpartland on 14/12/15.
  */
 
+const CHAIN_API_URL = "http://chain-api.media.mit.edu/devices/?site_id=7";
+
 var container, scene, renderer, camera, controls, sw, sh;
 var ground, groundWid, groundHei, groundZero;
 var stats;
@@ -43,8 +45,7 @@ var scatterGraph = null;             // Scatter plot graph
 var menuScatterGraph = null;
 
 // interactive
-var raycaster;
-var mouse = new THREE.Vector2(), INTERSECTED;
+var mouse = new THREE.Vector2();
 
 // data history
 var selectSensor;
@@ -135,67 +136,122 @@ $(document).ready(function() {
 	jQuery.subscribe(NETWORK_VORONOI_MOUSE_OVER, onNetworkVoronoiOver);
 	jQuery.subscribe(NETWORK_VORONOI_MOUSE_OUT, onNetworkVoronoiOut);
 	jQuery.subscribe(LINE_CHART_DRAG, onLineChartDrag);
-	jQuery.subscribe(GMAP_INIT, onGmapInit);
 	network = new NodeNetwork();
 });
 
-function onGmapInit()
+/////////////////////////////////////////////
+// Register all event
+/////////////////////////////////////////////
+function registerAllEvent()
 {
-	jQuery.unsubscribe(GMAP_INIT, onGmapInit);
+	// ---------------------------------------
+	//  Finished google map init things.
+	// ---------------------------------------
+	jQuery.subscribe(GMAP_INIT, function(e) {
+		jQuery.unsubscribe(GMAP_INIT, e.handleObj.handler);
 
-	// INIT 3D
-	jQuery.subscribe(DEVICE_MODEL_LOADED, onDeviceModelLoaded);
-	init3d();
+		// INIT 3D
+		init3d();
+		// Show loading animation
+		initLoadingScreen();
 
-	// Loading animation
-	initLoadingScreen();
+		// Start loading devices info from server...
+		chainManager = new ChainManager(CHAIN_API_URL);
+		chainManager.init();
+	});
 
-	// Loading node data on server...
-	jQuery.subscribe(SERVER_SUMMARY_COMPLETE, onServerSummary);
-	jQuery.subscribe(SERVER_DEVICE_INFO_COMPLETE, onDeviceInfoComplete);
-	jQuery.subscribe(SERVER_INIT_COMPLETE, onServerInitCompelte);
-	chainManager = new ChainManager("http://chain-api.media.mit.edu/devices/?site_id=7");
-	chainManager.init();
-}
+	// ---------------------------------------
+	//  Loaded all devices summary.
+	// ---------------------------------------
+	jQuery.subscribe(SERVER_SUMMARY_COMPLETE, function(e, d) {
+		jQuery.unsubscribe(SERVER_SUMMARY_COMPLETE, e.handleObj.handler);
 
-function onDeviceModelLoaded()
-{
-	jQuery.unsubscribe(DEVICE_MODEL_LOADED, onDeviceModelLoaded);
-	console.log("Device model loaded...");
+		// for loading animation
+		_counterTotal = d.totalCount;
+		_counterInterval = setInterval(function() {
+			var number = (_counterIdx / _counterTotal) * 100;
+			_counter.countUpTo(Math.round(number));
+		}, 800);
+	});
 
-	// Not Used now...
-}
+	// ---------------------------------------
+	//  Loaded one device info.
+	// ---------------------------------------
+	jQuery.subscribe(SERVER_DEVICE_INFO_COMPLETE, function(e, d) {
+		// fixme: Should remove handler at last
 
-function onServerSummary(e, i)
-{
-	_counterTotal = i.totalCount;
+		network.createDevice(d);
+		// for opening loading
+		_counterIdx++;
+	});
 
-	_counterInterval = setInterval(function() {
-		var number = (_counterIdx / _counterTotal) * 100;
-		_counter.countUpTo(Math.round(number));
-	}, 800);
-}
+	// ---------------------------------------
+	//  Finished all devices init progress.
+	// ---------------------------------------
+	jQuery.subscribe(SERVER_INIT_COMPLETE, function(e) {
+		jQuery.unsubscribe(SERVER_INIT_COMPLETE, e.handleObj.handler);
 
-function onDeviceInfoComplete(e, i)
-{
-	network.createDevice(i);
-	// for opening loading
-	_counterIdx++;
-}
+		network.createFakeDevices();
+		network.createVoronoi();
 
-function onServerInitCompelte()
-{
-	jQuery.unsubscribe(SERVER_SUMMARY_COMPLETE, onServerSummary);
-	jQuery.unsubscribe(SERVER_DEVICE_INFO_COMPLETE, onDeviceInfoComplete);
-	jQuery.unsubscribe(SERVER_INIT_COMPLETE, onServerInitCompelte);
+		// stop update opening loader
+		clearInterval(_counterInterval);
+		_counter.countUpTo(99);
+		clearLoadingScreen();
+	});
 
-	network.createFakeDevices();
-	network.createVoronoi();
+	// ---------------------------------------
+	// 外部模型载入完毕 *暂时没有用*
+	// ---------------------------------------
+	jQuery.subscribe(DEVICE_MODEL_LOADED, function(e) {
+		jQuery.unsubscribe(DEVICE_MODEL_LOADED, e.handleObj.handler);
+		// Not Used now...
+	});
 
-	// stop update opening loader
-	clearInterval(_counterInterval);
-	_counter.countUpTo(99);
-	clearLoadingScreen();
+	// ---------------------------------------
+	//  Node and sign clicked...
+	// ---------------------------------------
+	jQuery.subscribe(NETWORK_NORMAL_MESH_CLICK, function(e, d) {
+		// 打开node提示板
+		showNodeSign(d);
+	});
+	jQuery.subscribe(NETWORK_NORMAL_SIGN_CLICK, function(e, d) {
+		// 打开node内容页
+		showInfoPanel(d);
+	});
+
+	// ---------------------------------------
+	//  Selected circle on scatter plot...
+	// ---------------------------------------
+	jQuery.subscribe(SCATTER_PLOT_SELECTED, function(e, d) {
+		network.selectDevicesFromScatterPlot(d.list);
+	});
+
+	// ---------------------------------------
+	//  SYSTEM EVENT
+	// ---------------------------------------
+	document.addEventListener( 'mousemove', function(event) {
+		event.preventDefault();
+		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	}, false);
+
+	window.addEventListener("resize", function() {
+		sw = window.innerWidth;
+		sh = window.innerHeight;
+		renderer.setSize(sw, sh);
+		camera.aspect = sw / sh;
+		camera.updateProjectionMatrix();
+
+		// ui
+		mainmenu.rearrange();
+		// intro_page
+		intro.rearrange();
+		// info panel
+		rearrangeInfoPanel();
+		// drag bar
+		rearrangeDragbar();
+	});
 }
 
 function init3d()
@@ -221,10 +277,6 @@ function init3d()
 	scene.add(camera);
 	container.append(renderer.domElement);
 
-	// Raycaster for MOUSEEVENT
-	raycaster = new THREE.Raycaster();
-	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-
 	// STATS
 	//stats = new Stats();
 	//$("#state").append(stats.domElement);
@@ -235,24 +287,6 @@ function init3d()
 	controls.noZoom = true;
 	controls.noRotate = true;
 	controls.noPan = true;
-
-	// Handling window resize
-	window.addEventListener("resize", function() {
-		sw = window.innerWidth;
-		sh = window.innerHeight;
-		renderer.setSize(sw, sh);
-		camera.aspect = sw / sh;
-		camera.updateProjectionMatrix();
-
-		// ui
-		mainmenu.rearrange();
-		// intro_page
-		intro.rearrange();
-		// info panel
-		rearrangeInfoPanel();
-		// drag bar
-		rearrangeDragbar();
-	});
 
 	createWorld();
 
@@ -313,7 +347,7 @@ function init3d()
 			//apManager = new APManager();
 			//apManager.init();
 
-			// Todo: Can't rely on weather infomation to start all the web
+			// Todo: Can't rely on weather api to start 3d program
 			animate();
 		},
 		error : function(xhr, textStatus, error) {
@@ -334,15 +368,15 @@ function createWorld()
 {
 	createBaseGround();
 	initInfoPanel();
-	createSensorNode();
+	//createSensorNode();
 
-	//
-	square = new THREE.Mesh(
-		new THREE.PlaneBufferGeometry(50, 50, 20, 20),
-		new THREE.MeshPhongMaterial({color: 0xff0000, shading: THREE.FlatShading, side: THREE.DoubleSide, transparent:true})
-	);
-	square.position.y = -5;
-	square.position.z = -150;
+	// FOR TEST
+	//square = new THREE.Mesh(
+	//	new THREE.PlaneBufferGeometry(50, 50, 20, 20),
+	//	new THREE.MeshPhongMaterial({color: 0xff0000, shading: THREE.FlatShading, side: THREE.DoubleSide, transparent:true})
+	//);
+	//square.position.y = -5;
+	//square.position.z = -150;
 	//camera.add(square);
 }
 
@@ -352,6 +386,9 @@ function createBaseGround()
 	groundHei = network.boundHei;
 
 	var texture = THREE.ImageUtils.loadTexture("./res/textures/map_area.jpg");
+	texture.wrapS = THREE.ClampToEdgeWrapping;
+	texture.wrapT = THREE.ClampToEdgeWrapping;
+	texture.minFilter = THREE.NearestFilter;
 	ground = new THREE.Mesh(
 		new THREE.PlaneBufferGeometry(groundWid, groundHei, 200, 200),
 		new THREE.MeshPhongMaterial({map: texture, shading: THREE.SmoothShading, side: THREE.DoubleSide})
@@ -387,17 +424,8 @@ function createSensorNode()
 function animate()
 {
 	requestAnimationFrame(animate);
-
 	render();
 	//stats.update();
-}
-
-function onDocumentMouseMove( event )
-{
-	event.preventDefault();
-
-	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 }
 
 function render()
@@ -421,16 +449,6 @@ function render()
 	if(apManager != null) {
 		apManager.update(mouse.x, mouse.y);
 	}
-}
-
-/////////////////////////////////////////////
-// Register all event
-/////////////////////////////////////////////
-function registerAllEvent()
-{
-	jQuery.subscribe(SCATTER_PLOT_SELECTED, function(e, d) {
-
-	});
 }
 
 /////////////////////////////////////////////
@@ -467,22 +485,18 @@ function onMainMenuClick(e)
 		} else {
 			scatterGraph.show();
 		}
-		// Enter normal mode
-		network.enterNormalMode();
+		// Enter scatter mode
+		network.enterScatterPlotMode();
 		// Set default sign
-		var len = network.deviceBoxes.length - 1;
-		showNodeSign(network.deviceBoxes[getRandomInt(0, len)], 0.8);
+		//var len = network.deviceBoxes.length - 1;
+		//showNodeSign(network.deviceBoxes[getRandomInt(0, len)], 0.8);
 
 		// Set 3d scene
 		setScenePerspective(2);
 
-		// Register click event
-		jQuery.subscribe(NETWORK_NORMAL_SIGN_CLICK, onNetworkSignClicked);
-		jQuery.subscribe(NETWORK_NORMAL_MESH_CLICK, onNetworkMeshClicked);
-
 	} else if(e.type == MAINMENU_DATA) {
 
-		//console.log("Mainmenu Data: " + mainmenu.currSelectSensorIdx + ", " + mainmenu.currSelectRH);
+		console.log("Mainmenu Data: " + mainmenu.currSelectSensorIdx + ", " + mainmenu.currSelectRH);
 		// 隐藏动物和植物
 		if(apManager) apManager.hideAP();
 		// 切换天气
@@ -623,10 +637,6 @@ function onMainMenuChange(e)
 			// 隐藏scatter plot graph
 			scatterGraph.hide();
 
-			// Unregister mouse event
-			jQuery.unsubscribe(NETWORK_NORMAL_SIGN_CLICK, onNetworkSignClicked);
-			jQuery.unsubscribe(NETWORK_NORMAL_MESH_CLICK, onNetworkMeshClicked);
-
 			break;
 		case MAINMENU_DATA_LEAVE:
 			// CLEAR GRAPH
@@ -678,12 +688,7 @@ function setScenePerspective(idx)
 			controls.minPolarAngle = controls.getPolarAngle();
 			controls.maxPolarAngle = controls.getPolarAngle();
 		}});
-		// Hide sensor node
-		if(sensornode.visible) {
-			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
-				sensornode.visible = false;
-			}});
-		}
+
 		// Hide calendar
 		if(calendar != null) {
 			calendar.hide();
@@ -700,18 +705,14 @@ function setScenePerspective(idx)
 			//controls.minPolarAngle = controls.getPolarAngle();
 			//controls.maxPolarAngle = controls.getPolarAngle();
 		}});
-		// Hide sensor node
-		if(sensornode.visible) {
-			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
-				sensornode.visible = false;
-			}});
-		}
+
 		// Hide calendar
 		if(calendar != null) {
 			calendar.hide();
 		}
 
 		sceneState = 2;
+
 	} else if(idx == 3) {
 		TweenMax.to(ground.position, 1, {y: -220, delay:0.1, ease:Quint.easeOut});
 		TweenMax.to(camera.position, 1.2, {x:0, y:550, z:1466, delay:0, ease:Quart.easeOut, onComplete:function() {
@@ -721,12 +722,7 @@ function setScenePerspective(idx)
 			//controls.minPolarAngle = controls.getPolarAngle();
 			//controls.maxPolarAngle = controls.getPolarAngle();
 		}});
-		// Hide sensor node
-		if(sensornode.visible) {
-			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
-				sensornode.visible = false;
-			}});
-		}
+
 		// Hide calendar
 		if(calendar != null) {
 			calendar.hide();
@@ -737,12 +733,7 @@ function setScenePerspective(idx)
 
 		TweenMax.to(ground.position, 1, {y:-430, ease:Quint.easeOut});
 		TweenMax.to(camera.position, 1.2, {x:440, y:395, z:1828, ease:Quart.easeOut});
-		// Hide sensor node
-		if(sensornode.visible) {
-			TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
-				sensornode.visible = false;
-			}});
-		}
+
 		// Hide calendar
 		if(calendar != null) {
 			calendar.hide();
@@ -756,32 +747,8 @@ function setScenePerspective(idx)
 		}});
 		TweenMax.to(camera.position, 1.2, {x:11, y:-38, z:1565, ease:Quart.easeOut});
 
-		sensornode.visible = true;
-		TweenMax.to(sensornode.position, 1, {y:0, ease:Quint.easeOut, onComplete:function() {
-			// calendar
-			if(calendar == null) {
-				calendar = new CalendarEffect(scene, camera);
-			}
-			calendar.init(2014, calendar_node);
-		}});
-
 		sceneState = 5;
 	}
-}
-
-/////////////////////////////////////////////
-// Node Menu
-/////////////////////////////////////////////
-function onNetworkMeshClicked(e, d)
-{
-	// 打开node提示板
-	showNodeSign(d);
-}
-
-function onNetworkSignClicked(e, d)
-{
-	// 打开node内容页
-	showInfoPanel(d);
 }
 
 /////////////////////////////////////////////
@@ -820,6 +787,32 @@ function onLineChartDrag(e, d)
 {
 	//console.log("line drag: " + d);
 	updateNetworkNode(d);
+}
+
+/////////////////////////////////////////////
+// Device 3D Model
+/////////////////////////////////////////////
+function showDeviceMode(flg)
+{
+	if(sensornode) {
+
+		if(flg) {
+			sensornode.visible = true;
+			TweenMax.to(sensornode.position, 1, {y:0, ease:Quint.easeOut, onComplete:function() {
+				// calendar
+				if(calendar == null) {
+					calendar = new CalendarEffect(scene, camera);
+				}
+				calendar.init(2014, calendar_node);
+			}});
+		} else {
+			if(sensornode.visible) {
+				TweenMax.to(sensornode.position, 1, {y:SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+					sensornode.visible = false;
+				}});
+			}
+		}
+	}
 }
 
 /////////////////////////////////////////////
@@ -1187,7 +1180,7 @@ function onKeyboardDown()
 		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
 	}
 
-	console.log(d3.event.keyCode);
+	//console.log(d3.event.keyCode);
 }
 d3.select("body").on("keydown", onKeyboardDown);
 

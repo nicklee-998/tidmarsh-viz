@@ -283,6 +283,9 @@ WeatherEffect.prototype._rain = function()
 			this._rainParticuleParticules.vertices.push(particle);
 		}
 		var rainParticuleEmitterTexture = THREE.ImageUtils.loadTexture('res/textures/rain.png');
+		rainParticuleEmitterTexture.wrapS = THREE.ClampToEdgeWrapping;
+		rainParticuleEmitterTexture.wrapT = THREE.ClampToEdgeWrapping;
+		rainParticuleEmitterTexture.minFilter = THREE.NearestFilter;
 		var rainParticuleEmitterMaterial = new THREE.PointCloudMaterial({
 			map: rainParticuleEmitterTexture,
 			transparent: true,
@@ -362,6 +365,9 @@ WeatherEffect.prototype._snow = function()
 			this._snowParticuleParticules.vertices.push(particle);
 		}
 		var snowParticuleEmitterTexture = THREE.ImageUtils.loadTexture('res/textures/snowflake.png');
+		snowParticuleEmitterTexture.wrapS = THREE.ClampToEdgeWrapping;
+		snowParticuleEmitterTexture.wrapT = THREE.ClampToEdgeWrapping;
+		snowParticuleEmitterTexture.minFilter = THREE.NearestFilter;
 		var snowParticuleEmitterMaterial = new THREE.PointCloudMaterial({
 			map: snowParticuleEmitterTexture,
 			transparent: true,
