@@ -80,9 +80,12 @@ SensorNode.prototype.online = function(val)
 	}
 }
 
-SensorNode.prototype.selected = function()
+SensorNode.prototype.selected = function(color)
 {
-	this._mesh.material.color.setHex("0xff0000");
+	var clr = color.toString();
+	clr = "0x" + clr.substring(1);
+	//this._mesh.material.color.setHex("0xff0000");
+	this._mesh.material.color.setHex(clr);
 }
 
 SensorNode.prototype.deselected = function()

@@ -41,7 +41,8 @@ var calendar = null;
 var calendar_node = null;
 
 // scatter plot
-var scatterGraph = null;             // Scatter plot graph
+var scatterGraph = null;                // Scatter plot graph
+var scatterTimeGraph = null;            // Scatter plot graph
 var menuScatterGraph = null;
 
 // interactive
@@ -83,6 +84,7 @@ $(document).ready(function() {
 	lineChart = new UiLineChart();
 	menuData = new UiDataMenu();
 	menuHealth = new UiHealthMenu();
+	menuScatterGraph = new UiScatterplotMatrix("scatterplot_menu");
 
 	// MAIN MENU
 	jQuery.subscribe(MAINMENU_BEGIN, onMainMenuClick);
@@ -131,7 +133,6 @@ $(document).ready(function() {
 	// enter health mode
 	jQuery.subscribe(NETWORK_HEALTH_NODE_SELECTED, onNetworkNodeSelected);
 	jQuery.subscribe(NETWORK_HEALTH_NODE_DESELECTED, onNetworkNodeDeselected);
-
 
 	jQuery.subscribe(NETWORK_VORONOI_MOUSE_OVER, onNetworkVoronoiOver);
 	jQuery.subscribe(NETWORK_VORONOI_MOUSE_OUT, onNetworkVoronoiOut);
@@ -214,17 +215,68 @@ function registerAllEvent()
 	jQuery.subscribe(NETWORK_NORMAL_MESH_CLICK, function(e, d) {
 		// 打开node提示板
 		showNodeSign(d);
+		// highlight scatter plot
+		scatterGraph.highlightDevices([d.name]);
 	});
 	jQuery.subscribe(NETWORK_NORMAL_SIGN_CLICK, function(e, d) {
+		// 隐藏scatter plot
+		scatterGraph.hide();
+		menuScatterGraph.hide();
 		// 打开node内容页
 		showInfoPanel(d);
+	});
+	jQuery.subscribe(NODE_SIGN_CLOSED, function() {
+		// 显示scatter plot
+		scatterGraph.show();
+		menuScatterGraph.show();
 	});
 
 	// ---------------------------------------
 	//  Selected circle on scatter plot...
 	// ---------------------------------------
 	jQuery.subscribe(SCATTER_PLOT_SELECTED, function(e, d) {
+		// hidden sign
+		hideNodeSign();
+		// show deivces depend on selected plot
 		network.selectDevicesFromScatterPlot(d.list);
+		// show time
+		scatterTimeGraph.draw(d.tlist);
+	});
+
+	jQuery.subscribe(SCATTER_PLOT_PREV, function() {
+		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - 24);
+		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - 24);
+
+		menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+	});
+
+	jQuery.subscribe(SCATTER_PLOT_NEXT, function() {
+		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + 24);
+		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + 24);
+
+		menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+	});
+
+	jQuery.subscribe(SCATTER_PLOT_PREV_FAST, function() {
+		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - 240);
+		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - 240);
+
+		menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+	});
+
+	jQuery.subscribe(SCATTER_PLOT_NEXT_FAST, function() {
+		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + 240);
+		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + 240);
+
+		menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+	});
+
+	jQuery.subscribe(SCATTER_PLOT_DATE_SELECTED, function(e, d) {
+		scatterGraph.resetDate(d.start, d.end);
 	});
 
 	// ---------------------------------------
@@ -341,7 +393,7 @@ function init3d()
 			//$("#weather_big_state").css("left", (bwid - 30) / 2 - swid / 2);
 			var twid = $("#weather_big_temp").width();
 			$("#weather_big_symbol").css("left", twid);
-			$("#weather_big").css("left", -bwid)
+			$("#weather_big").css("right", bwid)
 
 			// Animal & Planet effect
 			//apManager = new APManager();
@@ -482,9 +534,12 @@ function onMainMenuClick(e)
 		if(scatterGraph == null) {
 			scatterGraph = new ScatterPlotGraph();
 			scatterGraph.initDataset(chainManager.devices, "2014");
+			scatterTimeGraph = new ScatterPlotTimeGraph("scatterplot_time");
+			menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
 		} else {
 			scatterGraph.show();
 		}
+		menuScatterGraph.show();
 		// Enter scatter mode
 		network.enterScatterPlotMode();
 		// Set default sign
@@ -636,6 +691,7 @@ function onMainMenuChange(e)
 			}
 			// 隐藏scatter plot graph
 			scatterGraph.hide();
+			menuScatterGraph.hide();
 
 			break;
 		case MAINMENU_DATA_LEAVE:
@@ -897,11 +953,11 @@ function showWeatherBig(flg)
 	if(flg) {
 		var wid = parseInt($('#weather_big').css('width'));
 		$('#weather_big').css('visibility', 'visible');
-		$('#weather_big').css('left', '-' + wid + 'px');
-		$('#weather_big').animate({left:'50px'}, 500, 'easeOutQuint');
+		$('#weather_big').css('right', '-' + wid + 'px');
+		$('#weather_big').animate({right:'50px'}, 500, 'easeOutQuint');
 	} else {
 		var wid = parseInt($('#weather_big').css('width'));
-		$('#weather_big').animate({left:'-' + wid + 'px'}, 500, 'easeOutQuint', function() {
+		$('#weather_big').animate({right: '-' + wid + 'px'}, 500, 'easeOutQuint', function() {
 			$('#weather_big').css('visibility', 'hidden');
 		});
 	}

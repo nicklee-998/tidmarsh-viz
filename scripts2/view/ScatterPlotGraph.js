@@ -8,6 +8,7 @@ function ScatterPlotGraph()
 	this._start_time = new Date(2014, 9, 10);
 	this._end_time = new Date(2014, 9, 15);
 
+
 	this._sensors = ["bmp_temperature", "illuminance", "bmp_pressure", "sht_humidity"];
 	this._sensorColorTable;
 	this._selectedData;
@@ -16,7 +17,7 @@ function ScatterPlotGraph()
 	this._csvobj;
 
 	// Size parameters.
-	this._size = 100;
+	this._size = 120;
 	this._padding = 10;
 	this._n = 4;
 
@@ -78,7 +79,7 @@ ScatterPlotGraph.prototype.show = function()
 	var wid = parseInt($('#scatterplot_cont').css('width'));
 	$('#scatterplot_cont').css('visibility', 'visible');
 	$('#scatterplot_cont').css('left', '-' + wid + 'px');
-	$('#scatterplot_cont').animate({left:'0px'}, 500, 'easeOutQuint');
+	$('#scatterplot_cont').animate({left:'30px'}, 500, 'easeOutQuint');
 }
 
 ScatterPlotGraph.prototype.hide = function()
@@ -110,6 +111,7 @@ ScatterPlotGraph.prototype.highlightDevices = function(darr)
 		var isfind = false;
 		for(var i = 0; i < darr.length; i++) {
 			if(darr[i] == d.did) {
+				d3.select(this).moveToFront();
 				isfind = true;
 				break;
 			}
@@ -135,16 +137,19 @@ ScatterPlotGraph.prototype._updateDataset = function()
 				var date = new Date(item.date);
 				if(date > this._start_time && date < this._end_time) {
 
-					var flag = true;
-					this._sensors.forEach(function(d) {
-						if(parseInt(item[d]) == -999) {
-							flag = false;
-						}
-					});
+					//if(date.getHours() >= 12 && date.getHours() <= 17) {
 
-					if(flag) {
-						this._selectedData.push(item);
-					}
+						var flag = true;
+						this._sensors.forEach(function(d) {
+							if(parseInt(item[d]) == -999) {
+								flag = false;
+							}
+						});
+
+						if(flag) {
+							this._selectedData.push(item);
+						}
+					//}
 
 				} else if(date >= this._end_time) {
 					break;
@@ -161,6 +166,16 @@ ScatterPlotGraph.prototype._updateDataset = function()
 
 		var value = function(d) { return d[sensor] };
 		var domain = [d3.min(self._selectedData, value), d3.max(self._selectedData, value)];
+		//var domain;
+		//if(sensor == "bmp_temperature") {
+		//	domain = [-20, 50];
+		//} else if(sensor == "illuminance") {
+		//	domain = [0, 50000];
+		//} else if(sensor == "bmp_pressure") {
+		//	domain = [980, 1200];
+		//} else if(sensor == "sht_humidity") {
+		//	domain = [0, 100];
+		//}
 		var range = [self._padding / 2, self._size - self._padding / 2];
 		var range2 = [self._size - self._padding / 2, self._padding / 2];
 
@@ -188,7 +203,7 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 
 	// Root panel.
 	this._scatterplot_svg = d3.select("#scatterplot_cont").append("svg:svg")
-		.attr("width", this._size * this._n + this._size / 2)
+		.attr("width", this._size * this._n + this._size / 2 + 20)
 		.attr("height", this._size * this._n + this._size / 2)
 		.append("svg:g")
 		.attr("transform", "translate(50, 0)");
@@ -223,6 +238,7 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 		.style("text-anchor", "end");
 
 	// Cell and plot.
+	var idarr = new Array();
 	var cell = this._scatterplot_svg.selectAll("g.cell")
 		.data(cross(this._sensors, this._sensors))
 		.enter().append("svg:g")
@@ -244,7 +260,23 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 				.data(self._selectedData)
 				.enter()
 				.append("svg:circle")
-				.style("fill", function(d) { return self._sensorColorTable[d.did]; })
+				.style("fill", function(d) {
+					// 找到不一样的did
+					var color = self._sensorColorTable[d.did];
+					var isfind = false;
+					for(var i = 0; i < idarr.length; i++) {
+						if(idarr[i] == d.did) {
+							isfind = true;
+							break;
+						}
+					}
+					if(!isfind) {
+						// That's the problem make it slow...
+						//idarr.push({did: d.did, clr: color});
+						idarr.push(d.did)
+					}
+					return color;
+				})
 				.attr("cx", function(d) { return self._x[p.x](d[p.x]); })
 				.attr("cy", function(d) { return self._y[p.y](d[p.y]); })
 				.attr("r", 3);
@@ -253,11 +285,19 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 			cell.call(self._scatterplot_bursh.x(self._x[p.x]).y(self._y[p.y]));
 		});
 
+	// ----------------------------
+	//  Send device init event
+	// ----------------------------
+	jQuery.publish(SCATTER_PLOT_SELECTED, {list:idarr, tlist:[]});
+
+
 	// Titles for the diagonal.
 	cell.filter(function(d) { return d.i == d.j; }).append("svg:text")
 		.attr("x", this._padding)
-		.attr("y", this._padding)
+		.attr("y", this._padding - this._size - 20)
 		.attr("dy", ".71em")
+		.attr("transform", "rotate(90)")
+		.style("fill", "rgba(220, 220, 220, 0.85)")
 		.text(function(d) { return d.x; });
 
 	// Clear the previously-active brush, if any.
@@ -272,11 +312,25 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 	function brush(p) {
 		var e = self._scatterplot_bursh.extent();
 		var idarr = new Array();
+		var tdarr = new Array();
 		self._scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
-			if(e[0][0] <= d[p.x] && d[p.x] <= e[1][0] &&
-				e[0][1] <= d[p.y] && d[p.y] <= e[1][1]) {
-				idarr.push(d.did);
-				return self._sensorColorTable[d.did];
+			if(e[0][0] <= d[p.x] && d[p.x] <= e[1][0] && e[0][1] <= d[p.y] && d[p.y] <= e[1][1]) {
+				// 找到不一样的did
+				var color = self._sensorColorTable[d.did];
+				var isfind = false;
+				for(var i = 0; i < idarr.length; i++) {
+					if(idarr[i] == d.did) {
+						isfind = true;
+						break;
+					}
+				}
+				if(!isfind) {
+					// That's the problem make it slow...
+					//idarr.push({did: d.did, clr: color});
+					idarr.push(d.did)
+				}
+				tdarr.push(d.date);
+				return color;
 			} else {
 				return null;
 			}
@@ -285,29 +339,33 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 		// ----------------------------
 		//  Send device init event
 		// ----------------------------
-		var arr = new Array();
-		for(var i = 0; i < idarr.length; i++) {
-			var isfind = false;
-			for(var j = 0; j < arr.length; j++) {
-				if(arr[j] == idarr[i]) {
-					isfind = true;
-					break;
-				}
-			}
-
-			if(!isfind) {
-				arr.push(idarr[i]);
-			}
-		}
-		jQuery.publish(SCATTER_PLOT_SELECTED, {list:arr});
+		jQuery.publish(SCATTER_PLOT_SELECTED, {list:idarr, tlist:tdarr});
 	}
 
 	// If the brush is empty, select all circles.
 	function brushend() {
 		if (self._scatterplot_bursh.empty()) {
+			var idarr = new Array();
 			self._scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
-				return self._sensorColorTable[d.did];
+				// 找到不一样的did
+				var color = self._sensorColorTable[d.did];
+				var isfind = false;
+				for(var i = 0; i < idarr.length; i++) {
+					if(idarr[i] == d.did) {
+						isfind = true;
+						break;
+					}
+				}
+				if(!isfind) {
+					idarr.push(d.did)
+				}
+				return color;
 			});
+
+			// ----------------------------
+			//  Send device init event
+			// ----------------------------
+			jQuery.publish(SCATTER_PLOT_SELECTED, {list:idarr, tlist:[]});
 		}
 	}
 
@@ -367,4 +425,43 @@ ScatterPlotGraph.prototype._updateScatterPlot = function()
 				.attr("cy", function(d) { return self._y[p.y](d[p.y]); })
 				.attr("r", 3);
 		});
+
+	// ----------------------------
+	//  Send device init event
+	// ----------------------------
+	var arr = new Array();
+	for(var i = 0; i < self._selectedData.length; i++) {
+		var isfind = false;
+		for(var j = 0; j < arr.length; j++) {
+			if(arr[j] == self._selectedData[i].did) {
+				isfind = true;
+				break;
+			}
+		}
+
+		if(!isfind) {
+			arr.push(self._selectedData[i].did);
+		}
+	}
+
+	jQuery.publish(SCATTER_PLOT_SELECTED, {list:idarr, tlist:[]});
+}
+
+ScatterPlotGraph.prototype._genDeviceIdList = function(darr)
+{
+	var arr = new Array();
+	for(var i = 0; i < darr.length; i++) {
+		var isfind = false;
+		for(var j = 0; j < arr.length; j++) {
+			if(arr[j] == darr[i]) {
+				isfind = true;
+				break;
+			}
+		}
+
+		if(!isfind) {
+			arr.push({did: darr[i], clr: this._sensorColorTable[darr[i]]});
+		}
+	}
+	return arr;
 }

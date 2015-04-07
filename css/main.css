@@ -48,6 +48,10 @@ html, body, #map-canvas {
 	visibility: hidden;
 }
 
+#datepicker_scatterplot {
+	position: absolute;
+}
+
 /***********************************************
  * Tooltip on voronoi graph - device name
  ***********************************************/

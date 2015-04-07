@@ -1,8 +1,14 @@
 #scatterplot_cont {
 	position: absolute;
-	left: 0px;
-	bottom: 0px;
+	left: 30px;
+	bottom: 20px;
 	font-size: 8px;
+}
+
+#scatterplot_menu {
+	position: absolute;
+	left: 50px;
+	top: 20px;
 }
 
 .axis line {
@@ -33,4 +39,79 @@ circle {
 
 .cell text {
 	pointer-events: none;
+}
+
+#scatterplotmenu_year {
+	position: absolute;
+	top: 150px;
+	left: 150px;
+	color: rgba(220, 220, 220, 0.85);
+	font-size: 35px;
+}
+
+
+.scattermenu_btn {
+	position: absolute;
+	top: 155px;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+}
+
+#scatterplotmenu_prev2 {
+	left: 20px;
+}
+
+#scatterplotmenu_prev {
+	left: 45px;
+}
+
+
+#scatterplotmenu_next {
+	left: 450px;
+}
+
+#scatterplotmenu_next2 {
+	left: 475px;
+}
+
+.scattermenu_date {
+	position: absolute;
+	top: 150px;
+	color: rgba(255, 255, 255, 0.95);
+	font-size: 35px;
+	cursor: pointer;
+}
+
+#scatterplotmenu_start {
+	left: 70px;
+}
+
+#scatterplotmenu_middel {
+	left: 245px;
+}
+
+#scatterplotmenu_end {
+	left: 270px;
+}
+
+/*time line*/
+#scatterplot_time {
+	position: absolute;
+	top: 250px;
+	left: 70px;
+}
+
+#scatterplottime_panel {
+	width: 500px;
+	height: 50px;
+	background-color: rgba(27, 27, 27, 0.89);
+	border: solid 1px;
+	border-color: #a3a3a3;
+}
+
+.scatterplot_cell {
+	position: absolute;
+	fill: rgba(255, 255, 255, 0.89);
+	opacity: 0.01;
 }

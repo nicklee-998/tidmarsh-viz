@@ -114,6 +114,11 @@ function initInfoPanel()
 	$("#info_btn_exit").css("background-image", "url('+ ../../images/btn_exit.png')");
 	$("#info_btn_exit").on('click', function() {
 		hideInfoPanel();
+
+		// ----------------------------
+		//  Send close event
+		// ----------------------------
+		jQuery.publish(NODE_SIGN_CLOSED);
 	});
 
 	// INFO SIGN PLANE

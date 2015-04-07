@@ -3,29 +3,82 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 	<link rel="stylesheet" type="text/css" href="./scripts2/css/scatter_plot_matrix.css"/>
+	<link rel="stylesheet" type="text/css" href="./css/datepicker.css"/>
 	<style type="text/css">
 
 		html {
 			background-color: rgba(32, 36, 40, 1);
 		}
 
+		#datepicker_scatterplot {
+			position: absolute;
+		}
+
 	</style>
 </head>
 <body>
-<h2 style="font-size:24px;">Tidmarsh Sensor Scatterplot</h2>
 <div id="scatterplot_cont"></div>
+<div id="scatterplot_time"></div>
+<div id="scatterplot_menu"></div>
+<div id="datepicker_scatterplot"></div>
 
 <script src="./libs/jquery-1.11.1.min.js"></script>
+<script src="./libs/jquery-ui.js"></script>
+<script src="./libs/tiny-pubsub.js"></script>
 <script src="./libs/d3.js"></script>
 <script src="scripts2/view/ScatterPlotGraph.js"></script>
+<script src="scripts2/view/ScatterPlotTimeGraph.js"></script>
+<script src="scripts2/controllers/UiScatterplotMatrix.js"></script>
+<script src="scripts2/global/CustomEvent.js"></script>
 <script>
 
 	const SITE_URL = "http://chain-api.media.mit.edu/devices/?site_id=7";
 
 	var devices;
-	var graph;
+	var scatterGraph, scatterTimeGraph;
+	var menu;
 
 	$(document).ready(function() {
+
+		menu = new UiScatterplotMatrix("scatterplot_menu");
+
+		jQuery.subscribe(SCATTER_PLOT_SELECTED, function(e, d) {
+
+			scatterTimeGraph.draw(d.tlist);
+		});
+
+		jQuery.subscribe(SCATTER_PLOT_PREV, function() {
+			scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - 24);
+			scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - 24);
+
+			menu.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+			scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		});
+		jQuery.subscribe(SCATTER_PLOT_NEXT, function() {
+			scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + 24);
+			scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + 24);
+
+			menu.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+			scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		});
+		jQuery.subscribe(SCATTER_PLOT_PREV_FAST, function() {
+			scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - 240);
+			scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - 240);
+
+			menu.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+			scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		});
+		jQuery.subscribe(SCATTER_PLOT_NEXT_FAST, function() {
+			scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + 240);
+			scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + 240);
+
+			menu.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+			scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		});
+		jQuery.subscribe(SCATTER_PLOT_DATE_SELECTED, function(e, d) {
+			scatterGraph.resetDate(d.start, d.end);
+		});
+
 		$.getJSON(SITE_URL, function(dat) {
 
 			// TODO: That's use a little trick way to get all sensors from on request, maybe change the way in future...
@@ -33,8 +86,11 @@
 			$.getJSON(url, function(dat2) {
 				devices = dat2["_links"]["items"];
 
-				graph = new ScatterPlotGraph();
-				graph.initDataset(devices, "2014");
+				scatterGraph = new ScatterPlotGraph();
+				scatterGraph.initDataset(devices, "2014");
+				scatterTimeGraph = new ScatterPlotTimeGraph("scatterplot_time");
+				menu.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+				menu.show();
 			});
 		});
 	});
@@ -47,23 +103,23 @@
 //		// 返回键退出
 		if(d3.event.keyCode == 37) 		// LEFT
 		{
-			graph._start_time.setHours(graph._start_time.getHours() - 240);
-			graph._end_time.setHours(graph._end_time.getHours() - 240);
+			scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - 240);
+			scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - 240);
 
-			console.log(graph._start_time.toLocaleDateString() + " - " + graph._end_time.toLocaleDateString());
-			graph.resetDate(graph._start_time, graph._end_time);
+			console.log(graph._start_time.toLocaleDateString() + " - " + scatterGraph._end_time.toLocaleDateString());
+			scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
 		}
 		else if(d3.event.keyCode == 39) 	// RIGHT
 		{
-			graph._start_time.setHours(graph._start_time.getHours() + 240);
-			graph._end_time.setHours(graph._end_time.getHours() + 240);
+			scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + 240);
+			scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + 240);
 
-			console.log(graph._start_time.toLocaleDateString() + " - " + graph._end_time.toLocaleDateString());
-			graph.resetDate(graph._start_time, graph._end_time);
+			console.log(scatterGraph._start_time.toLocaleDateString() + " - " + scatterGraph._end_time.toLocaleDateString());
+			scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
 		}
 		else if(d3.event.keyCode == 38)
 		{
-			graph.highlightDevices(["0x8114"]);
+			scatterGraph.highlightDevices(["0x8114"]);
 		}
 	}
 	d3.select("body").on("keydown", onKeyboardDown);

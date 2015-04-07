@@ -335,7 +335,7 @@ html, body {
 #weather_big {
 	position: absolute;
 	top: 150px;
-	left: 50px;
+	right: 50px;
 	width: 220px;
 	height: 150px;
 	color: white;
@@ -482,4 +482,8 @@ html, body {
 	position: absolute;
 	color: rgba(255, 255, 255, 0.90);
 	font-size: 30px;
+}
+
+#datepicker_scatterplot {
+	position: absolute;
 }

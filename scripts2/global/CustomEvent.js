@@ -24,6 +24,11 @@ var NETWORK_VORONOI_MOUSE_OVER = "network_voronoi_mouse_over";
 var NETWORK_VORONOI_MOUSE_OUT = "network_voronoi_mouse_out";
 
 /***********************************
+ * Node Event
+ ***********************************/
+var NODE_SIGN_CLOSED = "node_sign_closed";
+
+/***********************************
  * Line Chart
  ***********************************/
 var LINE_CHART_DRAG = "line_chart_drag";
@@ -87,3 +92,8 @@ var POWERMENU_STATISTIC_DATA = "power_menu_statistic_data";
  * SCATTER PLOT EVENT
  ***********************************/
 var SCATTER_PLOT_SELECTED = "scatter_plot_selected";
+var SCATTER_PLOT_PREV = "scatter_plot_prev";
+var SCATTER_PLOT_NEXT = "scatter_plot_next";
+var SCATTER_PLOT_PREV_FAST = "scatter_plot_prev_fast";
+var SCATTER_PLOT_NEXT_FAST = "scatter_plot_next_fast";
+var SCATTER_PLOT_DATE_SELECTED = "scatter_plot_date_selected";

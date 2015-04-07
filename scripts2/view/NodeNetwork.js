@@ -328,7 +328,7 @@ NodeNetwork.prototype.selectDevicesFromScatterPlot = function(darr)
 			device.node.deselected();
 			for(var j = 0; j < darr.length; j++) {
 				if(device.id == darr[j]) {
-					device.node.selected();
+					device.node.selected(scatterGraph._sensorColorTable[darr[j]]);
 					break;
 				}
 			}
