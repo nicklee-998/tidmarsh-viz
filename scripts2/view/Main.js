@@ -40,10 +40,18 @@ var network, chainManager, apManager;
 var calendar = null;
 var calendar_node = null;
 
-// scatter plot
+// --------------------------
+//  Scatter Plot
+// --------------------------
 var scatterGraph = null;                // Scatter plot graph
 var scatterTimeGraph = null;            // Scatter plot graph
 var menuScatterGraph = null;
+
+// --------------------------
+//  Power Graph
+// --------------------------
+var scene2, scene3;
+var menuPower, powerview;
 
 // interactive
 var mouse = new THREE.Vector2();
@@ -111,6 +119,7 @@ $(document).ready(function() {
 
 	mainmenu = new UiMainMenu();
 	mainmenuCurrent = MAINMENU_BEGIN;
+
 	// INTRO PAGE
 	intro = new UiIntroPage();
 
@@ -298,6 +307,19 @@ function registerAllEvent()
 	}
 
 	// ---------------------------------------
+	//  Power View
+	// ---------------------------------------
+	jQuery.subscribe(POWERMENU_CHANGE, function(e, d) {
+		powerview.genMonthGraph(d);
+	});
+	jQuery.subscribe(POWERMENU_2D_3D, function(e, d) {
+		powerview.changeView(d);
+	});
+	jQuery.subscribe(POWERMENU_STATISTIC_DATA, function(e, d) {
+		menuPower.showStatisticData(d);
+	});
+
+	// ---------------------------------------
 	//  SYSTEM EVENT
 	// ---------------------------------------
 	document.addEventListener( 'mousemove', function(event) {
@@ -334,18 +356,23 @@ function init3d()
 	renderer = new THREE.WebGLRenderer({ antialias:true });
 	renderer.setSize(sw, sh);
 	renderer.setClearColor( 0x202428, 1 );
-	renderer.sortObjects = true;
+	renderer.autoClear = false;
+	//renderer.sortObjects = true;
 
 	// Setup the camera
-	camera = new THREE.PerspectiveCamera(45, sw / sh, 0.1, 10000);
+	camera = new THREE.PerspectiveCamera(45, sw / sh, 0.1, 10000000);
 	camera.position.y = 1000;
 	camera.position.z = 1000;
 
 	// Setup the scene
 	scene = new THREE.Scene();
 	scene.fog = new THREE.Fog(0xffffff, 4000, 4000);
-	scene.add(camera);
+	//scene.add(camera);
 	container.append(renderer.domElement);
+
+	// Setup scenes for power view
+	scene2 = new THREE.Scene();
+	scene3 = new THREE.Scene();
 
 	// STATS
 	//stats = new Stats();
@@ -363,7 +390,6 @@ function init3d()
 	// for test
 	//weather = new WeatherEffect();
 	//weather.create("CLOUDY");
-	//
 	//animate();
 
 	// -------------------------------------
@@ -504,7 +530,13 @@ function render()
 		infoSignPlane.rotation.y = controls.getAzimuthalAngle();
 	}
 
+	renderer.clear();
 	renderer.render(scene, camera);
+	renderer.clearDepth();
+	renderer.render(scene2, camera);
+	renderer.clearDepth();
+	renderer.render(scene3, camera);
+
 	controls.update();
 
 	if(network != null) {
@@ -518,6 +550,9 @@ function render()
 	}
 	if(apManager != null) {
 		apManager.update(mouse.x, mouse.y);
+	}
+	if(powerview) {
+		powerview.update(mouse);
 	}
 }
 
@@ -681,6 +716,15 @@ function onMainMenuClick(e)
 		network.closeIncomingMessage();
 		network.clearVoronoi(true);
 
+		if(!powerview) {
+			powerview = new PowerView(scene, scene2, scene3, camera, "voltage_tooltip");
+			menuPower = new UiPowerViewMenu("submenu");
+		}
+		powerview.show();
+		menuPower.show();
+
+		// Set 3d scene
+		setScenePerspective(5);
 	}
 
 	mainmenuCurrent = e.type;
@@ -736,8 +780,8 @@ function onMainMenuChange(e)
 
 			break;
 		case MAINMENU_POWER_LEAVE:
-
-
+			powerview.hide();
+			menuPower.hide();
 
 			break;
 		default :
@@ -753,8 +797,12 @@ function setScenePerspective(idx)
 	if(sceneState == idx)
 		return;
 
+	scene.fog.near = 4000;
+	scene.fog.far = 4000;
 	controls.minPolarAngle = 0;
 	controls.maxPolarAngle = Math.PI;
+	controls.minDistance = 500;
+	controls.maxDistance = 3500;
 	ground.visible = true;
 
 	if(idx == 1) {
@@ -818,10 +866,14 @@ function setScenePerspective(idx)
 		sceneState = 4;
 	} else if(idx == 5) {
 
-		TweenMax.to(ground.position, 1, {y:-SENSOR_NODE_HEIGHT, ease:Quint.easeOut, onComplete:function() {
+		TweenMax.to(ground.position, 1, {y:-2000, ease:Quint.easeOut, onComplete:function() {
 			ground.visible = false;
 		}});
-		TweenMax.to(camera.position, 1.2, {x:11, y:-38, z:1565, ease:Quart.easeOut});
+		TweenMax.to(camera.position, 1.2, {x:1669, y:1505, z:2497, ease:Quart.easeOut});
+
+		controls.maxDistance = Infinity;
+		scene.fog.near = 1000000;
+		scene.fog.far = 1000000;
 
 		sceneState = 5;
 	}
@@ -926,7 +978,7 @@ function clearLoadingScreen()
 		// show ap
 		if(apManager) apManager.showAP();
 		// show intro
-		intro.showIntroPage(1600);
+		intro.showIntroPage(200);
 		// set control
 		controls.minPolarAngle = controls.getPolarAngle();
 		controls.maxPolarAngle = controls.getPolarAngle();

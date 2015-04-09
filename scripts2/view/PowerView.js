@@ -25,28 +25,32 @@ function PowerView(scene, scene2, scene3, camera, tooltipid)
 	this._statisticBuffer;
 	this._statisticIsReady = 0;      // 计数到3，说明更新好可以发送了，发送完毕后数值清零
 
+	// 3d position
+	this._pos_3d = {x:0, y:0, z:1200};
+	this._pos_2d = {x:0, y:0, z:1350};
+
 	// for Axis and Sunrise/Sunset
 	this._axisCont = new THREE.Object3D();
 	this._axisCont.name = "axis_container";
-	this._axisCont.position.x = 0;
-	this._axisCont.position.y = -560;
-	this._axisCont.position.z = 510;
+	this._axisCont.position.x = this._pos_3d.x;
+	this._axisCont.position.y = this._pos_3d.y;
+	this._axisCont.position.z = this._pos_3d.z;
 	scene.add(this._axisCont);
 
 	// for Weather
 	this._wCont = new THREE.Object3D();
 	this._wCont.name = "weather_container";
-	this._wCont.position.x = 0;
-	this._wCont.position.y = -560;
-	this._wCont.position.z = 510;
+	this._wCont.position.x = this._pos_3d.x;
+	this._wCont.position.y = this._pos_3d.y;
+	this._wCont.position.z = this._pos_3d.z;
 	scene2.add(this._wCont);
 
 	// for Charging and Running
 	this._crCont = new THREE.Object3D();
 	this._crCont.name = "charging_container";
-	this._crCont.position.x = 0;
-	this._crCont.position.y = -560;
-	this._crCont.position.z = 510;
+	this._crCont.position.x = this._pos_3d.x;
+	this._crCont.position.y = this._pos_3d.y;
+	this._crCont.position.z = this._pos_3d.z;
 	scene3.add(this._crCont);
 
 	this._camera = camera;
@@ -130,6 +134,8 @@ function PowerView(scene, scene2, scene3, camera, tooltipid)
 		},
 		view: "3d"      // 默认是3d视角
 	};
+
+	this._currCobj;
 }
 
 // ---------------------------------------------------
@@ -138,12 +144,20 @@ function PowerView(scene, scene2, scene3, camera, tooltipid)
 
 PowerView.prototype.show = function()
 {
+	//if(this._currCobj) {
+	//	this.genMonthGraph(this._currCobj);
+	//}
 
+	scene.add(this._axisCont);
+	scene2.add(this._wCont);
+	scene3.add(this._crCont);
 }
 
 PowerView.prototype.hide = function()
 {
-
+	scene.remove(this._axisCont);
+	scene2.remove(this._wCont);
+	scene3.remove(this._crCont);
 }
 
 PowerView.prototype.genMonthGraph = function(cobj)
@@ -152,6 +166,10 @@ PowerView.prototype.genMonthGraph = function(cobj)
 	var weathercsvfile = "./res/data_power/weather_" + cobj.year + "_" + cobj.month + ".csv";
 	var csvfile = "./res/data_power/tidbase4_" + cobj.year + "_" + cobj.month + ".csv";
 	var self = this;
+
+	if(this._currCobj != cobj) {
+		this._currCobj = cobj;
+	}
 
 	// 后面时间设置为2，要不然list中会少最后一天
 	this._dayList = d3.time.days(new Date(cobj.year, cobj.month-1, 1), new Date(cobj.year, cobj.month, 2));
@@ -288,17 +306,17 @@ PowerView.prototype.changeView = function(type)
 		//this._container.rotation.y = 0.3;
 		//this._container.rotation.z = -0.5;
 
-		this._axisCont.position.x = 440;
-		this._axisCont.position.y = -570;
-		this._axisCont.position.z = 1340;
+		this._axisCont.position.x = this._pos_2d.x;
+		this._axisCont.position.y = this._pos_2d.y;
+		this._axisCont.position.z = this._pos_2d.z;
 
-		this._wCont.position.x = 440;
-		this._wCont.position.y = -570;
-		this._wCont.position.z = 1340;
+		this._wCont.position.x = this._pos_2d.x;
+		this._wCont.position.y = this._pos_2d.y;
+		this._wCont.position.z = this._pos_2d.z;
 
-		this._crCont.position.x = 440;
-		this._crCont.position.y = -570;
-		this._crCont.position.z = 1340;
+		this._crCont.position.x = this._pos_2d.x;
+		this._crCont.position.y = this._pos_2d.y;
+		this._crCont.position.z = this._pos_2d.z;
 
 		this._setAxisMarkerView();
 
@@ -321,17 +339,17 @@ PowerView.prototype.changeView = function(type)
 		//this._container.rotation.y = 0.3;
 		//this._container.rotation.z = -0.5;
 
-		this._axisCont.position.x = 200;
-		this._axisCont.position.y = -560;
-		this._axisCont.position.z = 510;
+		this._axisCont.position.x = this._pos_3d.x;
+		this._axisCont.position.y = this._pos_3d.y;
+		this._axisCont.position.z = this._pos_3d.z;
 
-		this._wCont.position.x = 200;
-		this._wCont.position.y = -560;
-		this._wCont.position.z = 510;
+		this._wCont.position.x = this._pos_3d.x;
+		this._wCont.position.y = this._pos_3d.y;
+		this._wCont.position.z = this._pos_3d.z;
 
-		this._crCont.position.x = 200;
-		this._crCont.position.y = -560;
-		this._crCont.position.z = 510;
+		this._crCont.position.x = this._pos_3d.x;
+		this._crCont.position.y = this._pos_3d.y;
+		this._crCont.position.z = this._pos_3d.z;
 
 		this._setAxisMarkerView();
 	}

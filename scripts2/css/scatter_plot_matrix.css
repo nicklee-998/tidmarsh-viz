@@ -98,13 +98,13 @@ circle {
 /*time line*/
 #scatterplot_time {
 	position: absolute;
-	top: 250px;
+	top: 220px;
 	left: 80px;
 }
 
 #scatterplottime_panel {
 	width: 450px;
-	height: 30px;
+	height: 20px;
 	background-color: rgba(27, 27, 27, 0.89);
 	border: solid 1px;
 	border-color: #a3a3a3;

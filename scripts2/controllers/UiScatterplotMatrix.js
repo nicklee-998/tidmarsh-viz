@@ -7,6 +7,9 @@ function UiScatterplotMatrix(cname)
 	this._end;      // end date
 	this._selectedDate;     // 0:start, 1:end
 
+	this._cont = cname;
+	this._top = $('#' + cname).css("top");
+
 	$("#" + cname).append("<div id='scatterplotmenu_container'></div>");
 
 	//$("#scatterplotmenu_container").append("<img id='scatterplotmenu_left' class='scattermenu_btn' src='./images/btn_left.png'/>");
@@ -112,7 +115,7 @@ function UiScatterplotMatrix(cname)
 	var self = this;
 
 	// hide
-	$("#scatterplotmenu_container").css("visibility", "hidden");
+	$('#' + this._cont).css("visibility", "hidden");
 }
 
 UiScatterplotMatrix.prototype.resetDate = function(_start, _end)
@@ -127,10 +130,15 @@ UiScatterplotMatrix.prototype.resetDate = function(_start, _end)
 UiScatterplotMatrix.prototype.show = function()
 {
 	$("#datepicker_scatterplot").css("visibility", "hidden");
-	$("#scatterplotmenu_container").css("visibility", "visible");
+
+	$('#' + this._cont).css('visibility', 'visible');
+	$('#' + this._cont).css('top', '-80px');
+	$('#' + this._cont).animate({top:this._top}, 500, 'easeOutQuint');
 }
 
 UiScatterplotMatrix.prototype.hide = function()
 {
-	$("#scatterplotmenu_container").css("visibility", "hidden");
+	$('#' + this._cont).animate({top:'-80px'}, 500, 'easeOutQuint', function() {
+		$('#' + this._cont).css('visibility', 'hidden');
+	});
 }

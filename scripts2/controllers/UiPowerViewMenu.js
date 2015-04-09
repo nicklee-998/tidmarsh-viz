@@ -251,12 +251,12 @@ UiPowerViewMenu.prototype.showStatisticData = function(dobj)
 
 }
 
-UiPowerViewMenu.prototype.showMe = function()
+UiPowerViewMenu.prototype.show = function()
 {
-
+	$("#powermenu_container").css("visibility", "visible");
 }
 
-UiPowerViewMenu.prototype.hideMe = function()
+UiPowerViewMenu.prototype.hide = function()
 {
-
+	$("#powermenu_container").css("visibility", "hidden");
 }
