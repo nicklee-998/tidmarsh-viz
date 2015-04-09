@@ -2,153 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7d4f2cda-708d-45cd-96e4-586ac0f7b141" name="Default" comment="1. Added tooltip in data history mode&#10;2. Adjusted some effect of data history graph">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x0005.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x0006.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x111E.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x1150.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x115F.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x810A.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x810B.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x810D.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8110.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8112.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8113.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8114.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8115.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8116.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8117.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x811B.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x811F.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8124.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8126.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8128.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x812A.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x812B.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x812E.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8133.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8135.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8136.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8137.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8138.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8139.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x813B.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x813D.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8140.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8141.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8143.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8144.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8145.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8146.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8147.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8148.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8149.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x814B.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x814C.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x814D.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x814F.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8151.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8152.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8153.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8154.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8155.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8156.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8157.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8158.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8159.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x815A.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x815B.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x815C.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x815E.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8160.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8161.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8162.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8163.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8164.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8165.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8167.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8168.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x8169.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x816A.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x816B.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x816C.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014/0x816E.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x0005_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x0006_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x111E_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x1150_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x115F_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x810A_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x810B_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x810D_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8110_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8112_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8113_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8114_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8115_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8116_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8117_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x811B_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x811F_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8124_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8126_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8128_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x812A_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x812B_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x812E_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8133_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8135_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8136_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8137_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8138_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8139_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x813B_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x813D_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8140_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8141_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8143_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8144_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8145_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8146_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8147_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8148_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8149_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x814B_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x814C_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x814D_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x814F_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8151_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8152_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8153_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8154_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8155_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8156_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8157_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8158_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8159_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x815A_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x815B_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x815C_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x815E_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8160_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8161_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8162_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8163_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8164_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8165_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8167_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8168_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x8169_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x816A_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x816B_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x816C_2014.csv" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_sensor/2014_60/0x816E_2014.csv" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/Main.js" afterPath="$PROJECT_DIR$/scripts2/view/Main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js" afterPath="$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/res/data_power/tidbase4_2015_1_8928.csv" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/PowerView.js" afterPath="$PROJECT_DIR$/scripts2/view/PowerView.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/ScatterPlotTimeGraph.js" afterPath="$PROJECT_DIR$/scripts2/view/ScatterPlotTimeGraph.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/controllers/UiScatterplotMatrix.js" afterPath="$PROJECT_DIR$/scripts2/controllers/UiScatterplotMatrix.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo_scatterplot_matrix.html" afterPath="$PROJECT_DIR$/demo_scatterplot_matrix.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css" afterPath="$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js" afterPath="$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/data_power/list.csv" afterPath="$PROJECT_DIR$/res/data_power/list.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="tidmarsh-viz.iws" />
@@ -176,71 +37,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="demo_scatterplot_matrix.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/demo_scatterplot_matrix.html">
+      <file leaf-file-name="demo_3d.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/demo_3d.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.2083335" vertical-offset="1057" max-vertical-offset="2295">
-              <caret line="82" column="8" selection-start-line="82" selection-start-column="8" selection-end-line="112" selection-end-column="9" />
+            <state vertical-scroll-proportion="-16.25" vertical-offset="1545" max-vertical-offset="4020">
+              <caret line="129" column="47" selection-start-line="129" selection-start-column="34" selection-end-line="129" selection-end-column="47" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="scatter_plot_matrix.css" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css">
+      <file leaf-file-name="PowerView.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/scripts2/view/PowerView.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.36350778" vertical-offset="1123" max-vertical-offset="1830">
-              <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.33088234" vertical-offset="1740" max-vertical-offset="27480">
+              <caret line="131" column="10" selection-start-line="131" selection-start-column="10" selection-end-line="131" selection-end-column="10" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/index.html">
+      <file leaf-file-name="UiPowerViewMenu.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.5" vertical-offset="753" max-vertical-offset="5985">
-              <caret line="51" column="6" selection-start-line="51" selection-start-column="6" selection-end-line="51" selection-end-column="6" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Main.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8518519" vertical-offset="3863" max-vertical-offset="19290">
-              <caret line="256" column="33" selection-start-line="256" selection-start-column="33" selection-end-line="256" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ScatterPlotTimeGraph.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotTimeGraph.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="418" max-vertical-offset="1485">
-              <caret line="90" column="44" selection-start-line="90" selection-start-column="44" selection-end-line="90" selection-end-column="44" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ScatterPlotGraph.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.111111" vertical-offset="675" max-vertical-offset="7740">
-              <caret line="56" column="48" selection-start-line="56" selection-start-column="48" selection-end-line="56" selection-end-column="48" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="UiScatterplotMatrix.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiScatterplotMatrix.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="150" max-vertical-offset="2115">
-              <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="4005">
+              <caret line="36" column="84" selection-start-line="36" selection-start-column="84" selection-end-line="36" selection-end-column="84" />
               <folding />
             </state>
           </provider>
@@ -286,14 +107,9 @@
         <option value="$PROJECT_DIR$/demo/webgl_geometry_colors_lookuptable.html" />
         <option value="$PROJECT_DIR$/demo/demo_3d_container.html" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiMainMenu.js" />
-        <option value="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" />
-        <option value="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" />
         <option value="$PROJECT_DIR$/scripts2/global/GlobalVars.js" />
-        <option value="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" />
-        <option value="$PROJECT_DIR$/scripts2/view/PowerView.js" />
         <option value="$PROJECT_DIR$/demo_3d.html" />
         <option value="$PROJECT_DIR$/scripts2/css/pagemenu.css" />
-        <option value="$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js" />
         <option value="$PROJECT_DIR$/scripts2/view/CalendarEffect.js" />
         <option value="$PROJECT_DIR$/scripts2/view/WeatherEffect.js" />
         <option value="$PROJECT_DIR$/scripts2/view/SensorNode.js" />
@@ -308,8 +124,13 @@
         <option value="$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js" />
         <option value="$PROJECT_DIR$/demo_scatterplot_matrix.html" />
         <option value="$PROJECT_DIR$/scripts2/view/Main.js" />
-        <option value="$PROJECT_DIR$/scripts2/view/ScatterPlotTimeGraph.js" />
         <option value="$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css" />
+        <option value="$PROJECT_DIR$/scripts2/view/ScatterPlotTimeGraph.js" />
+        <option value="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" />
+        <option value="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" />
+        <option value="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" />
+        <option value="$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js" />
+        <option value="$PROJECT_DIR$/scripts2/view/PowerView.js" />
       </list>
     </option>
   </component>
@@ -725,12 +546,12 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32831737" sideWeight="0.49964765" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27111718" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32965517" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -829,13 +650,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.27027026" vertical-offset="1170" max-vertical-offset="5475">
-          <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/demo_sensor_river.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-32.5" vertical-offset="120" max-vertical-offset="1140">
@@ -861,28 +675,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="707">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.31343284" vertical-offset="315" max-vertical-offset="2385">
-          <caret line="7" column="68" selection-start-line="7" selection-start-column="68" selection-end-line="7" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.51492536" vertical-offset="720" max-vertical-offset="2190">
-          <caret line="71" column="32" selection-start-line="71" selection-start-column="32" selection-end-line="76" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/demo_3d.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5718475" vertical-offset="600" max-vertical-offset="4020">
-          <caret line="66" column="48" selection-start-line="66" selection-start-column="40" selection-end-line="66" selection-end-column="48" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -929,19 +721,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/PowerView.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.3611898" vertical-offset="1935" max-vertical-offset="27465">
-          <caret line="112" column="0" selection-start-line="112" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/data/WeatherManager.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="693">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1028,14 +811,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0706922" vertical-offset="27" max-vertical-offset="3045">
           <caret line="5" column="17" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.1430595" vertical-offset="3224" max-vertical-offset="3930">
-          <caret line="67" column="24" selection-start-line="67" selection-start-column="24" selection-end-line="67" selection-end-column="69" />
         </state>
       </provider>
     </entry>
@@ -1043,14 +818,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-23.481482" vertical-offset="6671" max-vertical-offset="7410">
           <caret line="487" column="23" selection-start-line="487" selection-start-column="23" selection-end-line="487" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="4560" max-vertical-offset="22020">
-          <caret line="334" column="17" selection-start-line="334" selection-start-column="17" selection-end-line="334" selection-end-column="17" />
           <folding />
         </state>
       </provider>
@@ -1075,55 +842,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.17910448" vertical-offset="300" max-vertical-offset="8070">
           <caret line="28" column="55" selection-start-line="28" selection-start-column="55" selection-end-line="28" selection-end-column="55" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.5" vertical-offset="753" max-vertical-offset="5985">
-          <caret line="51" column="6" selection-start-line="51" selection-start-column="6" selection-end-line="51" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiScatterplotMatrix.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="510" max-vertical-offset="2115">
-          <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.111111" vertical-offset="675" max-vertical-offset="7740">
-          <caret line="56" column="48" selection-start-line="56" selection-start-column="48" selection-end-line="56" selection-end-column="48" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/demo_scatterplot_matrix.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.2083335" vertical-offset="1057" max-vertical-offset="2295">
-          <caret line="82" column="8" selection-start-line="82" selection-start-column="8" selection-end-line="112" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8518519" vertical-offset="3863" max-vertical-offset="19290">
-          <caret line="256" column="33" selection-start-line="256" selection-start-column="33" selection-end-line="256" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotTimeGraph.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="418" max-vertical-offset="1485">
-          <caret line="90" column="44" selection-start-line="90" selection-start-column="44" selection-end-line="90" selection-end-column="44" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1135,10 +853,114 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.04477612" vertical-offset="360" max-vertical-offset="2190">
+          <caret line="22" column="46" selection-start-line="22" selection-start-column="46" selection-end-line="22" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.41288432" vertical-offset="753" max-vertical-offset="5985">
+          <caret line="69" column="26" selection-start-line="69" selection-start-column="26" selection-end-line="69" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.36350778" vertical-offset="1123" max-vertical-offset="1830">
-          <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.5205092" vertical-offset="1102" max-vertical-offset="1830">
+          <caret line="98" column="17" selection-start-line="98" selection-start-column="1" selection-end-line="98" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_scatterplot_matrix.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.49487555" vertical-offset="277" max-vertical-offset="2295">
+          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.096541785" vertical-offset="3773" max-vertical-offset="19290">
+          <caret line="256" column="33" selection-start-line="256" selection-start-column="33" selection-end-line="256" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.04477612" vertical-offset="0" max-vertical-offset="2385">
+          <caret line="2" column="16" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.15671642" vertical-offset="270" max-vertical-offset="5475">
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.55162656" vertical-offset="1335" max-vertical-offset="7740">
+          <caret line="115" column="8" selection-start-line="115" selection-start-column="8" selection-end-line="118" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiScatterplotMatrix.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.67892504" vertical-offset="150" max-vertical-offset="2115">
+          <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotTimeGraph.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.427157" vertical-offset="478" max-vertical-offset="1575">
+          <caret line="52" column="48" selection-start-line="52" selection-start-column="48" selection-end-line="52" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_3d.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-16.25" vertical-offset="1545" max-vertical-offset="4020">
+          <caret line="129" column="47" selection-start-line="129" selection-start-column="34" selection-end-line="129" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.6666665" vertical-offset="18108" max-vertical-offset="22020">
+          <caret line="1221" column="8" selection-start-line="1221" selection-start-column="8" selection-end-line="1223" selection-end-column="81" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiPowerViewMenu.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="4005">
+          <caret line="36" column="84" selection-start-line="36" selection-start-column="84" selection-end-line="36" selection-end-column="84" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/PowerView.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33088234" vertical-offset="1740" max-vertical-offset="27480">
+          <caret line="131" column="10" selection-start-line="131" selection-start-column="10" selection-end-line="131" selection-end-column="10" />
           <folding />
         </state>
       </provider>

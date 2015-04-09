@@ -6,8 +6,10 @@ function ScatterPlotTimeGraph(cont_name)
 {
 	$("#" + cont_name).append("<div id='scatterplottime_panel'></div>");
 
+	this._cont = cont_name;
 	this._width = $("#scatterplottime_panel").width();
 	this._height = $("#scatterplottime_panel").height();
+	this._left = $("#scatterplot_time").css("left");
 
 	var domain = [0, 24];
 	var range = [0, this._width];
@@ -45,17 +47,21 @@ function ScatterPlotTimeGraph(cont_name)
 		.style("text-anchor", "end");
 
 	// hide
-	$("#scatterplottime_panel").css("visibility", "hidden");
+	$('#' + this._cont).css("visibility", "hidden");
 }
 
 ScatterPlotTimeGraph.prototype.show = function()
 {
-	$("#scatterplottime_panel").css("visibility", "visible");
+	$('#' + this._cont).css('visibility', 'visible');
+	$('#' + this._cont).css('left', '-' + this._width + 'px');
+	$('#' + this._cont).animate({left:this._left}, 500, 'easeOutQuint');
 }
 
 ScatterPlotTimeGraph.prototype.hide = function()
 {
-	$("#scatterplottime_panel").css("visibility", "hidden");
+	$('#' + this._cont).animate({left:'-' + (this._width + 50) + 'px'}, 500, 'easeOutQuint', function() {
+		$('#' + this._cont).css('visibility', 'hidden');
+	});
 }
 
 ScatterPlotTimeGraph.prototype.draw = function(tarr)

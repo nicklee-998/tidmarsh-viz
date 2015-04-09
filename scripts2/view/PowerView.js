@@ -373,7 +373,8 @@ PowerView.prototype.dispose = function()
 
 PowerView.prototype.update = function(mouse)
 {
-	this._raycaster.setFromCamera( mouse, this._camera );
+	var vector = new THREE.Vector3(mouse.x, mouse.y, 1).unproject(this._camera);
+	this._raycaster.set(this._camera.position, vector.sub(this._camera.position).normalize());
 	var intersects;
 	if(this._view_state.type == POWER_MENU_CHARGING) {
 		intersects = this._raycaster.intersectObjects( this._charging_lines, true);

@@ -26,6 +26,18 @@ function UiPowerViewMenu(cname)
 		if(csv.length > 0) {
 			month_list = csv;
 			month_index = csv.length - 1;
+
+			// 默认显示最新的一个月
+			menu_state.year = parseInt(csv[csv.length-1].year);
+			menu_state.month = parseInt(csv[csv.length-1].month);
+
+			// ------------------------
+			// Send Default Event
+			// ------------------------
+			$("#powermenu_date").text(menu_state.year + "." + menu_state.month);
+			$("#pmenu_sunrise_sunset").toggleClass("powermenu_weather_selected");
+			menu_state.weather.sunrisesunset = 1;
+			jQuery.publish(POWERMENU_CHANGE, menu_state);
 		}
 	});
 
@@ -220,13 +232,6 @@ function UiPowerViewMenu(cname)
 	$(window).resize(function() {
 		$("#pmenu_2d3d").css("top", window.innerHeight-240);
 	});
-
-	// ------------------------
-	// Send Default Event
-	// ------------------------
-	$("#pmenu_sunrise_sunset").toggleClass("powermenu_weather_selected");
-	menu_state.weather.sunrisesunset = 1;
-	jQuery.publish(POWERMENU_CHANGE, menu_state);
 }
 
 UiPowerViewMenu.prototype.showStatisticData = function(dobj)
