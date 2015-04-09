@@ -4,10 +4,15 @@
 
 function ScatterPlotGraph()
 {
+	// ---------------------------------------
+	//  PUBLIC VARIABLE
+	// ---------------------------------------
+	this.dataHead = null;                  // 最早的数据
+	this.dataTrail = null;                 // 最后的数据
+
 	// scatter plot parameters
 	this._start_time = new Date(2014, 9, 10);
 	this._end_time = new Date(2014, 9, 15);
-
 
 	this._sensors = ["bmp_temperature", "illuminance", "bmp_pressure", "sht_humidity"];
 	this._sensorColorTable;
@@ -29,12 +34,13 @@ function ScatterPlotGraph()
 	this._scatterplot_svg;
 	this._scatterplot_bursh;
 	this._scatterplot_axis;
+	this._currentCell;              // 当前所选择的格子(cell)
 }
 
 // -----------------------------------------
 //  Init dataset
 // -----------------------------------------
-ScatterPlotGraph.prototype.initDataset = function(devices, year)
+ScatterPlotGraph.prototype.initDataset = function(devices)
 {
 	var self = this;
 
@@ -53,12 +59,35 @@ ScatterPlotGraph.prototype.initDataset = function(devices, year)
 			return;
 		}
 
-		var url = "./res/data_sensor/" + year + "/" + devices[self._csvidx].title + ".csv";
+		var url = "./res/data_sensor/" + devices[self._csvidx].title + ".csv";
 		d3.csv(url, function(dataset) {
 			console.log(url);
 			self._csvobj[devices[self._csvidx].title] = dataset;
 			self._sensorColorTable[devices[self._csvidx].title] = _getRandomColor();
 			self._csvidx++;
+
+			// 查找最早和最晚的点
+			if(dataset != null && dataset.length > 1) {
+				var head = new Date(dataset[0].date);
+				var trail = new Date(dataset[dataset.length-1].date);
+
+				if(self.dataHead == null) {
+					self.dataHead = head;
+				} else {
+					if(head < self.dataHead) {
+						self.dataHead = head;
+					}
+				}
+
+				if(self.dataTrail == null) {
+					self.dataTrail = trail;
+				} else {
+					if(trail > self.dataTrail) {
+						self.dataTrail = trail;
+					}
+				}
+			}
+
 			_startQueue();
 		});
 	}
@@ -310,36 +339,8 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 
 	// Highlight the selected circles.
 	function brush(p) {
-		var e = self._scatterplot_bursh.extent();
-		var idarr = new Array();
-		var tdarr = new Array();
-		self._scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
-			if(e[0][0] <= d[p.x] && d[p.x] <= e[1][0] && e[0][1] <= d[p.y] && d[p.y] <= e[1][1]) {
-				// 找到不一样的did
-				var color = self._sensorColorTable[d.did];
-				var isfind = false;
-				for(var i = 0; i < idarr.length; i++) {
-					if(idarr[i] == d.did) {
-						isfind = true;
-						break;
-					}
-				}
-				if(!isfind) {
-					// That's the problem make it slow...
-					//idarr.push({did: d.did, clr: color});
-					idarr.push(d.did)
-				}
-				tdarr.push(d.date);
-				return color;
-			} else {
-				return null;
-			}
-		});
-
-		// ----------------------------
-		//  Send device init event
-		// ----------------------------
-		jQuery.publish(SCATTER_PLOT_SELECTED, {list:idarr, tlist:tdarr});
+		self._currentCell = p;
+		self._updateSelectedArea();
 	}
 
 	// If the brush is empty, select all circles.
@@ -361,6 +362,9 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 				}
 				return color;
 			});
+
+			// Clear select cell
+			self._currentCell = null;
 
 			// ----------------------------
 			//  Send device init event
@@ -426,42 +430,82 @@ ScatterPlotGraph.prototype._updateScatterPlot = function()
 				.attr("r", 3);
 		});
 
+	this._updateSelectedArea();
+
 	// ----------------------------
 	//  Send device init event
 	// ----------------------------
-	var arr = new Array();
-	for(var i = 0; i < self._selectedData.length; i++) {
-		var isfind = false;
-		for(var j = 0; j < arr.length; j++) {
-			if(arr[j] == self._selectedData[i].did) {
-				isfind = true;
-				break;
-			}
-		}
-
-		if(!isfind) {
-			arr.push(self._selectedData[i].did);
-		}
-	}
-
-	jQuery.publish(SCATTER_PLOT_SELECTED, {list:idarr, tlist:[]});
+	//var idarr = new Array();
+	//for(var i = 0; i < self._selectedData.length; i++) {
+	//	var isfind = false;
+	//	for(var j = 0; j < idarr.length; j++) {
+	//		if(idarr[j] == self._selectedData[i].did) {
+	//			isfind = true;
+	//			break;
+	//		}
+	//	}
+	//
+	//	if(!isfind) {
+	//		idarr.push(self._selectedData[i].did);
+	//	}
+	//}
+	//
+	//jQuery.publish(SCATTER_PLOT_SELECTED, {list:idarr, tlist:[]});
 }
 
-ScatterPlotGraph.prototype._genDeviceIdList = function(darr)
+ScatterPlotGraph.prototype._updateSelectedArea = function()
 {
-	var arr = new Array();
-	for(var i = 0; i < darr.length; i++) {
-		var isfind = false;
-		for(var j = 0; j < arr.length; j++) {
-			if(arr[j] == darr[i]) {
-				isfind = true;
-				break;
-			}
-		}
-
-		if(!isfind) {
-			arr.push({did: darr[i], clr: this._sensorColorTable[darr[i]]});
-		}
+	var self = this;
+	if(self._currentCell == null) {
+		return;
 	}
-	return arr;
+
+	self._scatterplot_bursh.x(self._x[self._currentCell.x]).y(self._y[self._currentCell.y]).data = self._currentCell;
+	var e = self._scatterplot_bursh.extent();
+	var idarr = new Array();
+	var tdarr = new Array();
+
+	self._scatterplot_svg.selectAll("g.cell")
+		.each(function(k, i) {
+			var cell = d3.select(this);
+			// Plot dots.
+			cell.selectAll(".cell circle").style("fill", function(d) {
+				if(e[0][0] <= d[self._currentCell.x] &&
+					d[self._currentCell.x] <= e[1][0] &&
+					e[0][1] <= d[self._currentCell.y] &&
+					d[self._currentCell.y] <= e[1][1]) {
+					// 找到不一样的did
+					var color = self._sensorColorTable[d.did];
+
+					// 只在第一个格子里面寻找，这样效率又提高很多：）
+					if(i == 0) {
+						var isfind = false;
+						for(var ii = 0; ii < idarr.length; ii++) {
+							if(idarr[ii] == d.did) {
+								isfind = true;
+								break;
+							}
+						}
+						if(!isfind) {
+							// That's the problem make it slow...
+							//idarr.push({did: d.did, clr: color});
+							idarr.push(d.did)
+						}
+						tdarr.push(d.date);
+					}
+					return color;
+				} else {
+					return null;
+				}
+			});
+		});
+
+	//self._scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
+	//
+	//});
+
+	// ----------------------------
+	//  Send device init event
+	// ----------------------------
+	jQuery.publish(SCATTER_PLOT_SELECTED, {list:idarr, tlist:tdarr});
 }

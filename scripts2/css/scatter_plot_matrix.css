@@ -99,12 +99,12 @@ circle {
 #scatterplot_time {
 	position: absolute;
 	top: 250px;
-	left: 70px;
+	left: 80px;
 }
 
 #scatterplottime_panel {
-	width: 500px;
-	height: 50px;
+	width: 450px;
+	height: 30px;
 	background-color: rgba(27, 27, 27, 0.89);
 	border: solid 1px;
 	border-color: #a3a3a3;
@@ -112,6 +112,6 @@ circle {
 
 .scatterplot_cell {
 	position: absolute;
-	fill: rgba(255, 255, 255, 0.89);
-	opacity: 0.01;
+	fill: #fff;
+	opacity: 0.05;
 }

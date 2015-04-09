@@ -48,32 +48,16 @@
 		});
 
 		jQuery.subscribe(SCATTER_PLOT_PREV, function() {
-			scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - 24);
-			scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - 24);
-
-			menu.resetDate(scatterGraph._start_time, scatterGraph._end_time);
-			scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+			putBackTime(24);
 		});
 		jQuery.subscribe(SCATTER_PLOT_NEXT, function() {
-			scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + 24);
-			scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + 24);
-
-			menu.resetDate(scatterGraph._start_time, scatterGraph._end_time);
-			scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+			putForwardTime(24);
 		});
 		jQuery.subscribe(SCATTER_PLOT_PREV_FAST, function() {
-			scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - 240);
-			scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - 240);
-
-			menu.resetDate(scatterGraph._start_time, scatterGraph._end_time);
-			scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+			putBackTime(240);
 		});
 		jQuery.subscribe(SCATTER_PLOT_NEXT_FAST, function() {
-			scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + 240);
-			scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + 240);
-
-			menu.resetDate(scatterGraph._start_time, scatterGraph._end_time);
-			scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+			putForwardTime(240);
 		});
 		jQuery.subscribe(SCATTER_PLOT_DATE_SELECTED, function(e, d) {
 			scatterGraph.resetDate(d.start, d.end);
@@ -87,13 +71,47 @@
 				devices = dat2["_links"]["items"];
 
 				scatterGraph = new ScatterPlotGraph();
-				scatterGraph.initDataset(devices, "2014");
+				scatterGraph.initDataset(devices);
 				scatterTimeGraph = new ScatterPlotTimeGraph("scatterplot_time");
+				scatterTimeGraph.show();
 				menu.resetDate(scatterGraph._start_time, scatterGraph._end_time);
 				menu.show();
 			});
 		});
 	});
+
+	function putBackTime(hours)
+	{
+		var date = new Date(scatterGraph._start_time.toString());
+		date.setHours(date.getHours() - hours);
+
+		if(date < scatterGraph.dataHead) {
+			return;
+		}
+
+		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - hours);
+		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - hours);
+
+		menu.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+	}
+
+	function putForwardTime(hours)
+	{
+		var date = new Date(scatterGraph._end_time.toString());
+		date.setHours(date.getHours() + hours);
+
+		if(date > scatterGraph.dataTrail) {
+			return;
+		}
+
+		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + hours);
+		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + hours);
+
+		menu.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+	}
+
 
 	/////////////////////////////////////////////
 	// FOR TEST

@@ -221,6 +221,7 @@ function registerAllEvent()
 	jQuery.subscribe(NETWORK_NORMAL_SIGN_CLICK, function(e, d) {
 		// 隐藏scatter plot
 		scatterGraph.hide();
+		scatterTimeGraph.hide();
 		menuScatterGraph.hide();
 		// 打开node内容页
 		showInfoPanel(d);
@@ -228,6 +229,7 @@ function registerAllEvent()
 	jQuery.subscribe(NODE_SIGN_CLOSED, function() {
 		// 显示scatter plot
 		scatterGraph.show();
+		scatterTimeGraph.show();
 		menuScatterGraph.show();
 	});
 
@@ -244,40 +246,56 @@ function registerAllEvent()
 	});
 
 	jQuery.subscribe(SCATTER_PLOT_PREV, function() {
-		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - 24);
-		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - 24);
-
-		menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
-		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		putBackTime(24);
 	});
 
 	jQuery.subscribe(SCATTER_PLOT_NEXT, function() {
-		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + 24);
-		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + 24);
-
-		menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
-		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		putForwardTime(24);
 	});
 
 	jQuery.subscribe(SCATTER_PLOT_PREV_FAST, function() {
-		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - 240);
-		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - 240);
-
-		menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
-		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		putBackTime(240);
 	});
 
 	jQuery.subscribe(SCATTER_PLOT_NEXT_FAST, function() {
-		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + 240);
-		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + 240);
-
-		menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
-		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		putForwardTime(240);
 	});
 
 	jQuery.subscribe(SCATTER_PLOT_DATE_SELECTED, function(e, d) {
 		scatterGraph.resetDate(d.start, d.end);
 	});
+
+	function putBackTime(hours)
+	{
+		var date = new Date(scatterGraph._start_time.toString());
+		date.setHours(date.getHours() - hours);
+
+		if(date < scatterGraph.dataHead) {
+			return;
+		}
+
+		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - hours);
+		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - hours);
+
+		menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+	}
+
+	function putForwardTime(hours)
+	{
+		var date = new Date(scatterGraph._end_time.toString());
+		date.setHours(date.getHours() + hours);
+
+		if(date > scatterGraph.dataTrail) {
+			return;
+		}
+
+		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + hours);
+		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + hours);
+
+		menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+	}
 
 	// ---------------------------------------
 	//  SYSTEM EVENT
@@ -533,12 +551,13 @@ function onMainMenuClick(e)
 		// 显示scatter plot graph
 		if(scatterGraph == null) {
 			scatterGraph = new ScatterPlotGraph();
-			scatterGraph.initDataset(chainManager.devices, "2014");
+			scatterGraph.initDataset(chainManager.devices);
 			scatterTimeGraph = new ScatterPlotTimeGraph("scatterplot_time");
 			menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
 		} else {
 			scatterGraph.show();
 		}
+		scatterTimeGraph.show();
 		menuScatterGraph.show();
 		// Enter scatter mode
 		network.enterScatterPlotMode();
@@ -691,6 +710,7 @@ function onMainMenuChange(e)
 			}
 			// 隐藏scatter plot graph
 			scatterGraph.hide();
+			scatterTimeGraph.hide();
 			menuScatterGraph.hide();
 
 			break;
@@ -738,7 +758,7 @@ function setScenePerspective(idx)
 	ground.visible = true;
 
 	if(idx == 1) {
-		TweenMax.to(ground.position, 0.9, {y: -430, delay:0, ease:Quint.easeOut});
+		TweenMax.to(ground.position, 0.9, {x:0, y: -430, delay:0, ease:Quint.easeOut});
 		TweenMax.to(camera.position, 1.1, {x:0, y:-320, z:1532, delay:0.1, ease:Quart.easeInOut, onComplete:function() {
 			// set control
 			controls.minPolarAngle = controls.getPolarAngle();
@@ -753,7 +773,7 @@ function setScenePerspective(idx)
 		sceneState = 1;
 
 	} else if(idx == 2) {
-		TweenMax.to(ground.position, 1, {y: -220, delay:0.1, ease:Quint.easeOut});
+		TweenMax.to(ground.position, 1, {x:300, y: -220, delay:0.1, ease:Quint.easeOut});
 		TweenMax.to(camera.position, 1.2, {x:0, y:550, z:1466, delay:0, ease:Quart.easeOut, onComplete:function() {
 			// set control
 			controls.minPolarAngle = MIN_POLAR_ANGLE;
@@ -770,7 +790,7 @@ function setScenePerspective(idx)
 		sceneState = 2;
 
 	} else if(idx == 3) {
-		TweenMax.to(ground.position, 1, {y: -220, delay:0.1, ease:Quint.easeOut});
+		TweenMax.to(ground.position, 1, {x:0, y: -220, delay:0.1, ease:Quint.easeOut});
 		TweenMax.to(camera.position, 1.2, {x:0, y:550, z:1466, delay:0, ease:Quart.easeOut, onComplete:function() {
 			// set control
 			controls.minPolarAngle = MIN_POLAR_ANGLE;
@@ -787,7 +807,7 @@ function setScenePerspective(idx)
 		sceneState = 3;
 	} else if(idx == 4) {
 
-		TweenMax.to(ground.position, 1, {y:-430, ease:Quint.easeOut});
+		TweenMax.to(ground.position, 1, {x:0, y:-430, ease:Quint.easeOut});
 		TweenMax.to(camera.position, 1.2, {x:440, y:395, z:1828, ease:Quart.easeOut});
 
 		// Hide calendar
@@ -1130,7 +1150,7 @@ function onKeyboardDown()
 		console.log(camera.position);
 		console.log("Polar Angle = " + controls.getPolarAngle());
 		console.log("Azimuthal Angle = " + controls.getAzimuthalAngle());
-		console.log("Plane y = " + ground.position.y);
+		console.log("Plane position = (" + ground.position.x + "," + ground.position.y + "," + ground.position.z + ")");
 		console.log("===============================================");
 	}
 	else if(d3.event.keyCode == 73)	// I:
@@ -1221,19 +1241,11 @@ function onKeyboardDown()
 	}
 	else if(d3.event.keyCode == 78)	// N:
 	{
-		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() - 24);
-		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() - 24);
 
-		console.log(scatterGraph._start_time.toLocaleDateString() + " - " + scatterGraph._end_time.toLocaleDateString());
-		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
 	}
 	else if(d3.event.keyCode == 77)	// M:
 	{
-		scatterGraph._start_time.setHours(scatterGraph._start_time.getHours() + 24);
-		scatterGraph._end_time.setHours(scatterGraph._end_time.getHours() + 24);
 
-		console.log(scatterGraph._start_time.toLocaleDateString() + " - " + scatterGraph._end_time.toLocaleDateString());
-		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
 	}
 
 	//console.log(d3.event.keyCode);

@@ -44,6 +44,8 @@ function UiScatterplotMatrix(cname)
 		showOtherMonths: true,
 		dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
 		onSelect: function(date) {
+			$("#datepicker_scatterplot").css("visibility", "hidden");
+
 			var exDateTime = date.toString();
 
 			//parse date
@@ -64,8 +66,6 @@ function UiScatterplotMatrix(cname)
 			self.resetDate(self._start, self._end);
 
 			jQuery.publish(SCATTER_PLOT_DATE_SELECTED, {start:self._start, end:self._end});
-
-			$("#datepicker_scatterplot").css("visibility", "hidden");
 		}
 	});
 	$("#datepicker_scatterplot").css("visibility", "hidden");
