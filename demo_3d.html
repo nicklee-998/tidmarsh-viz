@@ -70,10 +70,10 @@
 		container.append(renderer.domElement);
 
 		// Setup the camera
-		camera = new THREE.PerspectiveCamera(45, sw / sh, 0.1, 10000000);
-		camera.position.x = 1669;
-		camera.position.y = 1505;
-		camera.position.z = 2497;
+		camera = new THREE.PerspectiveCamera(45, sw / sh, 0.1, 10000);
+		camera.position.x = 1946;
+		camera.position.y = 1755;
+		camera.position.z = 2912;
 
 		// Setup the scene
 		scene = new THREE.Scene();
@@ -227,23 +227,23 @@
 		}
 		else if(d3.event.keyCode == 55)	// 7
 		{
-			var obj = scene.getObjectByName("axis_container");
+			var obj = scene3.getObjectByName("charging_container");
 			obj.rotation.z += 0.1;
 		}
 		else if(d3.event.keyCode == 56)	// 8
 		{
-			var obj = scene.getObjectByName("axis_container");
+			var obj = scene3.getObjectByName("charging_container");
 			obj.rotation.z -= 0.1;
 		}
 		else if(d3.event.keyCode == 57)	// 9
 		{
-			var obj = scene.getObjectByName("axis_container");
-			obj.rotation.x += 0.1;
+			var obj = scene3.getObjectByName("charging_container");
+			obj.rotation.y += 0.1;
 		}
 		else if(d3.event.keyCode == 48)	// 0
 		{
-			var obj = scene.getObjectByName("axis_container");
-			obj.rotation.x -= 0.1;
+			var obj = scene3.getObjectByName("charging_container");
+			obj.rotation.y -= 0.1;
 		}
 		else if(d3.event.keyCode == 74)	// j
 		{

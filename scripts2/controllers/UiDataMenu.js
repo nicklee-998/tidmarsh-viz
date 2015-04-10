@@ -191,19 +191,22 @@ UiDataMenu.prototype._showRealtimeTip = function(flg)
 			}, 500, 'easeOutQuint');
 		}
 	} else {
-		if($('#realtime_tip').css('visibility') != 'hidden') {
-			$('#realtime_tip').animate({
-				opacity: 0
-			}, 500, 'easeOutQuint', function() {
-				$('#realtime_tip').css('visibility', 'hidden');
-			});
+		$('#realtime_tip').css('visibility', 'hidden');
+		$('#realtime_message').css('visibility', 'hidden');
 
-			$('#realtime_message').animate({
-				opacity: 0
-			}, 500, 'easeOutQuint', function() {
-				$('#realtime_message').css('visibility', 'hidden');
-			});
-		}
+		//if($('#realtime_tip').css('visibility') != 'hidden') {
+		//	$('#realtime_tip').animate({
+		//		opacity: 0
+		//	}, 500, 'easeOutQuint', function() {
+		//		$('#realtime_tip').css('visibility', 'hidden');
+		//	});
+		//
+		//	$('#realtime_message').animate({
+		//		opacity: 0
+		//	}, 500, 'easeOutQuint', function() {
+		//		$('#realtime_message').css('visibility', 'hidden');
+		//	});
+		//}
 	}
 }
 

@@ -11,7 +11,7 @@ function UiMainMenu()
 	$("#mainmenu").append("<img class='mainmenu_logo' src='./images/mainmenu_logo.png'></img>");
 	// first level four button
 	$("#mainmenu").append("<img id='mainmenu_btn_begin' class='mainmenu_button_first' src='./images/mainmenu_btn_begin.png'></img>");
-	$("#mainmenu").append("<img id='mainmenu_btn_network' class='mainmenu_button_first' src='./images/mainmenu_btn_network.png'></img>");
+	$("#mainmenu").append("<img id='mainmenu_btn_network' class='mainmenu_button_first' src='./images/mainmenu_btn_analysis.png'></img>");
 	$("#mainmenu").append("<img id='mainmenu_btn_data' class='mainmenu_button_first' src='./images/mainmenu_btn_data.png'></img>")
 	$("#mainmenu").append("<img id='mainmenu_btn_device' class='mainmenu_button_first' src='./images/mainmenu_btn_device.png'></img>");
 

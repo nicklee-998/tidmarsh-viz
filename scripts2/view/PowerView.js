@@ -26,8 +26,10 @@ function PowerView(scene, scene2, scene3, camera, tooltipid)
 	this._statisticIsReady = 0;      // 计数到3，说明更新好可以发送了，发送完毕后数值清零
 
 	// 3d position
-	this._pos_3d = {x:0, y:0, z:1200};
-	this._pos_2d = {x:0, y:0, z:1350};
+	this._pos_3d = {x:0, y:0, z:0};
+	this._pos_2d = {x:0, y:0, z:200};
+
+	this._offsetZ = 1200;           // 为了中心对齐
 
 	// for Axis and Sunrise/Sunset
 	this._axisCont = new THREE.Object3D();
@@ -136,6 +138,8 @@ function PowerView(scene, scene2, scene3, camera, tooltipid)
 	};
 
 	this._currCobj;
+
+	this._mouseEnabled = true;
 }
 
 // ---------------------------------------------------
@@ -151,6 +155,8 @@ PowerView.prototype.show = function()
 	scene.add(this._axisCont);
 	scene2.add(this._wCont);
 	scene3.add(this._crCont);
+
+	this._mouseEnabled = true;
 }
 
 PowerView.prototype.hide = function()
@@ -158,6 +164,8 @@ PowerView.prototype.hide = function()
 	scene.remove(this._axisCont);
 	scene2.remove(this._wCont);
 	scene3.remove(this._crCont);
+
+	this._mouseEnabled = false;
 }
 
 PowerView.prototype.genMonthGraph = function(cobj)
@@ -291,14 +299,14 @@ PowerView.prototype.genMonthGraph = function(cobj)
 
 PowerView.prototype.changeView = function(type)
 {
-	var self = this;
-	if(type == "2D") {
+	if(type == "TOP") {
 
-		this._view_state.view = "2D";
+		this._view_state.view = "TOP";
 
 		this._camera.fov = 1;
+		this._camera.far = 200000;
 		this._camera.position.x = 0;
-		this._camera.position.y = 174399.25413348092;
+		this._camera.position.y = 174399;
 		this._camera.position.z = 0;
 		this._camera.updateProjectionMatrix();
 
@@ -318,6 +326,11 @@ PowerView.prototype.changeView = function(type)
 		this._crCont.position.y = this._pos_2d.y;
 		this._crCont.position.z = this._pos_2d.z;
 
+		var r = -0.5;
+		TweenMax.from(this._axisCont.rotation, 0.8, {x:r, y:r, z:r, ease:Quart.easeOut});
+		TweenMax.from(this._wCont.rotation, 0.8, {x:r, y:r, z:r, ease:Quart.easeOut});
+		TweenMax.from(this._crCont.rotation, 0.8, {x:r, y:r, z:r, ease:Quart.easeOut});
+
 		this._setAxisMarkerView();
 
 		//TweenMax.from(this._container, 1, {opacity:0, ease:Quart.easeIn});
@@ -325,14 +338,33 @@ PowerView.prototype.changeView = function(type)
 		//
 		//}});
 
+	} else if(type == "SIDE") {
+
+		this._view_state.view = "SIDE";
+
+		this._camera.position.x = 0;
+		this._camera.position.y = 174399;
+		this._camera.position.z = 0;
+
+		//TweenMax.from(this._camera.position, 0.8, {x:204398, y:0, z:0, ease:Quart.easeOut});
+		var r = 1.575;
+		TweenMax.to(this._axisCont.rotation, 0.8, {x:0, y:-r, z:r, ease:Quart.easeOut});
+		TweenMax.to(this._wCont.rotation, 0.8, {x:0, y:-r, z:r, ease:Quart.easeOut});
+		TweenMax.to(this._crCont.rotation, 0.8, {x:0, y:-r, z:r, ease:Quart.easeOut});
+
+		var d = 500;
+		TweenMax.to(this._axisCont.position, 0.8, {z:d, ease:Quart.easeOut});
+		TweenMax.to(this._wCont.position, 0.8, {z:d, ease:Quart.easeOut});
+		TweenMax.to(this._crCont.position, 0.8, {z:d, ease:Quart.easeOut});
+
 	} else if(type == "3D") {
 
 		this._view_state.view = "3D";
 
 		this._camera.fov = 45;
-		this._camera.position.x = 1668;
-		this._camera.position.y = 1505;
-		this._camera.position.z = 2496.9999999999995;
+		this._camera.position.x = 1946;
+		this._camera.position.y = 1755;
+		this._camera.position.z = 2912;
 		this._camera.updateProjectionMatrix();
 
 		//this._container.rotation.x = 1.1;
@@ -350,6 +382,11 @@ PowerView.prototype.changeView = function(type)
 		this._crCont.position.x = this._pos_3d.x;
 		this._crCont.position.y = this._pos_3d.y;
 		this._crCont.position.z = this._pos_3d.z;
+
+		var r = 0;
+		TweenMax.to(this._axisCont.rotation, 0.8, {x:0, y:-r, z:r, ease:Quart.easeOut});
+		TweenMax.to(this._wCont.rotation, 0.8, {x:0, y:-r, z:r, ease:Quart.easeOut});
+		TweenMax.to(this._crCont.rotation, 0.8, {x:0, y:-r, z:r, ease:Quart.easeOut});
 
 		this._setAxisMarkerView();
 	}
@@ -391,6 +428,10 @@ PowerView.prototype.dispose = function()
 
 PowerView.prototype.update = function(mouse)
 {
+	if(!this._mouseEnabled) {
+		return;
+	}
+
 	var vector = new THREE.Vector3(mouse.x, mouse.y, 1).unproject(this._camera);
 	this._raycaster.set(this._camera.position, vector.sub(this._camera.position).normalize());
 	var intersects;
@@ -593,7 +634,7 @@ PowerView.prototype._genDayLine = function(datset, idx, date)
 		.interpolate(d3.interpolateHsl);
 
 	// Day position
-	var posday = -this._dayLength * idx;
+	var posday = -this._dayLength * idx + this._offsetZ;
 
 	// -------------------------
 	//  Draw Axis
@@ -927,7 +968,7 @@ PowerView.prototype._drawAxisTime = function()
 	var mesh1 = this._genTextMesh("12 AM");
 	mesh1.position.x = -this._dayWidth / 2;
 	mesh1.position.y = 18;
-	mesh1.position.z = 70;
+	mesh1.position.z = 70 + this._offsetZ;
 	this._axisCont.add(mesh1);
 	this._axisTimeLines.push(mesh1);
 }
@@ -937,14 +978,14 @@ PowerView.prototype._drawAxisSunriseSunsetTime = function(prise, pset)
 	var meshr = this._genTextMesh("sunrise");
 	meshr.position.x = prise;
 	meshr.position.y = 18;
-	meshr.position.z = 70;
+	meshr.position.z = 70 + this._offsetZ;
 	this._axisCont.add(meshr);
 	this._axisTimeLines.push(meshr);
 
 	var meshs = this._genTextMesh("sunset");
 	meshs.position.x = pset;
 	meshs.position.y = 18;
-	meshs.position.z = 70;
+	meshs.position.z = 70 + this._offsetZ;
 	this._axisCont.add(meshs);
 	this._axisTimeLines.push(meshs);
 }
@@ -1059,7 +1100,7 @@ PowerView.prototype._genSunriseSunsetByMonth = function()
 			.rangeRound([-this._dayWidth / 2, this._dayWidth / 2]);
 
 		// day pos
-		var daypos = this._dayLength * i;
+		var daypos = this._dayLength * i - this._offsetZ;
 
 		// sunrise
 		var sunrise = new Date(this._sunDataArr[i].sunrise);
@@ -1138,7 +1179,7 @@ PowerView.prototype._genWeatherByName = function(wname, color)
 	for(var i = 0; i < this._dayList.length-1; i++) {
 
 		// day position
-		var daypos = this._dayLength * i;
+		var daypos = this._dayLength * i - this._offsetZ;
 
 		// time scale
 		var date1 = this._dayList[i];

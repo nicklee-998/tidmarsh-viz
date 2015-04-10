@@ -232,6 +232,7 @@ function registerAllEvent()
 		scatterGraph.hide();
 		scatterTimeGraph.hide();
 		menuScatterGraph.hide();
+		showWeatherBig(false);
 		// 打开node内容页
 		showInfoPanel(d);
 	});
@@ -240,6 +241,7 @@ function registerAllEvent()
 		scatterGraph.show();
 		scatterTimeGraph.show();
 		menuScatterGraph.show();
+		showWeatherBig(true);
 	});
 
 	// ---------------------------------------
@@ -360,7 +362,7 @@ function init3d()
 	//renderer.sortObjects = true;
 
 	// Setup the camera
-	camera = new THREE.PerspectiveCamera(45, sw / sh, 0.1, 10000000);
+	camera = new THREE.PerspectiveCamera(45, sw / sh, 0.1, 10000);
 	camera.position.y = 1000;
 	camera.position.z = 1000;
 
@@ -797,6 +799,11 @@ function setScenePerspective(idx)
 	if(sceneState == idx)
 		return;
 
+	if(camera.fov == 1) {
+		camera.fov = 45;
+		camera.far = 10000;
+		camera.updateProjectionMatrix();
+	}
 	scene.fog.near = 4000;
 	scene.fog.far = 4000;
 	controls.minPolarAngle = 0;
@@ -821,8 +828,8 @@ function setScenePerspective(idx)
 		sceneState = 1;
 
 	} else if(idx == 2) {
-		TweenMax.to(ground.position, 1, {x:300, y: -220, delay:0.1, ease:Quint.easeOut});
-		TweenMax.to(camera.position, 1.2, {x:0, y:550, z:1466, delay:0, ease:Quart.easeOut, onComplete:function() {
+		TweenMax.to(ground.position, 1, {x:200, y: -220, delay:0.1, ease:Quint.easeOut});
+		TweenMax.to(camera.position, 1.2, {x:422, y:656, z:1357, delay:0, ease:Quart.easeOut, onComplete:function() {
 			// set control
 			controls.minPolarAngle = MIN_POLAR_ANGLE;
 			controls.maxPolarAngle = MAX_POLAR_ANGLE;
@@ -866,10 +873,9 @@ function setScenePerspective(idx)
 		sceneState = 4;
 	} else if(idx == 5) {
 
-		TweenMax.to(ground.position, 1, {y:-2000, ease:Quint.easeOut, onComplete:function() {
-			ground.visible = false;
-		}});
-		TweenMax.to(camera.position, 1.2, {x:1669, y:1505, z:2497, ease:Quart.easeOut});
+		ground.visible = false;
+
+		TweenMax.to(camera.position, 1.2, {x:1946, y:1755, z:2912, ease:Quart.easeOut});
 
 		controls.maxDistance = Infinity;
 		scene.fog.near = 1000000;

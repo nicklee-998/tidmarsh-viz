@@ -198,21 +198,22 @@ function UiPowerViewMenu(cname)
 		jQuery.publish(POWERMENU_CHANGE, menu_state);
 	}
 
-	// 2D/3D button
-	$("#powermenu_container").append("<div id='pmenu_2d3d' class='powermenu_2d3d'>2D</div>");
+	// Top/Side/3D button
+	$("#powermenu_container").append("<div id='pmenu_2d3d' class='powermenu_2d3d'>TOP</div>");
 	$("#pmenu_2d3d").css("top", window.innerHeight-240);
 	$("#pmenu_2d3d").click(function() {
 
 		var newtype;
-		var newlabel;
 		if($("#pmenu_2d3d").html() == "3D") {
 			newtype = "3D";
-			newlabel = "2D";
+			$("#pmenu_2d3d").text("TOP");
+		} else if($("#pmenu_2d3d").html() == "TOP") {
+			newtype = "TOP";
+			$("#pmenu_2d3d").text("SIDE");
 		} else {
-			newtype = "2D";
-			newlabel = "3D";
+			newtype = "SIDE";
+			$("#pmenu_2d3d").text("3D");
 		}
-		$("#pmenu_2d3d").text(newlabel);
 
 		// ------------------------
 		// Send menu change event
