@@ -26,6 +26,7 @@ function NodeNetwork()
 	this.animatedObjects;
 	this.devices = new Array();
 	this.deviceBoxes = new Array();         // 不包括fake点的box
+	this._nodeContainer = null;
 
 	// Mode
 	this._mode = this.NETWORK_MODE_NONE;
@@ -39,12 +40,6 @@ function NodeNetwork()
 	this._cellLabelTextFontSize = 30;
 	this._cellLabelTextColor = {r:70, g:70, b:70, a:0.7};
 	this._cellLabelTextWidth;
-
-	// Health Graph
-	this._healthDateLayers = null;
-	this._healthSelectedNode = null;
-	this._healthTimeline = null;
-	this._isHealthAnalysis = false;
 
 	// Poisson disc
 	this._k = 30;
@@ -71,7 +66,6 @@ function NodeNetwork()
 	this._mouseX;
 	this._mouseY;
 
-
 	document.addEventListener( 'mousemove', function(event) {
 		self._mouseX = event.clientX;
 		self._mouseY = event.clientY;
@@ -84,28 +78,28 @@ function NodeNetwork()
 
 				$("#health_tooltip").css("visibility", "hidden");
 
-				if(self._healthSelectedNode == self._intersected) {
-					self._healthSelectedNode.material.emissive.setHex(self._healthSelectedNode.currentHex);
-					self._healthSelectedNode = null;
-					//self.onHealthMouseOut();
-
-					// ------------------------
-					// Send click event
-					// ------------------------
-					jQuery.publish(NETWORK_HEALTH_NODE_DESELECTED, self._intersected.name);
-
-				} else {
-					if(self._healthSelectedNode != null) {
-						self._healthSelectedNode.material.emissive.setHex(self._healthSelectedNode.currentHex);
-					}
-					self._healthSelectedNode = self._intersected;
-					self._healthSelectedNode.material.emissive.setHex(0xff0000);
-
-					// ------------------------
-					// Send click event
-					// ------------------------
-					jQuery.publish(NETWORK_HEALTH_NODE_SELECTED, self._intersected.name);
-				}
+				//if(self._healthSelectedNode == self._intersected) {
+				//	self._healthSelectedNode.material.emissive.setHex(self._healthSelectedNode.currentHex);
+				//	self._healthSelectedNode = null;
+				//	//self.onHealthMouseOut();
+				//
+				//	// ------------------------
+				//	// Send click event
+				//	// ------------------------
+				//	jQuery.publish(NETWORK_HEALTH_NODE_DESELECTED, self._intersected.name);
+				//
+				//} else {
+				//	if(self._healthSelectedNode != null) {
+				//		self._healthSelectedNode.material.emissive.setHex(self._healthSelectedNode.currentHex);
+				//	}
+				//	self._healthSelectedNode = self._intersected;
+				//	self._healthSelectedNode.material.emissive.setHex(0xff0000);
+				//
+				//	// ------------------------
+				//	// Send click event
+				//	// ------------------------
+				//	jQuery.publish(NETWORK_HEALTH_NODE_SELECTED, self._intersected.name);
+				//}
 
 			} else if(self._mode == self.NETWORK_MODE_NORMAL ||
 				self._mode == self.NETWORK_MODE_SCATTER_PLOT) {
@@ -219,7 +213,11 @@ NodeNetwork.prototype.createDevice = function(dInfo)
 	//} else {
 	//	node.online(false);
 	//}
-	ground.add(box);
+	if(this._nodeContainer == null) {
+		this._nodeContainer = new THREE.Object3D();
+		ground.add(this._nodeContainer);
+	}
+	this._nodeContainer.add(box);
 
 	// poisson dict -
 	this._sample(pnt.x * groundWid, pnt.y * groundHei);
@@ -359,7 +357,7 @@ NodeNetwork.prototype.enterNormalMode = function()
 // -------------------------------------------------------
 //  Health Graph
 // -------------------------------------------------------
-NodeNetwork.prototype.createHealthGraph = function(csvfile)
+NodeNetwork.prototype.enterHealthGraph = function()
 {
 	// Make all nodes offline
 	for(var i = 0; i < this.devices.length; i++) {
@@ -369,479 +367,7 @@ NodeNetwork.prototype.createHealthGraph = function(csvfile)
 		}
 	}
 
-	// Create graph
-	var self = this;
-	var c1 = "hsl(0, 100%, 100%)";
-	var c2 = "hsl(113, 100%, 55%)";
-	var valueToColorScale = d3.scale
-		.sqrt()
-		//.linear()
-		.domain([0, 1])
-		.range([c1, c2])
-		.interpolate(d3.interpolateHsl);
-
-	// open loader
-	$(".loading-text").text("Analysising Data...");
-	loader2start();
-	self._isHealthAnalysis = true;
-
-	d3.csv(csvfile, function(d) {
-		//console.log(self.devices);
-
-		var did = "default";
-		var device = null;
-		var zidx = 0;
-		var queueIdx = 0;
-
-		//function startQueue() {
-		//
-		//	if(queueIdx >= d.length) {
-		//		stopQueue();
-		//		return;
-		//	}
-		//
-		//	// Find the device
-		//	var isfind = false;
-		//	if(did != d[queueIdx]["did"]) {
-		//
-		//		for(var i = queueIdx; i < d.length; i++) {
-		//			device = self.getDeviceById(d[queueIdx]["did"]);
-		//			if(device != null) {
-		//				did = d[queueIdx]["did"];
-		//				zidx = 0;
-		//				isfind = true;
-		//				break;
-		//			} else {
-		//				queueIdx++;
-		//			}
-		//		}
-		//
-		//		// 如果整个csv文件中都没有有效的设备，循环结束
-		//		if(!isfind) {
-		//			stopQueue();
-		//			return;
-		//		}
-		//	}
-		//
-		//	//console.log("start queue: " + did);
-		//
-		//	var obj = d[queueIdx];
-		//	var arr = new Array();
-		//	var health = 0;
-		//	for(value in obj) {
-		//		if(value == "did" || value.indexOf("date") != -1 || value == "charge_flags_charge" || value == "charge_flags_fault") {
-		//			continue;
-		//		} else {
-		//			var val = parseInt(obj[value]);
-		//			if(val == -999) {
-		//				continue;
-		//			} else {
-		//				// fixme: 4320 is the message ratio, it's hard code right now
-		//				var f = val / 4320;
-		//				arr.push(f);
-		//			}
-		//			//console.log(value + ", " + obj[value]);
-		//		}
-		//	}
-		//
-		//	// calculate health
-		//	var total = 0;
-		//	for(index in arr) {
-		//		total += arr[index];
-		//	}
-		//	health = total / arr.length;
-		//
-		//	createBlock(health);
-		//}
-
-		function stopQueue()
-		{
-			// 全部结束，显示时间轴
-			// health timeline
-			if(self._healthTimeline == null) {
-				var timelineWid = 4;
-				var timelineHei = 365 * 2;
-				self._healthTimeline = new THREE.Mesh(
-					new THREE.PlaneBufferGeometry(timelineWid, timelineHei, 20, 20),
-					new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true, side:THREE.DoubleSide})
-				);
-				self._healthTimeline.material.opacity = 0.7;
-				self._healthTimeline.position.x = groundWid / 2 + (timelineWid / 2) / 1.414;
-				self._healthTimeline.position.y = groundHei / 2 + (timelineWid / 2) / 1.414;
-				self._healthTimeline.position.z = timelineHei / 2;
-				self._healthTimeline.rotation.x = Math.PI / 2;
-				self._healthTimeline.rotation.y = Math.PI / 4;
-
-				// start title
-				var startTitle = document.createElement( "canvas" );
-				startTitle.width = 150;
-				startTitle.height = 60;
-				var context = startTitle.getContext( "2d" );
-				context.fillStyle = "white";
-				context.font = "18pt arial";
-				context.fillText( "2014/1/1", 25, 60 );
-
-				var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(startTitle), transparent: true, side:THREE.DoubleSide});
-				xm.map.needsUpdate = true;
-				var startmesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
-				startmesh.position.x = 50;
-				startmesh.position.y = -(timelineHei / 2) + 30;
-				startmesh.position.z = -2;
-				self._healthTimeline.add(startmesh);
-
-				// end title
-				var endTitle = document.createElement( "canvas" );
-				endTitle.width = 150;
-				endTitle.height = 60;
-				var context = endTitle.getContext( "2d" );
-				context.fillStyle = "white";
-				context.font = "18pt arial";
-				context.fillText( "2014/12/31", 25, 60 );
-
-				var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(endTitle), transparent: true, side:THREE.DoubleSide});
-				xm.map.needsUpdate = true;
-				var endmesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(150, 60), xm);
-				endmesh.position.x = 70;
-				endmesh.position.y = (timelineHei / 2) + 15;
-				endmesh.position.z = -2;
-				self._healthTimeline.add(endmesh);
-			}
-			ground.add(self._healthTimeline);
-			//TweenMax.from(self._healthTimeline.material, 0.8, {opacity:0, ease:Expo.easeOut});
-
-
-			// Remove loading
-			loader2end();
-			self._isHealthAnalysis = false;
-
-			console.log("All finish");
-		}
-
-		//function createBlock(health) {
-		//
-		//	if(health != 0) {
-		//		var hColor = valueToColorScale(health);
-		//		hColor = "0x" + hColor.substring(1);
-		//
-		//		var box = new THREE.Mesh (
-		//			new THREE.BoxGeometry(25, 25, 2),
-		//			new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent:true} )
-		//		);
-		//		box.material.color.setHex(hColor);
-		//		box.position.x = device.mesh.position.x;
-		//		box.position.y = device.mesh.position.y;
-		//		box.position.z = zidx * 2;
-		//		box.userData = {
-		//			px:box.position.x, py:box.position.y, pz:box.position.z,
-		//			rx:box.rotation.x, ry:box.rotation.y, rz:box.rotation.z,
-		//			sx:box.scale.x, sy:box.scale.y, sz:box.scale.z
-		//		};
-		//		device.healthBoxes.push(box);
-		//	} else {
-		//		//device.healthBoxes.push(null);
-		//	}
-		//
-		//	zidx++;
-		//	queueIdx++;
-		//
-		//	if(queueIdx == d.length) {
-		//		stopQueue();
-		//		return;
-		//	}
-		//
-		//	// Find device will change, do animation, then go to next device
-		//	if(did != d[queueIdx]["did"]) {
-		//
-		//		console.log(did + ": " + device.healthBoxes.length);
-		//		var count = 0;
-		//		var localIdx = 0;
-		//		var threshold = parseInt(device.healthBoxes.length);
-		//
-		//		var timer = setInterval(function() {
-		//
-		//			//console.log(localIdx + ", " + device.healthBoxes.length);
-		//			if(localIdx >= device.healthBoxes.length ) {
-		//				clearInterval(timer);
-		//				startQueue();
-		//				return;
-		//			}
-		//
-		//			var box = device.healthBoxes[localIdx];
-		//			if(box != null) {
-		//				//TweenMax.from(box.material, 0.01, {opacity:0, delay: 0.01 * i, ease:Expo.easeOut, onComplete: function() {
-		//
-		//				//}});
-		//				ground.add(box);
-		//
-		//				//count++;
-		//				//if(count == threshold) {
-		//				//	startQueue();
-		//				//}
-		//			}
-		//			localIdx++;
-		//		}, 1);
-		//
-		//		//for(var i = 0; i < device.healthBoxes.length; i++) {
-		//		//	//console.log(localIdx + ", " + device.healthBoxes.length);
-		//		//	var box = device.healthBoxes[i];
-		//		//	if(box != null) {
-		//		//		//TweenMax.from(box.material, 0.01, {opacity:0, delay: 0.01 * i, ease:Expo.easeOut, onComplete: function() {
-		//		//
-		//		//		//}});
-		//		//		ground.add(box);
-		//		//
-		//		//		count++;
-		//		//		if(count >= threshold) {
-		//		//			console.log("jaaj");
-		//		//			startQueue();
-		//		//		}
-		//		//	}
-		//		//}
-		//	} else {
-		//		startQueue();
-		//	}
-		//}
-		//startQueue();
-
-
-		//var did = "default";
-		//var device = null;
-		//var zidx = 0;
-		//var queueIdx = 0;
-
-
-		for(var i = 0; i < d.length; i++) {
-
-			// Find the device
-			if(did != d[i]["did"]) {
-
-				device = self.getDeviceById(d[i]["did"]);
-				if(device != null) {
-					did = d[i]["did"];
-					zidx = 0;
-				} else {
-					continue;
-				}
-			}
-
-			var obj = d[i];
-			var health = caculateHealthFromCSV(obj);
-			//console.log("health = " + health);
-
-			if(health != 0) {
-				var hColor = valueToColorScale(health);
-				hColor = "0x" + hColor.substring(1);
-
-				var box = new THREE.Mesh (
-					new THREE.BoxGeometry(25, 25, 2),
-					new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent:true} )
-				);
-				box.material.color.setHex(hColor);
-				box.position.x = device.mesh.position.x;
-				box.position.y = device.mesh.position.y;
-				box.position.z = zidx * 2;
-				box.userData = {
-					px:box.position.x, py:box.position.y, pz:box.position.z,
-					rx:box.rotation.x, ry:box.rotation.y, rz:box.rotation.z,
-					sx:box.scale.x, sy:box.scale.y, sz:box.scale.z
-				};
-				device.healthBoxes.push(box);
-
-				//TweenMax.from(box.position, 0.5, {z:0, ease:Expo.easeOut});
-
-				ground.add(box);
-			} else {
-				device.healthBoxes.push(null);
-			}
-
-			zidx++;
-		}
-
-		stopQueue();
-
-		// 选择日期层
-		//if(self._healthDateLayers == null) {
-		//
-		//	self._healthDateLayers = new Array();
-		//	for(var k = 0; k < 365; k++) {
-		//		var layer = new THREE.Mesh(
-		//			new THREE.BoxGeometry(groundWid, groundHei, 2),
-		//			new THREE.MeshLambertMaterial( {color: 0xff0000, transparent:true} )
-		//		);
-		//		layer.material.opacity = 0;
-		//		//layer.position.x = -groundWid / 2;
-		//		//layer.position.y = -groundHei / 2;
-		//		layer.position.z = k * 2;
-		//		layer.name = "dateLayer_" + k;
-		//		layer.userData = {idx:k};
-		//		ground.add(layer);
-		//
-		//		self._healthDateLayers.push(layer);
-		//	}
-		//}
-
-
-		self._mode = self.NETWORK_MODE_HEALTH;
-	});
-}
-
-NodeNetwork.prototype.clearHealthGraph = function()
-{
-	// clear timeline
-	ground.remove(this._healthTimeline);
-
-	for(var i = 0; i < this.devices.length; i++) {
-		if(this.devices[i].type != "blank") {
-			for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-				var box = this.devices[i].healthBoxes[j];
-				if(box != null) {
-
-					ground.remove(box);
-					box.geometry.dispose();
-					box.material.dispose();
-
-					//console.log(box);
-					//box.userData = null;
-					//TweenMax.to(box.material, 0.6, {opacity:0, ease:Expo.easeOut, onComplete:function() {
-					//	ground.remove(box);
-					//	box.geometry.dispose();
-					//	box.material.dispose();
-					//}});
-				}
-			}
-			this.devices[i].healthBoxes = new Array();
-		}
-	}
-}
-
-NodeNetwork.prototype.showHealthGraph = function(mode)
-{
-	if(mode == 1) {
-
-		for(var i = 0; i < this.devices.length; i++) {
-
-			if(this.devices[i].type != "blank") {
-				for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-					var box = this.devices[i].healthBoxes[j];
-					if(box != null) {
-						//console.log(box);
-						var obj = box.userData;
-						var rd = getRandomArbitrary(0.1, 0.5);
-
-						TweenMax.to(box.position, 1, {x:obj.px, y:obj.py, z:obj.pz, delay:rd, ease:Expo.easeOut});
-						TweenMax.to(box.rotation, 1, {x:obj.rx, delay:rd, ease:Expo.easeOut});
-						TweenMax.to(box.scale, 1, {x:obj.sx, y:obj.sy, z:obj.sz, delay:rd, ease:Expo.easeOut});
-					}
-				}
-			}
-		}
-
-	} else if(mode == 2) {
-
-		var deviceIdx = 0;
-		for(var i = 0; i < this.devices.length; i++) {
-
-			if(this.devices[i].type != "blank") {
-				for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-					var box = this.devices[i].healthBoxes[j];
-					if(box != null) {
-						//console.log(box);
-						var ps = 0.5;
-						var gap = (25 + 1) * ps;
-						var wwid = gap * 365;
-						var px = j * gap - wwid / 2;
-						var py = -(groundHei / 2 + 200);
-						var pz = deviceIdx * gap + 300;
-						var rd = getRandomArbitrary(0.1, 0.5);
-
-						TweenMax.to(box.position, 1, {x:px, y:py, z:pz, delay:rd, ease:Expo.easeOut});
-						TweenMax.to(box.rotation, 1, {x:Math.PI / 2, delay:rd, ease:Expo.easeOut});
-						TweenMax.to(box.scale, 1, {x:ps, y:ps, z:ps, delay:rd, ease:Expo.easeOut});
-					}
-				}
-
-				deviceIdx++;
-			}
-		}
-	}
-}
-
-NodeNetwork.prototype.onHealthMouseOver = function(did)
-{
-	//dobj.material.opacity = 0.6;
-
-	for(var i = 0; i < this.devices.length; i++) {
-		if(this.devices[i].type != "blank") {
-
-			if(this.devices[i].id == did) {
-				$("#health_tooltip").css("visibility", "visible");
-				$("#health_tooltip").text(did);
-				$("#health_tooltip").css("left", this._mouseX + 13);
-				$("#health_tooltip").css("top", this._mouseY - 10);
-
-				for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-					var box = this.devices[i].healthBoxes[j];
-					if(box != null) {
-						TweenMax.to(box.material, 0.5, {opacity:1, ease:Expo.easeOut});
-					}
-				}
-
-			} else {
-				for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-					var box = this.devices[i].healthBoxes[j];
-					if(box != null) {
-						TweenMax.to(box.material, 0.5, {opacity:0.01, ease:Expo.easeOut});
-					}
-				}
-			}
-		}
-	}
-}
-
-NodeNetwork.prototype.onHealthMouseOut = function()
-{
-	$("#health_tooltip").css("visibility", "hidden");
-
-	//for(var j = 0; j < this._healthDateLayers.length; j++) {
-	//	var layer = this._healthDateLayers[j];
-	//	layer.material.opacity = 0;
-	//}
-
-	if(this._healthSelectedNode != null) {
-
-		for(var i = 0; i < this.devices.length; i++) {
-			if(this.devices[i].type != "blank") {
-				if(this.devices[i].id == this._healthSelectedNode.name) {
-					for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-						var box = this.devices[i].healthBoxes[j];
-						if(box != null) {
-							TweenMax.to(box.material, 0.5, {opacity:1, ease:Expo.easeOut});
-						}
-					}
-				} else {
-					for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-						var box = this.devices[i].healthBoxes[j];
-						if(box != null) {
-							TweenMax.to(box.material, 0.5, {opacity:0.01, ease:Expo.easeOut});
-						}
-					}
-				}
-			}
-		}
-
-	} else {
-
-		for(var i = 0; i < this.devices.length; i++) {
-			if(this.devices[i].type != "blank") {
-				for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-					var box = this.devices[i].healthBoxes[j];
-					if(box != null) {
-						TweenMax.to(box.material, 0.5, {opacity:1, ease:Expo.easeOut});
-					}
-				}
-			}
-		}
-	}
+	this._mode = this.NETWORK_MODE_HEALTH;
 }
 
 // -------------------------------------------------------
@@ -1218,72 +744,77 @@ NodeNetwork.prototype.render = function(mx, my)
 		return;
 	}
 
-	// find intersections
-	var vector = new THREE.Vector3(mx, my, 1).unproject(camera);
-	this._raycaster.set(camera.position, vector.sub(camera.position).normalize());
-	var intersects = this._raycaster.intersectObjects(ground.children, true);
+	if(this._nodeContainer) {
+		// find intersections
+		var vector = new THREE.Vector3(mx, my, 1).unproject(camera);
+		this._raycaster.set(camera.position, vector.sub(camera.position).normalize());
+		var intersects = this._raycaster.intersectObjects(this._nodeContainer.children, true);
 
-	if(intersects.length > 0) {
-		if(this.getDeviceById(intersects[0].object.name) != null && !this._isHealthAnalysis) {
+		if(intersects.length > 0) {
+			if(this.getDeviceById(intersects[0].object.name) != null && !this._isHealthAnalysis) {
 
-			if(this._intersected != intersects[0].object) {
-				if(this._intersected) {
-					this._intersected.material.emissive.setHex(this._intersected.currentHex);
-				}
-				this._intersected = intersects[0].object;
-
-				// 已经选定的点不要变色
-				if(this._healthSelectedNode != intersects[0].object) {
-					this._intersected.currentHex = this._intersected.material.emissive.getHex();
-					this._intersected.material.emissive.setHex(0x746331);
-				}
-
-				// mouse over
-				if(this._mode == this.NETWORK_MODE_HEALTH) {
-					this.onHealthMouseOver(this._intersected.name);
-				}
-			}
-		}
-		//else if(intersects[0].object.name.indexOf("dateLayer") != -1) {
-		//
-		//	if(this._intersected != intersects[0].object) {
-		//		if(this._intersected) {
-		//			this._intersected.material.emissive.setHex(this._intersected.currentHex);
-		//		}
-		//		this._intersected = intersects[0].object;
-		//		this._intersected.currentHex = this._intersected.material.emissive.getHex();
-		//		this._intersected.material.emissive.setHex(0xff0000);
-		//
-		//		// mouse over
-		//		if(this._mode == this.NETWORK_MODE_HEALTH) {
-		//			this.onHealthMouseOver(this._intersected);
-		//		}
-		//	}
-		//
-		//}
-		else if(intersects[0].object.name == "info_sign_plane" || intersects[0].object.name == "signmesh") {
-			var sign = null;
-			for(var i = 0; i < intersects.length; i++) {
-				if(intersects[i].object.name == "info_sign_plane") {
-					sign = intersects[i].object;
-					break;
-				}
-			}
-
-			if(sign != null) {
-				if(this._intersected != sign) {
+				if(this._intersected != intersects[0].object) {
 					if(this._intersected) {
 						this._intersected.material.emissive.setHex(this._intersected.currentHex);
 					}
-					this._intersected = sign;
-					this._intersected.currentHex = this._intersected.material.emissive.getHex();
-					this._intersected.material.emissive.setHex(0xff0000);
+					this._intersected = intersects[0].object;
+
+					// 已经选定的点不要变色
+					if(this._healthSelectedNode != intersects[0].object) {
+						this._intersected.currentHex = this._intersected.material.emissive.getHex();
+						this._intersected.material.emissive.setHex(0x746331);
+					}
+
+					// mouse over
+					if(this._mode == this.NETWORK_MODE_HEALTH) {
+						// ------------------------
+						// Send Health Event
+						// ------------------------
+						jQuery.publish(HEALTH_NODE_MOUSE_OVER, {name:this._intersected.name});
+					}
 				}
 			}
-		}
-		else {
-			if (this._intersected) {
+			else if(intersects[0].object.name == "info_sign_plane" || intersects[0].object.name == "signmesh") {
+				var sign = null;
+				for(var i = 0; i < intersects.length; i++) {
+					if(intersects[i].object.name == "info_sign_plane") {
+						sign = intersects[i].object;
+						break;
+					}
+				}
 
+				if(sign != null) {
+					if(this._intersected != sign) {
+						if(this._intersected) {
+							this._intersected.material.emissive.setHex(this._intersected.currentHex);
+						}
+						this._intersected = sign;
+						this._intersected.currentHex = this._intersected.material.emissive.getHex();
+						this._intersected.material.emissive.setHex(0xff0000);
+					}
+				}
+			}
+			else {
+				if (this._intersected) {
+
+					// 已经选定的点不要变色
+					if(this._healthSelectedNode != this._intersected) {
+						this._intersected.material.emissive.setHex( this._intersected.currentHex );
+					}
+
+					// mouse out in health mode
+					if(this._mode == this.NETWORK_MODE_HEALTH) {
+						// ------------------------
+						// Send Health Event
+						// ------------------------
+						jQuery.publish(HEALTH_NODE_MOUSE_OUT);
+					}
+				}
+				this._intersected = null;
+			}
+
+		} else {
+			if (this._intersected) {
 				// 已经选定的点不要变色
 				if(this._healthSelectedNode != this._intersected) {
 					this._intersected.material.emissive.setHex( this._intersected.currentHex );
@@ -1291,25 +822,14 @@ NodeNetwork.prototype.render = function(mx, my)
 
 				// mouse out in health mode
 				if(this._mode == this.NETWORK_MODE_HEALTH) {
-					this.onHealthMouseOut();
+					// ------------------------
+					// Send Health Event
+					// ------------------------
+					jQuery.publish(HEALTH_NODE_MOUSE_OUT);
 				}
 			}
 			this._intersected = null;
 		}
-
-	} else {
-		if (this._intersected) {
-			// 已经选定的点不要变色
-			if(this._healthSelectedNode != this._intersected) {
-				this._intersected.material.emissive.setHex( this._intersected.currentHex );
-			}
-
-			// mouse out in health mode
-			if(this._mode == this.NETWORK_MODE_HEALTH) {
-				this.onHealthMouseOut();
-			}
-		}
-		this._intersected = null;
 	}
 
 	// -------------------------------------------------

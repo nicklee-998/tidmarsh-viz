@@ -153,6 +153,7 @@
 <script src="./scripts2/controllers/UiScatterplotMatrix.js"></script>
 <script src="./scripts2/view/PowerView.js"></script>
 <script src="./scripts2/controllers/UiPowerViewMenu.js"></script>
+<script src="./scripts2/view/HealthView.js"></script>
 
 <script>
 	// From d3-threeD.js
@@ -393,6 +394,48 @@
 
 	var $d3g = {};
 	d3threeD($d3g);
+</script>
+
+<script id="vertexShader" type="x-shader/x-vertex">
+
+	precision mediump float;
+	precision mediump int;
+
+	uniform mat4 modelViewMatrix; // optional
+	uniform mat4 projectionMatrix; // optional
+
+	attribute vec3 position;
+	attribute vec4 color;
+
+	varying vec3 vPosition;
+	varying vec4 vColor;
+
+	void main()	{
+		vPosition = position;
+		vColor = color;
+
+		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+	}
+
+</script>
+
+<script id="fragmentShader" type="x-shader/x-fragment">
+
+	precision mediump float;
+	precision mediump int;
+
+	uniform float time;
+
+	varying vec3 vPosition;
+	varying vec4 vColor;
+
+	void main()	{
+		vec4 color = vec4( vColor );
+		color.a = time;
+
+		gl_FragColor = color;
+	}
+
 </script>
 
 </body>

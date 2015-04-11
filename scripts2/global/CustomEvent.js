@@ -82,6 +82,13 @@ var MAINMENU_POWER = "main_menu_power";
 var MAINMENU_POWER_LEAVE = "main_menu_power_leave";
 
 /***********************************
+ * HEALTH GRAPH EVENT
+ ***********************************/
+var HEALTH_NODE_MOUSE_OVER = "health_node_mouse_over";
+var HEALTH_NODE_MOUSE_OUT = "health_node_mouse_out";
+var HEALTH_NODE_CLICK = "health_node_click";
+
+/***********************************
  * POWER MENU EVENT
  ***********************************/
 var POWERMENU_CHANGE = "power_menu_change";

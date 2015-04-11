@@ -48,6 +48,11 @@ var scatterTimeGraph = null;            // Scatter plot graph
 var menuScatterGraph = null;
 
 // --------------------------
+//  Health Graph
+// --------------------------
+var menuHealth, viewHealth = null;
+
+// --------------------------
 //  Power Graph
 // --------------------------
 var scene2, scene3;
@@ -67,7 +72,6 @@ var sensorColorTable = ["#E77227", "#D81E00", "#E445BA", "#3242DF", "#57C66C"];
 var lineChart;          // line chart of sensors
 
 var menuData;           // menu of data history
-var menuHealth;
 
 // --------------------------
 //  Birds
@@ -84,6 +88,11 @@ d3.selection.prototype.moveToFront = function() {
 		this.parentNode.appendChild(this);
 	});
 };
+
+// 不让网页文字选中
+document.onselectstart = function() {
+	return false;
+}
 
 $(document).ready(function() {
 
@@ -307,6 +316,16 @@ function registerAllEvent()
 		menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
 		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
 	}
+
+	// ---------------------------------------
+	//  Health View
+	// ---------------------------------------
+	jQuery.subscribe(HEALTH_NODE_MOUSE_OVER, function(e, d) {
+		viewHealth.onMouseOver(d.name);
+	});
+	jQuery.subscribe(HEALTH_NODE_MOUSE_OUT, function() {
+		viewHealth.onMouseOut();
+	});
 
 	// ---------------------------------------
 	//  Power View
@@ -694,16 +713,19 @@ function onMainMenuClick(e)
 		// CLEAR GRAPH
 		network.closeIncomingMessage();
 		network.clearVoronoi(true);
+		network.enterHealthGraph();
 
+		// Health graph
+		if(viewHealth == null) {
+			viewHealth = new HealthView();
+			viewHealth.create("./res/data_2014/2014_all.csv", network.devices);
+		}
 		// Device health
 		hideHealthCalendar();
-		// show menu
+		viewHealth.show();
 		menuHealth.showMe();
 		// Set 3d scene
 		setScenePerspective(4);
-
-		var cfile = "./res/data_2014/2014_all.csv"
-		network.createHealthGraph(cfile);
 
 	} else if(e.type == MAINMENU_POWER) {
 
@@ -777,7 +799,7 @@ function onMainMenuChange(e)
 			// Device health
 			hideHealthCalendar();
 			menuHealth.hideMe();
-			network.clearHealthGraph();
+			viewHealth.hide();
 			network.restoreNodes();
 
 			break;
