@@ -39,12 +39,16 @@ function ScatterPlotTimeGraph(cont_name)
 		.attr("transform", "translate(0, 0)")
 		.call(xAxis)
 		.selectAll("text")
-		.attr("y", 6)
+		.attr("y", 3)
 		.attr("x", 6)
 		.attr("dy", "1.71em")
-		.style("font-size", 6)
+		.text(function(d) {
+			var time = d + ":00";
+			return time;
+		})
+		.style("font-size", 10)
 		.style("fill", "white")
-		.style("text-anchor", "end");
+		.style("text-anchor", "left");
 
 	// hide
 	$('#' + this._cont).css("visibility", "hidden");

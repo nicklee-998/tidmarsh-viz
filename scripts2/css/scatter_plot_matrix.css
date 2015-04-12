@@ -1,7 +1,7 @@
 #scatterplot_cont {
 	position: absolute;
 	left: 30px;
-	bottom: 20px;
+	bottom: 0px;
 	font-size: 8px;
 }
 
@@ -43,7 +43,7 @@ circle {
 
 #scatterplotmenu_year {
 	position: absolute;
-	top: 150px;
+	top: 130px;
 	left: 150px;
 	color: rgba(220, 220, 220, 0.85);
 	font-size: 35px;
@@ -52,7 +52,7 @@ circle {
 
 .scattermenu_btn {
 	position: absolute;
-	top: 155px;
+	top: 125px;
 	width: 20px;
 	height: 20px;
 	cursor: pointer;
@@ -77,7 +77,7 @@ circle {
 
 .scattermenu_date {
 	position: absolute;
-	top: 150px;
+	top: 120px;
 	color: rgba(255, 255, 255, 0.95);
 	font-size: 35px;
 	cursor: pointer;
@@ -98,8 +98,8 @@ circle {
 /*time line*/
 #scatterplot_time {
 	position: absolute;
-	top: 220px;
-	left: 80px;
+	top: 140px;
+	left: 610px;
 }
 
 #scatterplottime_panel {

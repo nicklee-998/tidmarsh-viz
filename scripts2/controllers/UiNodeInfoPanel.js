@@ -131,7 +131,9 @@ function initInfoPanel()
 	infoSignPlane.name = "info_sign_plane";
 	infoSignPlane.visible = false;
 	infoSignPlane.rotation.x = Math.PI / 2;
-	ground.add(infoSignPlane);
+
+	// Fixme: Should not do something like this...
+	network._nodeContainer.add(infoSignPlane);
 
 	// Device title
 	infoSignTitle = document.createElement( "canvas" );

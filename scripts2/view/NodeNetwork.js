@@ -78,31 +78,31 @@ function NodeNetwork()
 
 				$("#health_tooltip").css("visibility", "hidden");
 
-				//if(self._healthSelectedNode == self._intersected) {
-				//	self._healthSelectedNode.material.emissive.setHex(self._healthSelectedNode.currentHex);
-				//	self._healthSelectedNode = null;
-				//	//self.onHealthMouseOut();
-				//
-				//	// ------------------------
-				//	// Send click event
-				//	// ------------------------
-				//	jQuery.publish(NETWORK_HEALTH_NODE_DESELECTED, self._intersected.name);
-				//
-				//} else {
-				//	if(self._healthSelectedNode != null) {
-				//		self._healthSelectedNode.material.emissive.setHex(self._healthSelectedNode.currentHex);
-				//	}
-				//	self._healthSelectedNode = self._intersected;
-				//	self._healthSelectedNode.material.emissive.setHex(0xff0000);
-				//
-				//	// ------------------------
-				//	// Send click event
-				//	// ------------------------
-				//	jQuery.publish(NETWORK_HEALTH_NODE_SELECTED, self._intersected.name);
-				//}
+				if(self._healthSelectedNode == self._intersected) {
+					self._healthSelectedNode.material.emissive.setHex(self._healthSelectedNode.currentHex);
+					self._healthSelectedNode = null;
+
+					// ------------------------
+					// Send click event
+					// ------------------------
+					jQuery.publish(NETWORK_HEALTH_NODE_DESELECTED, self._intersected.name);
+
+				} else {
+					if(self._healthSelectedNode != null) {
+						self._healthSelectedNode.material.emissive.setHex(self._healthSelectedNode.currentHex);
+					}
+					self._healthSelectedNode = self._intersected;
+					self._healthSelectedNode.material.emissive.setHex(0xff0000);
+
+					// ------------------------
+					// Send click event
+					// ------------------------
+					jQuery.publish(NETWORK_HEALTH_NODE_SELECTED, self._intersected.name);
+				}
 
 			} else if(self._mode == self.NETWORK_MODE_NORMAL ||
 				self._mode == self.NETWORK_MODE_SCATTER_PLOT) {
+
 				if(self._intersected) {
 					if(self._intersected.name == "info_sign_plane") {
 						jQuery.publish(NETWORK_NORMAL_SIGN_CLICK, self._intersected);
@@ -115,61 +115,79 @@ function NodeNetwork()
 		}
 	}, false );
 
-	// ------------------------------------------
-	// Google Map
-	// ------------------------------------------
-	// Todo: the area lat and lng info should be in Config file
-	var swBound = new google.maps.LatLng(41.90321131560879, -70.57343602180481);
-	var neBound = new google.maps.LatLng(41.904696544596135, -70.57117223739624);
-	this.bounds = new google.maps.LatLngBounds(swBound, neBound);
+	var self = this;
 
-	var center = this.bounds.getCenter();
+	this.boundWid = 1000;    // default value
+	this.boundHei = 1000;
 
-	var canvas = document.getElementById('map-canvas');
-	var mapOptions = {
-		// Todo: maybe we should put zoom in config file, cause it affects the wid and hei of the ground.
-		zoom: 19,
-		center: center,
-		disableDefaultUI: true,
-		mapTypeId: google.maps.MapTypeId.SATELLITE
-	};
-	this.map = new google.maps.Map(canvas, mapOptions);
+	if(DEBUG_MODE) {
 
-	this.overlay = new google.maps.OverlayView();
-	this.overlay.setMap(this.map);
-	this.pntSW;
-	this.pntNE;
-	this.boundWid;
-	this.boundHei;
-
-	this.overlay.onAdd = function() {
-
-		var project = self.overlay.getProjection();
-		self.pntSW = project.fromLatLngToContainerPixel(self.bounds.getSouthWest());
-		self.pntNE = project.fromLatLngToContainerPixel(self.bounds.getNorthEast());
-
-		self.boundWid = self.pntNE.x - self.pntSW.x;
-		self.boundHei = self.pntSW.y - self.pntNE.y;
-
-		console.log("Area width and height: " + self.boundWid + ", " + self.boundHei);
-
-		// Init Poisson disc Params
-		// TODO: radius should put in config file
-		var radius = self.boundWid / 15;
+		var radius = this.boundWid / 15;
 		self._radius2 = radius * radius;
 		self._R = 3 * self._radius2;
 		self._cellSize = radius * Math.SQRT1_2;
-		self._gridWidth = Math.ceil(self.boundWid / self._cellSize);
-		self._gridHeight = Math.ceil(self.boundHei / self._cellSize);
+		self._gridWidth = Math.ceil(this.boundWid / self._cellSize);
+		self._gridHeight = Math.ceil(this.boundHei / self._cellSize);
 		self._grid = new Array(self._gridWidth * self._gridHeight);
 
 		// ---------------------------
 		//  SEND GMAP INIT EVENT
 		// ---------------------------
-		jQuery.publish(GMAP_INIT);
-	};
+		jQuery.publish(GMAP_INIT, {gwid:this.boundWid, ghei:this.boundHei});
 
-	var self = this;
+	} else {
+		// ------------------------------------------
+		// Google Map
+		// ------------------------------------------
+		// Todo: the area lat and lng info should be in Config file
+		var swBound = new google.maps.LatLng(41.90321131560879, -70.57343602180481);
+		var neBound = new google.maps.LatLng(41.904696544596135, -70.57117223739624);
+		this.bounds = new google.maps.LatLngBounds(swBound, neBound);
+
+		var center = this.bounds.getCenter();
+
+		var canvas = document.getElementById('map-canvas');
+		var mapOptions = {
+			// Todo: maybe we should put zoom in config file, cause it affects the wid and hei of the ground.
+			zoom: 19,
+			center: center,
+			disableDefaultUI: true,
+			mapTypeId: google.maps.MapTypeId.SATELLITE
+		};
+		this.map = new google.maps.Map(canvas, mapOptions);
+
+		this.overlay = new google.maps.OverlayView();
+		this.overlay.setMap(this.map);
+		this.pntSW;
+		this.pntNE;
+
+		this.overlay.onAdd = function() {
+
+			var project = self.overlay.getProjection();
+			self.pntSW = project.fromLatLngToContainerPixel(self.bounds.getSouthWest());
+			self.pntNE = project.fromLatLngToContainerPixel(self.bounds.getNorthEast());
+
+			self.boundWid = self.pntNE.x - self.pntSW.x;
+			self.boundHei = self.pntSW.y - self.pntNE.y;
+
+			console.log("Area width and height: " + self.boundWid + ", " + self.boundHei);
+
+			// Init Poisson disc Params
+			// TODO: radius should put in config file
+			var radius = self.boundWid / 15;
+			self._radius2 = radius * radius;
+			self._R = 3 * self._radius2;
+			self._cellSize = radius * Math.SQRT1_2;
+			self._gridWidth = Math.ceil(self.boundWid / self._cellSize);
+			self._gridHeight = Math.ceil(self.boundHei / self._cellSize);
+			self._grid = new Array(self._gridWidth * self._gridHeight);
+
+			// ---------------------------
+			//  SEND GMAP INIT EVENT
+			// ---------------------------
+			jQuery.publish(GMAP_INIT, {gwid:this.boundWid, ghei:this.boundHei});
+		};
+	}
 }
 
 // -------------------------------------------------------
@@ -185,7 +203,12 @@ NodeNetwork.prototype.createDevice = function(dInfo)
 	// 创建设备
 	var node = new SensorNode(dInfo.title);
 	var box = node._mesh;
-	var pnt = this.latLngToCube(dInfo.lat, dInfo.lng);
+	var pnt;
+	if(DEBUG_MODE) {
+		pnt = {x:Math.random(), y:Math.random()};
+	} else {
+		pnt = this.latLngToCube(dInfo.lat, dInfo.lng);
+	}
 	box.position.x = pnt.x * groundWid - groundWid / 2;
 	box.position.y = -(pnt.y * groundHei - groundHei / 2);
 	box.position.z = 8;
@@ -783,6 +806,7 @@ NodeNetwork.prototype.render = function(mx, my)
 					}
 				}
 
+
 				if(sign != null) {
 					if(this._intersected != sign) {
 						if(this._intersected) {
@@ -807,7 +831,7 @@ NodeNetwork.prototype.render = function(mx, my)
 						// ------------------------
 						// Send Health Event
 						// ------------------------
-						jQuery.publish(HEALTH_NODE_MOUSE_OUT);
+						jQuery.publish(HEALTH_NODE_MOUSE_OUT, {name:this._intersected.name});
 					}
 				}
 				this._intersected = null;
@@ -825,7 +849,7 @@ NodeNetwork.prototype.render = function(mx, my)
 					// ------------------------
 					// Send Health Event
 					// ------------------------
-					jQuery.publish(HEALTH_NODE_MOUSE_OUT);
+					jQuery.publish(HEALTH_NODE_MOUSE_OUT, {name:this._intersected.name});
 				}
 			}
 			this._intersected = null;

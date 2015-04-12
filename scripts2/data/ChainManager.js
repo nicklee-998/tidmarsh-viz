@@ -39,63 +39,59 @@ function ChainManager(url)
 
 //----------------------------------------------
 // PUBLIC METHOD:
-// 	Get all new sensor data
-//----------------------------------------------
-ChainManager.prototype.getLastestData = function(did)
-{
-	var self = this;
-	var url = "http://chain-api.media.mit.edu/sites/7/summary";
-
-	$.getJSON(url, function(dat) {
-		var devs = dat.devices;
-		var sens = null;
-		for(var i = 0; i < devs.length; i++) {
-			if(devs[i].name == did) {
-				sens = devs[i].sensors;
-
-				// ------------------------
-				// Send device init event
-				// ------------------------
-				jQuery.publish(SERVER_LASTEST_DATA, {arr:sens});
-
-				break;
-			}
-		}
-	});
-}
-
-//----------------------------------------------
-// PUBLIC METHOD:
 // 	Get all devices info
 //----------------------------------------------
 ChainManager.prototype.init = function()
 {
 	var self = this;
 
-	$.getJSON(this.websiteUrl, function(dat) {
-		// ------------------------------
-		//  Send device summary event
-		// ------------------------------
-		jQuery.publish(SERVER_SUMMARY_COMPLETE, {totalCount:dat.totalCount});
+	if(DEBUG_MODE) {
+		$.ajax({
+			url : "./res/fortest/devices_info.txt",
+			success : function (data) {
+				self.devices = JSON.parse(data);
 
-		// TODO: That's use a little trick way to get all sensors from on request, maybe change the way in future...
-		var url = self.websiteUrl + '&limit=' + dat.totalCount + '&offset=0';
-		$.getJSON(url, function(dat2) {
-			self.devices = dat2._links.items;
+				for(var i = 0; i < self.devices.length; i++) {
+					var device = self.devices[i];
+					// ------------------------
+					// Send device init event
+					// ------------------------
+					jQuery.publish(SERVER_DEVICE_INFO_COMPLETE, device);
+				}
 
-			// load all device info
-			self._loadIdx = 0;
-			self._getAllDeviceInfo();
-
-			//console.log(self.devices);
+				// init complete
+				jQuery.publish(SERVER_INIT_COMPLETE);
+			}
 		});
-	});
+
+	} else {
+		$.getJSON(this.websiteUrl, function(dat) {
+			// ------------------------------
+			//  Send device summary event
+			// ------------------------------
+			jQuery.publish(SERVER_SUMMARY_COMPLETE, {totalCount:dat.totalCount});
+
+			// TODO: That's use a little trick way to get all sensors from on request, maybe change the way in future...
+			var url = self.websiteUrl + '&limit=' + dat.totalCount + '&offset=0';
+			$.getJSON(url, function(dat2) {
+				self.devices = dat2._links.items;
+
+				// load all device info
+				self._loadIdx = 0;
+				self._getAllDeviceInfo();
+
+				//console.log(self.devices);
+			});
+		});
+	}
 }
 
 ChainManager.prototype._getAllDeviceInfo = function()
 {
 	if(this._loadIdx == this.devices.length) {
-		// init complete
+		// ------------------------
+		// Send init complete
+		// ------------------------
 		jQuery.publish(SERVER_INIT_COMPLETE);
 
 		return;

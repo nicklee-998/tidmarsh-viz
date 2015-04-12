@@ -12,8 +12,20 @@ function HealthView()
 	this._healthTimeline = null;
 	this._isHealthAnalysis = false;
 
+	this._selectedDevice = null;    // selected device id
+
 	//
 	this._healthTable = {};
+
+	this._mouseX;
+	this._mouseY;
+
+	document.addEventListener( 'mousemove', function(event) {
+		self._mouseX = event.clientX;
+		self._mouseY = event.clientY;
+	}, false );
+
+	var self = this;
 }
 
 HealthView.prototype.create = function(csvfile, devices)
@@ -234,36 +246,81 @@ HealthView.prototype.create = function(csvfile, devices)
 
 HealthView.prototype.show = function()
 {
-	ground.add(this._hCont);
+	if(this._hCont) ground.add(this._hCont);
+	if(this._healthTimeline) ground.add(this._healthTimeline);
 }
 
 HealthView.prototype.hide = function()
 {
 	// clear timeline
 	ground.remove(this._hCont);
+	ground.remove(this._healthTimeline);
+}
 
-	//for(var i = 0; i < this.devices.length; i++) {
-	//	if(this.devices[i].type != "blank") {
-	//		for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-	//			var box = this.devices[i].healthBoxes[j];
-	//			if(box != null) {
-	//
-	//				ground.remove(box);
-	//				box.geometry.dispose();
-	//				box.material.dispose();
-	//
-	//				//console.log(box);
-	//				//box.userData = null;
-	//				//TweenMax.to(box.material, 0.6, {opacity:0, ease:Expo.easeOut, onComplete:function() {
-	//				//	ground.remove(box);
-	//				//	box.geometry.dispose();
-	//				//	box.material.dispose();
-	//				//}});
-	//			}
-	//		}
-	//		this.devices[i].healthBoxes = new Array();
-	//	}
-	//}
+HealthView.prototype.select = function(did)
+{
+	this._selectedDevice = did;
+
+	for (var key in this._healthTable) {
+		if (this._healthTable.hasOwnProperty(key)) {
+			if(key == did) {
+				$("#health_tooltip").css("visibility", "visible");
+				$("#health_tooltip").text(did);
+				$("#health_tooltip").css("left", this._mouseX + 13);
+				$("#health_tooltip").css("top", this._mouseY - 10);
+
+				// make
+				//this._healthTable[key].material.uniforms.time.value = 1;
+				TweenMax.to(this._healthTable[key].material.uniforms.time, 0.5, {value:1, ease:Expo.easeOut});
+
+			} else {
+				//
+				//this._healthTable[key].material.uniforms.time.value = 0.01;
+				TweenMax.to(this._healthTable[key].material.uniforms.time, 0.5, {value:0.01, ease:Expo.easeOut});
+			}
+		}
+	}
+}
+
+HealthView.prototype.onMouseOver = function(did)
+{
+	if(this._selectedDevice) {
+		return;
+	}
+
+	for (var key in this._healthTable) {
+		if (this._healthTable.hasOwnProperty(key)) {
+			if(key == did) {
+				$("#health_tooltip").css("visibility", "visible");
+				$("#health_tooltip").text(did);
+				$("#health_tooltip").css("left", this._mouseX + 13);
+				$("#health_tooltip").css("top", this._mouseY - 10);
+
+				// make
+				//this._healthTable[key].material.uniforms.time.value = 1;
+				TweenMax.to(this._healthTable[key].material.uniforms.time, 0.5, {value:1, ease:Expo.easeOut});
+
+			} else {
+				//
+				//this._healthTable[key].material.uniforms.time.value = 0.01;
+				TweenMax.to(this._healthTable[key].material.uniforms.time, 0.5, {value:0.01, ease:Expo.easeOut});
+			}
+		}
+	}
+}
+
+HealthView.prototype.onMouseOut = function(did)
+{
+	$("#health_tooltip").css("visibility", "hidden");
+
+	if(this._selectedDevice == null) {
+		for (var key in this._healthTable) {
+			if (this._healthTable.hasOwnProperty(key)) {
+				//this._healthTable[key].material.uniforms.time.value = 1;
+				TweenMax.to(this._healthTable[key].material.uniforms.time, 0.5, {value:1, ease:Expo.easeOut});
+			}
+		}
+	}
 }
 
 HealthView.prototype.arrange = function(mode)
@@ -313,99 +370,6 @@ HealthView.prototype.arrange = function(mode)
 				}
 
 				deviceIdx++;
-			}
-		}
-	}
-}
-
-HealthView.prototype.onMouseOver = function(did)
-{
-	for (var key in this._healthTable) {
-		if (this._healthTable.hasOwnProperty(key)) {
-			if(key == did) {
-				$("#health_tooltip").css("visibility", "visible");
-				$("#health_tooltip").text(did);
-				$("#health_tooltip").css("left", this._mouseX + 13);
-				$("#health_tooltip").css("top", this._mouseY - 10);
-
-				// make
-
-			} else {
-				//
-			}
-		}
-	}
-
-	return;
-
-	//for(var i = 0; i < this._healthTable.length; i++) {
-	//	if(this.devices[i].type != "blank") {
-	//
-	//		if(this.devices[i].id == did) {
-	//
-	//
-	//			for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-	//				var box = this.devices[i].healthBoxes[j];
-	//				if(box != null) {
-	//					TweenMax.to(box.material, 0.5, {opacity:1, ease:Expo.easeOut});
-	//				}
-	//			}
-	//
-	//		} else {
-	//			for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-	//				var box = this.devices[i].healthBoxes[j];
-	//				if(box != null) {
-	//					TweenMax.to(box.material, 0.5, {opacity:0.01, ease:Expo.easeOut});
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-}
-
-HealthView.prototype.onMouseOut = function()
-{
-	return;
-
-	$("#health_tooltip").css("visibility", "hidden");
-
-	//for(var j = 0; j < this._healthDateLayers.length; j++) {
-	//	var layer = this._healthDateLayers[j];
-	//	layer.material.opacity = 0;
-	//}
-
-	if(this._healthSelectedNode != null) {
-
-		for(var i = 0; i < this.devices.length; i++) {
-			if(this.devices[i].type != "blank") {
-				if(this.devices[i].id == this._healthSelectedNode.name) {
-					for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-						var box = this.devices[i].healthBoxes[j];
-						if(box != null) {
-							TweenMax.to(box.material, 0.5, {opacity:1, ease:Expo.easeOut});
-						}
-					}
-				} else {
-					for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-						var box = this.devices[i].healthBoxes[j];
-						if(box != null) {
-							TweenMax.to(box.material, 0.5, {opacity:0.01, ease:Expo.easeOut});
-						}
-					}
-				}
-			}
-		}
-
-	} else {
-
-		for(var i = 0; i < this.devices.length; i++) {
-			if(this.devices[i].type != "blank") {
-				for(var j = 0; j < this.devices[i].healthBoxes.length; j++) {
-					var box = this.devices[i].healthBoxes[j];
-					if(box != null) {
-						TweenMax.to(box.material, 0.5, {opacity:1, ease:Expo.easeOut});
-					}
-				}
 			}
 		}
 	}

@@ -3,6 +3,7 @@
  */
 
 const CHAIN_API_URL = "http://chain-api.media.mit.edu/devices/?site_id=7";
+const DEBUG_MODE = true;
 
 var container, scene, renderer, camera, controls, sw, sh;
 var ground, groundWid, groundHei, groundZero;
@@ -149,9 +150,6 @@ $(document).ready(function() {
 	registerAllEvent();
 
 	// enter health mode
-	jQuery.subscribe(NETWORK_HEALTH_NODE_SELECTED, onNetworkNodeSelected);
-	jQuery.subscribe(NETWORK_HEALTH_NODE_DESELECTED, onNetworkNodeDeselected);
-
 	jQuery.subscribe(NETWORK_VORONOI_MOUSE_OVER, onNetworkVoronoiOver);
 	jQuery.subscribe(NETWORK_VORONOI_MOUSE_OUT, onNetworkVoronoiOut);
 	jQuery.subscribe(LINE_CHART_DRAG, onLineChartDrag);
@@ -166,8 +164,12 @@ function registerAllEvent()
 	// ---------------------------------------
 	//  Finished google map init things.
 	// ---------------------------------------
-	jQuery.subscribe(GMAP_INIT, function(e) {
+	jQuery.subscribe(GMAP_INIT, function(e, d) {
 		jQuery.unsubscribe(GMAP_INIT, e.handleObj.handler);
+
+		// get gound wid/hei
+		groundWid = d.gwid;
+		groundHei = d.ghei;
 
 		// INIT 3D
 		init3d();
@@ -212,6 +214,8 @@ function registerAllEvent()
 
 		network.createFakeDevices();
 		network.createVoronoi();
+
+		initInfoPanel();
 
 		// stop update opening loader
 		clearInterval(_counterInterval);
@@ -323,8 +327,18 @@ function registerAllEvent()
 	jQuery.subscribe(HEALTH_NODE_MOUSE_OVER, function(e, d) {
 		viewHealth.onMouseOver(d.name);
 	});
-	jQuery.subscribe(HEALTH_NODE_MOUSE_OUT, function() {
-		viewHealth.onMouseOut();
+	jQuery.subscribe(HEALTH_NODE_MOUSE_OUT, function(e, d) {
+		viewHealth.onMouseOut(d.name);
+	});
+
+	jQuery.subscribe(NETWORK_HEALTH_NODE_SELECTED, function(e, d) {
+		viewHealth.select(d);
+		calendar_node = "./res/data_2014/" + d + "_2014.csv";
+		setHealthCalendar(calendar_node);
+	});
+	jQuery.subscribe(NETWORK_HEALTH_NODE_DESELECTED, function() {
+		viewHealth.select(null);
+		hideHealthCalendar();
 	});
 
 	// ---------------------------------------
@@ -484,7 +498,6 @@ function init3d()
 function createWorld()
 {
 	createBaseGround();
-	initInfoPanel();
 	//createSensorNode();
 
 	// FOR TEST
@@ -499,9 +512,6 @@ function createWorld()
 
 function createBaseGround()
 {
-	groundWid = network.boundWid;
-	groundHei = network.boundHei;
-
 	var texture = THREE.ImageUtils.loadTexture("./res/textures/map_area.jpg");
 	texture.wrapS = THREE.ClampToEdgeWrapping;
 	texture.wrapT = THREE.ClampToEdgeWrapping;
@@ -920,20 +930,6 @@ function onNetworkVoronoiOut(e, d)
 {
 	console.log("mouse out: " + d);
 	lineChart.highlight(null);
-}
-
-/////////////////////////////////////////////
-// Health Menu
-/////////////////////////////////////////////
-function onNetworkNodeSelected(e, d)
-{
-	calendar_node = "./res/data_2014/" + d + "_2014.csv";
-	setHealthCalendar(calendar_node);
-}
-
-function onNetworkNodeDeselected(e, d)
-{
-	hideHealthCalendar();
 }
 
 /////////////////////////////////////////////
