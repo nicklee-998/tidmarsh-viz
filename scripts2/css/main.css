@@ -370,6 +370,7 @@ html, body {
 	background-color: #FFFFFF;
 	border: solid 5px;
 	border-color: #FFFFFF;
+	visibility: hidden;
 }
 
 .info-label {

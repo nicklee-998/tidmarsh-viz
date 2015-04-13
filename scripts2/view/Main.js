@@ -749,6 +749,7 @@ function onMainMenuClick(e)
 		// CLEAR GRAPH
 		network.closeIncomingMessage();
 		network.clearVoronoi(true);
+		network.enterPowerGraph();
 
 		if(!powerview) {
 			powerview = new PowerView(scene, scene2, scene3, camera, "voltage_tooltip");
@@ -807,7 +808,6 @@ function onMainMenuChange(e)
 			break;
 		case MAINMENU_HEALTH_LEAVE:
 			// Device health
-			console.log("health leave");
 			hideHealthCalendar();
 			menuHealth.hideMe();
 			viewHealth.hide();
@@ -817,6 +817,7 @@ function onMainMenuChange(e)
 		case MAINMENU_POWER_LEAVE:
 			powerview.hide();
 			menuPower.hide();
+			network.restoreNodes();
 
 			break;
 		default :

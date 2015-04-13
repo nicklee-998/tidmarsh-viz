@@ -17,6 +17,7 @@ function NodeNetwork()
 	this.NETWORK_MODE_VORONOI_REALTIME = "network_mode_voronoi_realtime";
 	this.NETWORK_MODE_VORONOI_HISTORY = "network_mode_voronoi_history";
 	this.NETWORK_MODE_HEALTH = "network_mode_health";
+	this.NETWORK_MODE_POWER = "network_mode_power";
 	this.NETWORK_MODE_SCATTER_PLOT = "network_mode_scatter_plot";
 
 	// Mouse Interaction
@@ -391,6 +392,22 @@ NodeNetwork.prototype.enterHealthGraph = function()
 	}
 
 	this._mode = this.NETWORK_MODE_HEALTH;
+}
+
+// -------------------------------------------------------
+//  Power Graph
+// -------------------------------------------------------
+NodeNetwork.prototype.enterPowerGraph = function()
+{
+	// Make all nodes offline
+	for(var i = 0; i < this.devices.length; i++) {
+		var device = this.devices[i];
+		if(device.type != "blank") {
+			device.node.online(false);
+		}
+	}
+
+	this._mode = this.NETWORK_MODE_POWER;
 }
 
 // -------------------------------------------------------
