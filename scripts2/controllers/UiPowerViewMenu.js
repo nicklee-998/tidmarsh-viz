@@ -54,10 +54,10 @@ function UiPowerViewMenu(cname)
 	$("#powermenu_container").append("<div id='pmenu_rain' class='powermenu_weather'>RAIN</div>");
 	$("#powermenu_container").append("<div id='pmenu_snow' class='powermenu_weather'>SNOW</div>");
 	$("#powermenu_container").append("<div id='pmenu_visibility' class='powermenu_weather'>VISIBILITY</div>");
-	$("#powermenu_container").append("<div id='pmenu_temprature' class='powermenu_weather'>TEMPRATURE</div>");
+	$("#powermenu_container").append("<div id='pmenu_temperature' class='powermenu_weather'>TEMPERATURE</div>");
 	var weatherButtons = [$("#pmenu_sunrise_sunset"), $("#pmenu_clear"),
 		$("#pmenu_cloud"), $("#pmenu_rain"),
-		$("#pmenu_snow"), $("#pmenu_visibility"), $("#pmenu_temprature")];
+		$("#pmenu_snow"), $("#pmenu_visibility"), $("#pmenu_temperature")];
 
 	for(var i = 0; i < weatherButtons.length; i++) {
 		var menu = weatherButtons[i];
@@ -176,7 +176,7 @@ function UiPowerViewMenu(cname)
 							menu.removeClass("powermenu_weather_selected");
 						}
 						break;
-					case "pmenu_temprature":
+					case "pmenu_temperature":
 						menu_state.weather.temprature = !menu_state.weather.temprature;
 						if(menu_state.weather.temprature == 1) {
 							menu.toggleClass("powermenu_weather_selected");

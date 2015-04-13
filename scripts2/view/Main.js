@@ -3,7 +3,7 @@
  */
 
 const CHAIN_API_URL = "http://chain-api.media.mit.edu/devices/?site_id=7";
-const DEBUG_MODE = true;
+const DEBUG_MODE = false;
 
 var container, scene, renderer, camera, controls, sw, sh;
 var ground, groundWid, groundHei, groundZero;

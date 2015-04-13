@@ -142,9 +142,9 @@ function NodeNetwork()
 		// Todo: the area lat and lng info should be in Config file
 		var swBound = new google.maps.LatLng(41.90321131560879, -70.57343602180481);
 		var neBound = new google.maps.LatLng(41.904696544596135, -70.57117223739624);
-		this.bounds = new google.maps.LatLngBounds(swBound, neBound);
+		var bounds = new google.maps.LatLngBounds(swBound, neBound);
 
-		var center = this.bounds.getCenter();
+		var center = bounds.getCenter();
 
 		var canvas = document.getElementById('map-canvas');
 		var mapOptions = {
@@ -164,8 +164,8 @@ function NodeNetwork()
 		this.overlay.onAdd = function() {
 
 			var project = self.overlay.getProjection();
-			self.pntSW = project.fromLatLngToContainerPixel(self.bounds.getSouthWest());
-			self.pntNE = project.fromLatLngToContainerPixel(self.bounds.getNorthEast());
+			self.pntSW = project.fromLatLngToContainerPixel(bounds.getSouthWest());
+			self.pntNE = project.fromLatLngToContainerPixel(bounds.getNorthEast());
 
 			self.boundWid = self.pntNE.x - self.pntSW.x;
 			self.boundHei = self.pntSW.y - self.pntNE.y;
@@ -185,7 +185,7 @@ function NodeNetwork()
 			// ---------------------------
 			//  SEND GMAP INIT EVENT
 			// ---------------------------
-			jQuery.publish(GMAP_INIT, {gwid:this.boundWid, ghei:this.boundHei});
+			jQuery.publish(GMAP_INIT, {gwid:self.boundWid, ghei:self.boundHei});
 		};
 	}
 }
