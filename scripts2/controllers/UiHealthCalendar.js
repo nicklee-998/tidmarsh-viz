@@ -509,6 +509,11 @@ function setHealthCalendar(csvfile)
 
 	d3.csv(csvfile, function(csv) {
 
+		// maybe some node don't have the calendar information.
+		if(csv == null) {
+			return;
+		}
+
 		calendarCsv = csv;
 
 		var idx = 0;

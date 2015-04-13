@@ -94,8 +94,8 @@ function UiMainMenu()
 
 						self.hideDeviceButtons();
 						self.showSubButtons();
-						self.arrangeSensorButtons();
-						self.arrangeRHButtons();
+						self.arrangeSensorButtons(false);
+						self.arrangeRHButtons(false);
 
 						jQuery.publish(MAINMENU_DATA);
 						break;
@@ -106,7 +106,7 @@ function UiMainMenu()
 						self.hideSensorButtons();
 						self.hideRHButtons();
 						self.showDeviceSubButtons();
-						self.arrangeDeviceButtons();
+						self.arrangeDeviceButtons(false);
 
 						jQuery.publish(MAINMENU_HEALTH);
 						break;
@@ -159,14 +159,14 @@ function UiMainMenu()
 			}
 		}
 
-		self.arrangeDeviceButtons();
+		self.arrangeDeviceButtons(true);
 	}
 
 	//$("#mainmenu_sbtn_power").css("visibility", "hidden");
 	this.dButtons = [$("#mainmenu_sbtn_health"), $("#mainmenu_sbtn_power")];
 	//this.dButtons = [$("#mainmenu_sbtn_health")];
 	this.btnColors2 = ["#027b08", "#9a0101"];
-	this.arrangeDeviceButtons();
+	this.arrangeDeviceButtons(false);
 
 	for(var i = 0; i < this.dButtons.length; i++) {
 		this.dButtons[i].css("visibility", "hidden");
@@ -216,7 +216,7 @@ function UiMainMenu()
 			self.currSelectSensorIdx = 4;
 			jQuery.publish(MAINMENU_DATA);
 		}
-		self.arrangeSensorButtons();
+		self.arrangeSensorButtons(true);
 	}
 
 	// third level buttons
@@ -245,7 +245,7 @@ function UiMainMenu()
 			// ------------------------------
 			jQuery.publish(MAINMENU_DATA);
 		}
-		self.arrangeRHButtons();
+		self.arrangeRHButtons(true);
 	}
 
 	this.mButtons = [$("#mainmenu_btn_begin"), $("#mainmenu_btn_network"), $("#mainmenu_btn_data"), $("#mainmenu_btn_device")];
@@ -260,8 +260,8 @@ function UiMainMenu()
 	var self = this;
 
 	this.rearrange();
-	this.arrangeSensorButtons();
-	this.arrangeRHButtons();
+	this.arrangeSensorButtons(false);
+	this.arrangeRHButtons(false);
 
 	for(var i = 0; i < this.sButtons.length; i++) {
 		this.sButtons[i].css("visibility", "hidden");
@@ -289,6 +289,7 @@ UiMainMenu.prototype.rearrange = function()
 	var middle = window.innerWidth / 2;
 	var widBtn = 105;
 	var gap = 90;
+
 	$("#mainmenu_btn_begin").css("left", (middle - widBtn * 2 - gap * 1.5));
 	$("#mainmenu_btn_network").css("left", (middle - widBtn - gap / 2));
 	$("#mainmenu_btn_data").css("left", middle + gap / 2);
@@ -297,9 +298,9 @@ UiMainMenu.prototype.rearrange = function()
 	// selector
 	$("#mainmenu_selector").css("left", this.mButtons[this.currSelectIdx-1].css("left"));
 
-	this.arrangeSensorButtons();
-	this.arrangeRHButtons();
-	this.arrangeDeviceButtons();
+	this.arrangeSensorButtons(false);
+	this.arrangeRHButtons(false);
+	this.arrangeDeviceButtons(false);
 
 	if(this.currSelectIdx == 1 || this.currSelectIdx == 2) {
 		for(var i = 0; i < this.sButtons.length; i++) {
@@ -352,7 +353,7 @@ UiMainMenu.prototype.showDeviceSubButtons = function()
 	}
 }
 
-UiMainMenu.prototype.arrangeSensorButtons = function()
+UiMainMenu.prototype.arrangeSensorButtons = function(animate)
 {
 	var widBtn = 105;
 	var gap = 3;
@@ -360,11 +361,15 @@ UiMainMenu.prototype.arrangeSensorButtons = function()
 
 	// sensor buttons
 	for(var i = 0; i < this.sButtons.length; i++) {
-		this.sButtons[i].css("visibility", "visible");
-		//this.sButtons[i].css("left", toleft + (widBtn + gap) * i);
-		this.sButtons[i].animate({
-			left: toleft + (widBtn + gap) * i
-		}, 200);
+		//this.sButtons[i].css("visibility", "visible");
+
+		if(animate) {
+			this.sButtons[i].animate({
+				left: toleft + (widBtn + gap) * i
+			}, 200);
+		} else {
+			this.sButtons[i].css("left", toleft + (widBtn + gap) * i);
+		}
 
 		// color
 		if(this.currSelectSensorIdx == i) {
@@ -379,16 +384,17 @@ UiMainMenu.prototype.arrangeSensorButtons = function()
 UiMainMenu.prototype.hideSensorButtons = function()
 {
 	for(var i = 0; i < this.sButtons.length; i++) {
-		//this.sButtons[i].css("visibility", "hidden");
-		this.sButtons[i].delay(300).animate({
-			opacity: 0
-		}, 200, function() {
-			$(this).css("visibility", "hidden");
-		});
+		this.sButtons[i].css("visibility", "hidden");
+
+		//this.sButtons[i].delay(300).animate({
+		//	opacity: 0
+		//}, 200, function() {
+		//	$(this).css("visibility", "hidden");
+		//});
 	}
 }
 
-UiMainMenu.prototype.arrangeDeviceButtons = function()
+UiMainMenu.prototype.arrangeDeviceButtons = function(animate)
 {
 	var widBtn = 105;
 	var gap = 3;
@@ -396,11 +402,15 @@ UiMainMenu.prototype.arrangeDeviceButtons = function()
 
 	// device buttons
 	for(var i = 0; i < this.dButtons.length; i++) {
-		this.dButtons[i].css("visibility", "visible");
+		//this.dButtons[i].css("visibility", "visible");
 
-		this.dButtons[i].animate({
-			left: toleft + (widBtn + gap) * i
-		}, 200);
+		if(animate) {
+			this.dButtons[i].animate({
+				left: toleft + (widBtn + gap) * i
+			}, 200);
+		} else {
+			this.dButtons[i].css("left", toleft + (widBtn + gap) * i);
+		}
 
 		// color
 		if(this.currSelectDeviceMenuIdx == i) {
@@ -414,16 +424,16 @@ UiMainMenu.prototype.arrangeDeviceButtons = function()
 UiMainMenu.prototype.hideDeviceButtons = function()
 {
 	for(var i = 0; i < this.dButtons.length; i++) {
-		//this.sButtons[i].css("visibility", "hidden");
-		this.dButtons[i].delay(300).animate({
-			opacity: 0
-		}, 200, function() {
-			$(this).css("visibility", "hidden");
-		});
+		this.dButtons[i].css("visibility", "hidden");
+		//this.dButtons[i].delay(300).animate({
+		//	opacity: 0
+		//}, 200, function() {
+		//	$(this).css("visibility", "hidden");
+		//});
 	}
 }
 
-UiMainMenu.prototype.arrangeRHButtons = function()
+UiMainMenu.prototype.arrangeRHButtons = function(animate)
 {
 	var widBtn = 105;
 	var gap = 3;
@@ -431,11 +441,15 @@ UiMainMenu.prototype.arrangeRHButtons = function()
 
 	// sensor buttons
 	for(var i = 0; i < this.rButtons.length; i++) {
-		this.rButtons[i].css("visibility", "visible");
-		//this.rButtons[i].css("left", toleft + (widBtn + gap) * i);
-		this.rButtons[i].animate({
-			left: toleft + (widBtn + gap) * i
-		}, 200);
+		//this.rButtons[i].css("visibility", "visible");
+
+		if(animate) {
+			this.rButtons[i].animate({
+				left: toleft + (widBtn + gap) * i
+			}, 200);
+		} else {
+			this.rButtons[i].css("left", toleft + (widBtn + gap) * i);
+		}
 
 		// color
 		if(this.currSelectRH == i) {
@@ -449,11 +463,11 @@ UiMainMenu.prototype.arrangeRHButtons = function()
 UiMainMenu.prototype.hideRHButtons = function()
 {
 	for(var i = 0; i < this.rButtons.length; i++) {
-		//this.rButtons[i].css("visibility", "hidden");
-		this.rButtons[i].delay(100).animate({
-			opacity: 0
-		}, 200, function() {
-			$(this).css("visibility", "hidden");
-		});
+		this.rButtons[i].css("visibility", "hidden");
+		//this.rButtons[i].delay(100).animate({
+		//	opacity: 0
+		//}, 200, function() {
+		//	$(this).css("visibility", "hidden");
+		//});
 	}
 }

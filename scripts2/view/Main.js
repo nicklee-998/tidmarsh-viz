@@ -807,6 +807,7 @@ function onMainMenuChange(e)
 			break;
 		case MAINMENU_HEALTH_LEAVE:
 			// Device health
+			console.log("health leave");
 			hideHealthCalendar();
 			menuHealth.hideMe();
 			viewHealth.hide();

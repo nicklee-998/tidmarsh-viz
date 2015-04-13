@@ -255,6 +255,12 @@ HealthView.prototype.hide = function()
 	// clear timeline
 	ground.remove(this._hCont);
 	ground.remove(this._healthTimeline);
+
+	for (var key in this._healthTable) {
+		if (this._healthTable.hasOwnProperty(key)) {
+			this._healthTable[key].material.uniforms.time.value = 1;
+		}
+	}
 }
 
 HealthView.prototype.select = function(did)
