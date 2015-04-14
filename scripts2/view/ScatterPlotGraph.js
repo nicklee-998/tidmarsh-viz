@@ -11,8 +11,8 @@ function ScatterPlotGraph()
 	this.dataTrail = null;                 // 最后的数据
 
 	// scatter plot parameters
-	this._start_time = new Date(2014, 10, 15);
-	this._end_time = new Date(2014, 10, 30);
+	this._start_time = new Date(2014, 10, 23);
+	this._end_time = new Date(2014, 10, 29);
 
 	this._sensors = ["bmp_temperature", "illuminance", "bmp_pressure", "sht_humidity"];
 	this._sensorColorTable;
