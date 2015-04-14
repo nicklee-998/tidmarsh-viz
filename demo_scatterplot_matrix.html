@@ -17,6 +17,7 @@
 	</style>
 </head>
 <body>
+<div id="state"></div>
 <div id="scatterplot_cont"></div>
 <div id="scatterplot_time"></div>
 <div id="scatterplot_menu"></div>
@@ -26,6 +27,7 @@
 <script src="./libs/jquery-ui.js"></script>
 <script src="./libs/tiny-pubsub.js"></script>
 <script src="./libs/d3.js"></script>
+<script src="./libs/stats.min.js"></script>
 <script src="scripts2/view/ScatterPlotGraph.js"></script>
 <script src="scripts2/view/ScatterPlotTimeGraph.js"></script>
 <script src="scripts2/controllers/UiScatterplotMatrix.js"></script>
@@ -38,15 +40,27 @@
 	var scatterGraph, scatterTimeGraph;
 	var menu;
 
+	var stats;
+
 	$(document).ready(function() {
+
+		stats = new Stats();
+		stats.setMode(0); // 0: fps, 1: ms
+
+		// align top-left
+		stats.domElement.style.position = 'absolute';
+		stats.domElement.style.left = '0px';
+		stats.domElement.style.top = '0px';
+		document.body.appendChild( stats.domElement );
+
+		requestAnimationFrame( update );
+
 
 		menu = new UiScatterplotMatrix("scatterplot_menu");
 
 		jQuery.subscribe(SCATTER_PLOT_SELECTED, function(e, d) {
-
 			scatterTimeGraph.draw(d.tlist);
 		});
-
 		jQuery.subscribe(SCATTER_PLOT_PREV, function() {
 			putBackTime(24);
 		});
@@ -112,6 +126,20 @@
 		scatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
 	}
 
+	/////////////////////////////////////////////
+	// FOR FPS
+	/////////////////////////////////////////////
+	var update = function () {
+
+		stats.begin();
+
+		// monitored code goes here
+
+		stats.end();
+
+		requestAnimationFrame( update );
+
+	};
 
 	/////////////////////////////////////////////
 	// FOR TEST

@@ -674,6 +674,7 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value, date)
 			//device.cell.scale.z = mobj.height;
 			device.cell.visible = true;
 			device.cell.position.z = ground.position.y + 3;
+			device.cell.scale.z = 0.1;
 			TweenMax.to(device.cell.scale, 0.5, {z:mobj.height, ease:Elastic.easeOut});
 
 			// 显示数量提示符

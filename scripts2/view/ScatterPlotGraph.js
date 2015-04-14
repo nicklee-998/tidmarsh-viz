@@ -11,12 +11,14 @@ function ScatterPlotGraph()
 	this.dataTrail = null;                 // 最后的数据
 
 	// scatter plot parameters
-	this._start_time = new Date(2014, 9, 10);
-	this._end_time = new Date(2014, 9, 15);
+	this._start_time = new Date(2014, 10, 15);
+	this._end_time = new Date(2014, 10, 30);
 
 	this._sensors = ["bmp_temperature", "illuminance", "bmp_pressure", "sht_humidity"];
 	this._sensorColorTable;
+
 	this._selectedData;
+	this._selectedQuadData;
 
 	this._csvidx;
 	this._csvobj;
@@ -211,8 +213,6 @@ ScatterPlotGraph.prototype._updateDataset = function()
 		self._y[sensor] = d3.scale.linear().domain(domain).range(range2);
 		self._x[sensor] = d3.scale.linear().domain(domain).range(range);
 	});
-
-	console.log("Data selected number: " + this._selectedData.length);
 }
 
 ScatterPlotGraph.prototype._drawScatterPlot = function()
@@ -318,7 +318,6 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 	//  Send device init event
 	// ----------------------------
 	jQuery.publish(SCATTER_PLOT_SELECTED, {list:idarr, tlist:[]});
-
 
 	// Titles for the diagonal.
 	cell.filter(function(d) { return d.i == d.j; }).append("svg:text")
@@ -464,12 +463,17 @@ ScatterPlotGraph.prototype._updateSelectedArea = function()
 	var e = self._scatterplot_bursh.extent();
 	var idarr = new Array();
 	var tdarr = new Array();
+	var count = 0;
 
 	self._scatterplot_svg.selectAll("g.cell")
 		.each(function(k, i) {
 			var cell = d3.select(this);
+
 			// Plot dots.
 			cell.selectAll(".cell circle").style("fill", function(d) {
+
+				count++;
+
 				if(e[0][0] <= d[self._currentCell.x] &&
 					d[self._currentCell.x] <= e[1][0] &&
 					e[0][1] <= d[self._currentCell.y] &&
@@ -500,6 +504,7 @@ ScatterPlotGraph.prototype._updateSelectedArea = function()
 			});
 		});
 
+	console.log(count);
 	//self._scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
 	//
 	//});

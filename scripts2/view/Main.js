@@ -333,7 +333,7 @@ function registerAllEvent()
 
 	jQuery.subscribe(NETWORK_HEALTH_NODE_SELECTED, function(e, d) {
 		viewHealth.select(d);
-		calendar_node = "./res/data_2014/" + d + "_2014.csv";
+		calendar_node = "./res/data_health/" + d + "_2014.csv";
 		setHealthCalendar(calendar_node);
 	});
 	jQuery.subscribe(NETWORK_HEALTH_NODE_DESELECTED, function() {
@@ -728,7 +728,7 @@ function onMainMenuClick(e)
 		// Health graph
 		if(viewHealth == null) {
 			viewHealth = new HealthView();
-			viewHealth.create("./res/data_2014/2014_all.csv", network.devices);
+			viewHealth.create("./res/data_health/2014_all.csv", network.devices);
 		}
 		// Device health
 		hideHealthCalendar();
@@ -1233,7 +1233,7 @@ function onKeyboardDown()
 	}
 	else if(d3.event.keyCode == 73)	// I:
 	{
-		var cfile = "./res/data_2014/2014_all.csv"
+		var cfile = "./res/data_health/2014_all.csv"
 		network.createHealthGraph(cfile);
 	}
 	else if(d3.event.keyCode == 74) // J:

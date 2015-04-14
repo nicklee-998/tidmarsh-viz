@@ -36,10 +36,10 @@
 	const SITE_URL = "http://chain-api.media.mit.edu/devices/?site_id=7";
 	const _REMOVE_NULL_ = true;			// keep null or not
 	const START_DAY = new Date(2014, 0, 1);
-	const END_DAY = new Date(2015, 3, 1);		// not include this day
+	const END_DAY = new Date(2015, 0, 1);		// not include this day
 	const TIME_INTERVAL = 120;			// unit: minute
-	const START_DEVICE_IDX = 40;
-	const END_DEVICE_IDX = 999;		// If 999, then get all device
+	const START_DEVICE_IDX = 45;
+	const END_DEVICE_IDX = 46;		// If 999, then get all device
 	const SENSOR_LIST = ["sht_temperature", "bmp_temperature", "illuminance",
 		"bmp_pressure", "sht_humidity", "battery_voltage",
 		"charge_flags_charge", "charge_flags_fault"];
@@ -342,7 +342,7 @@
 		} else {
 			_oneDeviceData.push(_onePieceData);
 		}
-		//console.log(_onePieceData.bmp_pressure);
+		console.log(_onePieceData.date + ": " + _onePieceData.did + ", " + _onePieceData.bmp_temperature + ", " + _onePieceData.bmp_pressure);
 
 		// Progress Bar
 		_currPiece++;
@@ -450,7 +450,7 @@
 
 		$.getJSON(url, function(dat) {
 
-			//console.log("[" + _start + "] to [" + _end + "] Total data number is: " + dat.data.length);
+//			console.log("[" + _start + "] to [" + _end + "] Total data number is: " + dat.data.length);
 			if(dat.data.length > 0) {
 				_onePieceData.update = true;
 			}
