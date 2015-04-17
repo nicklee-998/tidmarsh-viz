@@ -454,6 +454,14 @@ html, body {
 	top: 0px;
 }
 
+.line_unit {
+	position: absolute;
+	top: 25px;
+	left: 20px;
+	font-size: 14px;
+	fill: #e2e2e2;
+}
+
 /***********************************************
  * Main Loading
  ***********************************************/

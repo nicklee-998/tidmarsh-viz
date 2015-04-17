@@ -695,7 +695,7 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value, date)
 				context.clearRect(0, 0, this._cellLabelTextWidth * 2, this._cellLabelTextWidth * 2);
 				context.font = "Bold " + this._cellLabelTextFontSize + "px Arial";
 				context.fillStyle = "rgba(" + this._cellLabelTextColor.r + "," + this._cellLabelTextColor.g + "," + this._cellLabelTextColor.b + "," + this._cellLabelTextColor.a + ")";
-				context.fillText( value.toFixed(2) + mobj.unit, this._cellLabelTextWidth / 2, 95);
+				context.fillText( value.toFixed(2), this._cellLabelTextWidth / 2, 95);
 
 				device.cellLabel.position.z = ground.position.y + 13 + mobj.height;
 			}

@@ -805,6 +805,11 @@ function onMainMenuChange(e)
 			showDragBar(false);
 			showLineChart(false);
 
+			// 清楚日期数据，进入重新选择
+			sliderYear = null;
+			sliderMonth = null;
+			sliderDay = null;
+
 			break;
 		case MAINMENU_HEALTH_LEAVE:
 			// Device health

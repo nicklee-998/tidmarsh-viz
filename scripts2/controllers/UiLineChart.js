@@ -5,7 +5,7 @@ function UiLineChart()
 {
 	this._width = window.innerWidth;
 	this._height = 170;
-	this._margin = {left: 30, right: 0, top: 50, bottom: 0};
+	this._margin = {left: 38, right: 0, top: 50, bottom: 0};
 
 	this._draggerDown = false;
 	this._mouseOffsetX;
@@ -196,8 +196,8 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 	}
 
 	// just in case...
+	var iobj = getConfigBySensor(sid);
 	if(min == null || max == null) {
-		var iobj = getConfigBySensor(sid);
 		min = iobj.min;
 		max = iobj.max;
 	}
@@ -250,33 +250,15 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 		.attr("y2", y(max))
 		.attr("class", "line_chart_axis_y");
 
-	//this._viz.selectAll(".xLabel")
-	//	.data(x.ticks(5))
-	//	.enter().append("svg:text")
-	//	.attr("class", "xLabel")
-	//	.text("womemenne")
-	//	.attr("x", function(d) { return x(d) })
-	//	.attr("y", this._height-10)
-	//	.attr("text-anchor", "middle");
-
 	this._viz.selectAll(".yLabel")
 		.data(y.ticks(4))
 		.enter().append("svg:text")
 		.attr("class", "yLabel")
 		.text(function(d) { return d; })
-		.attr("x", 3)
+		.attr("x", this._margin.left - 5)
 		.attr("y", function(d) { return y(d) })
-		.attr("text-anchor", "right")
+		.attr("text-anchor", "end")
 		.attr("dy", 3);
-
-	//this._viz.selectAll(".xTicks")
-	//	.data(x.ticks(5))
-	//	.enter().append("svg:line")
-	//	.attr("class", "xTicks")
-	//	.attr("x1", function(d) { return x(d); })
-	//	.attr("y1", y(iobj.min))
-	//	.attr("x2", function(d) { return x(d); })
-	//	.attr("y2", y(iobj.max)+7);
 
 	this._viz.selectAll(".yTicks")
 		.data(y.ticks(4))
@@ -286,6 +268,14 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 		.attr("x1", x(start) - 3)
 		.attr("y2", function(d) { return y(d); })
 		.attr("x2", x(start));
+
+	// unit
+	var ustr = "unit: " + iobj.unit;
+	this._viz.append("svg:text")
+		.text(ustr)
+		.attr("class", "line_unit")
+		.attr("x", this._margin.left + 10)
+		.attr("y", 45);
 }
 
 UiLineChart.prototype.highlight = function(did)
