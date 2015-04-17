@@ -246,6 +246,10 @@ ChainManager.prototype._startDeviceList = function()
 		// -----------------------------------
 		jQuery.publish(SERVER_DEVICE_LIST_COMPLETE);
 
+
+		//console.log(JSON.stringify(this._dFactory.dataset));
+
+
 		return;
 	}
 

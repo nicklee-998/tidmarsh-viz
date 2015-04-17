@@ -66,6 +66,11 @@ function NodeNetwork()
 	this._intersectedVor = null;
 	this._mouseX;
 	this._mouseY;
+	this._isPressed = false;
+
+	document.addEventListener('mousedown', function() {
+		self._isPressed = true;
+	});
 
 	document.addEventListener( 'mousemove', function(event) {
 		self._mouseX = event.clientX;
@@ -73,6 +78,8 @@ function NodeNetwork()
 	}, false );
 
 	document.addEventListener( 'mouseup', function() {
+		self._isPressed = false;
+
 		if(self._intersected) {
 			// Health mode click
 			if(self._mode == self.NETWORK_MODE_HEALTH) {
@@ -729,6 +736,11 @@ NodeNetwork.prototype.clearVoronoi = function(isAnim)
 
 NodeNetwork.prototype.onVoronoiMouseOver = function(name)
 {
+	// 如果在拖动模型状态，不要显示提示
+	if(this._isPressed) {
+		return;
+	}
+
 	var did = name.substring(name.indexOf("_") + 1);
 
 	var device = this.getDeviceById(did);

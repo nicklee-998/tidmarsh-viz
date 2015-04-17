@@ -1110,9 +1110,30 @@ function getDevicesDataBySensorMenu()
 	jQuery.subscribe(SERVER_DEVICE_LIST_START, onDeviceData);
 	jQuery.subscribe(SERVER_DEVICE_DATA_COMPLETE, onDeviceData);
 	jQuery.subscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
-	chainManager.fetchMultiDevicesByDate(arr, [selectSensor],
-		{year:sliderYear, month:sliderMonth, day:sliderDay, hour:0, minu:0, sec:0},
-		{year:sliderYear, month:sliderMonth, day:sliderDay, hour:23, minu:59, sec:59});
+
+	if(DEBUG_MODE) {
+
+		// -----------------------------------
+		// Send device list start event
+		// -----------------------------------
+		jQuery.publish(SERVER_DEVICE_LIST_START);
+
+		$.ajax({
+			url : "./res/fortest/sensor_data_illuminace.txt",
+			success : function (data) {
+				chainManager._dFactory.dataset = JSON.parse(data);
+
+				// -----------------------------------
+				// Send device list complete event
+				// -----------------------------------
+				jQuery.publish(SERVER_DEVICE_LIST_COMPLETE);
+			}
+		});
+	} else {
+		chainManager.fetchMultiDevicesByDate(arr, [selectSensor],
+			{year:sliderYear, month:sliderMonth, day:sliderDay, hour:0, minu:0, sec:0},
+			{year:sliderYear, month:sliderMonth, day:sliderDay, hour:23, minu:59, sec:59});
+	}
 }
 
 function onDeviceData(e, i)
@@ -1124,7 +1145,8 @@ function onDeviceData(e, i)
 
 		// 隐藏日历
 		menuData.hideMe();
-		showLineChart(false);
+		//showLineChart(false);
+		$('#chart_div').css('visibility', 'hidden');
 		//showUIMenu(false);
 
 		// 显示loader

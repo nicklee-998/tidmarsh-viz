@@ -149,21 +149,10 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 		.attr("height", this._height)
 		.append("g");
 
-	// start making graph
-	var iobj = getConfigBySensor(sid);
-
-	var x = d3.time.scale()
-		.domain([start, end])
-		.range([0 + this._margin.left, (this._width - this._margin.right)]);
-	var y = d3.scale.linear()
-		.domain([iobj.max, iobj.min])
-		.range([0 + this._margin.top, (this._height - this._margin.bottom)]);
-
-	this._dateScale = d3.scale.linear().domain([0, 1]).range([start.getTime(), end.getTime()]);
-
-	var line = d3.svg.line()
-		.x(function(d) { return x(d.x); })
-		.y(function(d) { return y(d.y); });
+	// min and max
+	var min = null;
+	var max = null;
+	var dataset2 = new Array();
 
 	// set dataset
 	for (var i = 0; i < dataset.length; i++) {
@@ -178,14 +167,20 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 			//console.log(values[j].timestamp);
 			var date = new Date(values[j].timestamp);
 
-			if (values[j].value == -999) {
-				currData.push({x: date, y: iobj.min});
-			} else {
-				// Todo: 做这样的处理好吗？
-				if(values[j].value > iobj.max) {
-					values[j].value = iobj.max;
-				}
+			// 寻找最小和最大值
+			if (values[j].value != -999) {
 				currData.push({x: date, y: values[j].value});
+
+				if(min == null) {
+					min = values[j].value;
+					max = values[j].value;
+				} else {
+					if(values[j].value < min) {
+						min = values[j].value;
+					} else if(values[j].value > max) {
+						max = values[j].value;
+					}
+				}
 			}
 
 			//if (!started) {
@@ -197,6 +192,31 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 			//}
 		}
 
+		dataset2.push(currData);
+	}
+
+	// just in case...
+	if(min == null || max == null) {
+		var iobj = getConfigBySensor(sid);
+		min = iobj.min;
+		max = iobj.max;
+	}
+
+	var x = d3.time.scale()
+		.domain([start, end])
+		.range([0 + this._margin.left, (this._width - this._margin.right)]);
+	var y = d3.scale.linear()
+		.domain([max, min])
+		.range([0 + this._margin.top, (this._height - this._margin.bottom)]);
+
+	this._dateScale = d3.scale.linear().domain([0, 1]).range([start.getTime(), end.getTime()]);
+
+	var line = d3.svg.line()
+		.x(function(d) { return x(d.x); })
+		.y(function(d) { return y(d.y); });
+
+	for(var k = 0; k < dataset2.length; k++) {
+		var currData = dataset2[k];
 		if(currData.length > 0) {
 			this._viz.append("svg:path")
 				.data([currData])
@@ -204,7 +224,7 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 				.attr("class", "line_chart_path")
 				.attr("d", line)
 				.attr("name", function(d) {
-					return dataset[i].did;
+					return dataset[k].did;
 				})
 				.on("mouseover", function() {
 
@@ -213,22 +233,21 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 
 				});
 		}
-
 	}
 
 	// draw graph
 	this._viz.append("svg:line")
 		.attr("x1", x(start))
-		.attr("y1", y(iobj.min))
+		.attr("y1", y(min))
 		.attr("x2", x(end))
-		.attr("y2", y(iobj.min))
+		.attr("y2", y(min))
 		.attr("class", "line_chart_axis");
 
 	this._viz.append("svg:line")
 		.attr("x1", x(start))
-		.attr("y1", y(iobj.min))
+		.attr("y1", y(min))
 		.attr("x2", x(start))
-		.attr("y2", y(iobj.max))
+		.attr("y2", y(max))
 		.attr("class", "line_chart_axis_y");
 
 	//this._viz.selectAll(".xLabel")
