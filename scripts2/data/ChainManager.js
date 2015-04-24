@@ -239,7 +239,6 @@ ChainManager.prototype.fetchMultiDevicesByDate2 = function(dlist, slist, start, 
 	for(var i = 0; i < this._devicelist.length; i++) {
 		var did = this._devicelist[i];
 		var device = this.getDeviceByName(did);
-		console.log(device);
 
 		// 需要load的sensor做上记号
 		for(var j = 0; j < device.sensors.length; j++) {
