@@ -707,7 +707,6 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value, date)
 			}
 		}
 	}
-
 }
 
 NodeNetwork.prototype.clearVoronoi = function(isAnim)

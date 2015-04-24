@@ -211,6 +211,131 @@ ChainManager.prototype.fetchDataById = function(did, sid)
 
 //---------------------------------------------------------------------
 // PUBLIC METHOD:
+// 	Get Multi Devices Sensor Data by Period Sync
+//	devices is array -> a list of device name which need get data
+// 	sensors is array -> a list of sensor name which need get data
+// 	start&end is object -> {year, month, day}
+//---------------------------------------------------------------------
+ChainManager.prototype.fetchMultiDevicesByDate2 = function(dlist, slist, start, end)
+{
+	// --------------------------------
+	// Send device list start event
+	// --------------------------------
+	jQuery.publish(SERVER_DEVICE_LIST_START);
+
+	var self = this;
+	var loadCount = 0;
+	var loadTotal = 0;
+
+	this._devicelist = dlist;
+	this._sensorlist = slist;
+	this._start = new Date(start.year, start.month, start.day, start.hour, start.minu, start.sec);		// change to timestamp
+	this._end = new Date(end.year, end.month, end.day, end.hour, end.minu, end.sec);			// change to timestamp
+	this._multiDeviceMode = true;
+
+	// restore data factory
+	this._dFactory.restore();
+
+	for(var i = 0; i < this._devicelist.length; i++) {
+		var did = this._devicelist[i];
+		var device = this.getDeviceByName(did);
+		console.log(device);
+
+		// 需要load的sensor做上记号
+		for(var j = 0; j < device.sensors.length; j++) {
+			var sobj = device.sensors[j];
+			for(var k = 0; k < this._sensorlist.length; k++) {
+				if(this._sensorlist[k] == sobj.title) {
+					console.log(sobj);
+					sobj.loadFlag = true;
+					loadTotal++;
+
+					// TODO: a hacker way, not offical method to get date...
+					var ststr = (this._start.getTime()).toString();
+					var edstr = (this._end.getTime()).toString();
+					var short_ststr = ststr.substr(0, 10);
+					var short_edstr = edstr.substr(0, 10);
+					var href = sobj.href;
+					var sid = href.substring(href.indexOf("scalar_sensors/") + 15);
+					var url = "http://chain-api.media.mit.edu/scalar_data/?sensor_id=" + sid + '&timestamp__gte=' + short_ststr + '&timestamp__lt=' + short_edstr;
+
+					$.getJSON(url, function(dat) {
+
+						var hstr = dat["_links"]["self"]["href"];
+						var sid = hstr.substring(hstr.indexOf("sensor_id=")+10, hstr.indexOf("&"));
+						var surl = "http://chain-api.media.mit.edu/scalar_sensors/" + sid;
+						var tobj = self.getDeviceBySensor(surl);
+						var dTitle = tobj.did;
+						var sTitle = tobj.sid;
+
+						// --------------------------------------------
+						//  将接收到的server数据转化为固定的时间间隔
+						//  每个时间间隔采用平均值计算
+						//  没有数据的统一采用-999来表示
+						// --------------------------------------------
+						var amount, count, avg;
+						var idx = 0;
+						var exflg = false;
+						var stpnter = new Date(self._start.getTime());
+						var edpnter = new Date(self._start.getTime());
+
+						while(!exflg) {
+							stpnter.setTime(edpnter.getTime());
+							edpnter.setSeconds(edpnter.getSeconds() + global_data_window);
+							//console.log(stpnter.toTimeString() + ", " + edpnter.toTimeString());
+							if(edpnter > self._end) {
+								exflg = true;
+							} else {
+								amount = 0;
+								count = 0;
+								avg = -999;
+								// 判断这个数据是不是在目前的窗口内
+								for(var i = idx; i < dat["data"].length; i++) {
+									var tmpd = new Date(dat["data"][i].timestamp);
+
+									// TEST
+									//if(self._device.title == "0x816C" && self._sensor.title == "sht_temperature") {
+									//	console.log("stpnter: " + stpnter);
+									//	console.log("edpnter: " + edpnter);
+									//	console.log(tmpd);
+									//	console.log((tmpd > stpnter && tmpd <= edpnter));
+									//	console.log("=================================");
+									//}
+
+									if(tmpd > stpnter && tmpd <= edpnter) {
+										amount += dat["data"][i].value;
+										count++;
+									} else {
+										if(count != 0) {
+											avg = amount / count;
+										}
+										break;
+									}
+									idx++;
+								}
+
+								self._dFactory.addData(dTitle, sTitle, {timestamp: stpnter.toUTCString(), value: avg});
+							}
+						}
+
+						loadCount++;
+						if(loadCount == loadTotal) {
+							// -----------------------------------
+							// Send device list complete event
+							// -----------------------------------
+							jQuery.publish(SERVER_DEVICE_LIST_COMPLETE);
+						}
+					});
+
+					break;
+				}
+			}
+		}
+	}
+}
+
+//---------------------------------------------------------------------
+// PUBLIC METHOD:
 // 	Get Multi Devices Sensor Data by Period
 //	devices is array -> a list of device name which need get data
 // 	sensors is array -> a list of sensor name which need get data
@@ -245,10 +370,6 @@ ChainManager.prototype._startDeviceList = function()
 		// Send device list complete event
 		// -----------------------------------
 		jQuery.publish(SERVER_DEVICE_LIST_COMPLETE);
-
-
-		//console.log(JSON.stringify(this._dFactory.dataset));
-
 
 		return;
 	}

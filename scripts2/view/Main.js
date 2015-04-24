@@ -1135,7 +1135,11 @@ function getDevicesDataBySensorMenu()
 			}
 		});
 	} else {
-		chainManager.fetchMultiDevicesByDate(arr, [selectSensor],
+		//chainManager.fetchMultiDevicesByDate(arr, [selectSensor],
+		//	{year:sliderYear, month:sliderMonth, day:sliderDay, hour:0, minu:0, sec:0},
+		//	{year:sliderYear, month:sliderMonth, day:sliderDay, hour:23, minu:59, sec:59});
+
+		chainManager.fetchMultiDevicesByDate2(arr, [selectSensor],
 			{year:sliderYear, month:sliderMonth, day:sliderDay, hour:0, minu:0, sec:0},
 			{year:sliderYear, month:sliderMonth, day:sliderDay, hour:23, minu:59, sec:59});
 	}

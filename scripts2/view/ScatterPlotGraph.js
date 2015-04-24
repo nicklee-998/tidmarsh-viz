@@ -24,7 +24,7 @@ function ScatterPlotGraph()
 	this._csvobj;
 
 	// Size parameters.
-	this._size = 120;
+	this._size = 160;
 	this._padding = 10;
 	this._n = 4;
 
@@ -32,7 +32,7 @@ function ScatterPlotGraph()
 	this._x = {};
 	this._y = {};
 
-	// scatter plot svg
+	// Scatter plot svg
 	this._scatterplot_svg;
 	this._scatterplot_bursh;
 	this._scatterplot_axis;
