@@ -77,104 +77,83 @@ ChainManager.prototype.init = function()
 				self.devices = dat2._links.items;
 
 				// load all device info
-				self._loadIdx = 0;
-				self._getAllDeviceInfo();
+				var loadIdx = 0;
+				var loadTotal = self.devices.length;
+				for(var i = 0; i < self.devices.length; i++) {
 
-				//console.log(self.devices);
+					// Get device info
+					$.getJSON(self.devices[i].href, function(dat_dev) {
+
+						// ---------------------------------
+						//  Device Object Definition
+						// ---------------------------------
+						var device = self.getDeviceByName(dat_dev.name);
+						var href = device.href;
+						device.id = href.substring(href.indexOf("/devices/")+9);        // id是数据库中的编号
+						device.building = dat_dev.building;
+						device.room = dat_dev.room;
+						device.floor = dat_dev.floor;
+						device.description = dat_dev.description;
+						device.websocket = dat_dev["_links"]["ch:websocketStream"]["href"];
+						device.lastUpdated = null;
+						if(dat_dev.geoLocation) {
+							device.lat = dat_dev.geoLocation.latitude;
+							device.lng = dat_dev.geoLocation.longitude;
+						} else {
+							device.lat = 0;
+							device.lng = 0;
+						}
+
+						// Get sensor info
+						$.getJSON(dat_dev["_links"]["ch:sensors"]["href"], function(dat_sensor) {
+
+							var arr = [];
+							var lastUpdatedUrl = null;
+							for(var i = 0; i < dat_sensor["_links"]["items"].length; i++) {
+
+								var t = dat_sensor["_links"]["items"][i].title;
+								var h = dat_sensor["_links"]["items"][i].href;
+
+								if(t == "battery_voltage") {
+									lastUpdatedUrl = h;
+								}
+
+								// ---------------------------------
+								//  Sensor Object Definition
+								// ---------------------------------
+								arr.push({
+									title:t,
+									href:h,
+									dataHistory:"",
+									dataType:"",
+									metric:"",
+									unit:"",
+									dataPrev:"",
+									dataNext:"",
+									updated:"",             // 最后一次该sensor数据更新的时间
+									loadFlag:false
+								});
+							}
+							device.sensors = arr;
+
+							loadIdx++;
+							if(loadIdx == loadTotal) {
+								// ------------------------
+								// Send init complete
+								// ------------------------
+								jQuery.publish(SERVER_INIT_COMPLETE);
+							} else {
+								// ------------------------
+								// Send device init event
+								// ------------------------
+								jQuery.publish(SERVER_DEVICE_INFO_COMPLETE, device);
+							}
+						});
+					});
+				}
 			});
 		});
 	}
-}
-
-ChainManager.prototype._getAllDeviceInfo = function()
-{
-	if(this._loadIdx == this.devices.length) {
-		// ------------------------
-		// Send init complete
-		// ------------------------
-		jQuery.publish(SERVER_INIT_COMPLETE);
-
-		return;
-	}
-
-	var self = this;
-	var device = this.devices[this._loadIdx];
-	$.getJSON(device.href, function(dat) {
-		// ---------------------------------
-		//  Device Object Definition
-		// ---------------------------------
-		device.building = dat.building;
-		device.room = dat.room;
-		device.floor = dat.floor;
-		device.description = dat.description;
-		device.websocket = dat["_links"]["ch:websocketStream"]["href"];
-		device.lastUpdated = null;
-
-		if(dat.geoLocation) {
-			device.lat = dat.geoLocation.latitude;
-			device.lng = dat.geoLocation.longitude;
-		} else {
-			device.lat = 0;
-			device.lng = 0;
-		}
-
-		$.getJSON(dat["_links"]["ch:sensors"]["href"], function(dat2) {
-
-			var arr = [];
-			var lastUpdatedUrl = null;
-			for(var i = 0; i < dat2["_links"]["items"].length; i++)
-			{
-				var t = dat2["_links"]["items"][i].title;
-				var h = dat2["_links"]["items"][i].href;
-
-				if(t == "battery_voltage") {
-					lastUpdatedUrl = h;
-				}
-
-				// ---------------------------------
-				//  Sensor Object Definition
-				// ---------------------------------
-				arr.push({
-					title:t,
-					href:h,
-					dataHistory:"",
-					dataType:"",
-					metric:"",
-					unit:"",
-					dataPrev:"",
-					dataNext:"",
-					updated:"",             // 最后一次该sensor数据更新的时间
-					loadFlag:false
-				});
-			}
-			device.sensors = arr;
-
-			// get last updated date
-			if(lastUpdatedUrl != null) {
-				$.getJSON(lastUpdatedUrl, function(dat3) {
-					device.lastUpdated = new Date(dat3["updated"]);
-
-					// ------------------------
-					// Send device init event
-					// ------------------------
-					jQuery.publish(SERVER_DEVICE_INFO_COMPLETE, device);
-
-					// go on next device...
-					self._loadIdx++;
-					self._getAllDeviceInfo();
-				});
-			} else {
-				// ------------------------
-				// Send device init event
-				// ------------------------
-				jQuery.publish(SERVER_DEVICE_INFO_COMPLETE, device);
-
-				// go on next device...
-				self._loadIdx++;
-				self._getAllDeviceInfo();
-			}
-		});
-	});
 }
 
 //----------------------------------------------
@@ -598,11 +577,22 @@ ChainManager.prototype._rollupUnit = function(u)
 ChainManager.prototype.getDeviceByName = function(dname)
 {
 	var device = null;
-	for(d in this.devices)
-	{
+	for(d in this.devices) {
 		//console.log(deviceList[d].title + ", " + dname);
-		if(this.devices[d].title == dname)
-		{
+		if(this.devices[d].title == dname) {
+			device = this.devices[d];
+			break;
+		}
+	}
+	return device;
+}
+
+ChainManager.prototype.getDeviceById = function(did)
+{
+	var device = null;
+	for(d in this.devices) {
+		//console.log(deviceList[d].title + ", " + dname);
+		if(this.devices[d].id == did) {
 			device = this.devices[d];
 			break;
 		}
