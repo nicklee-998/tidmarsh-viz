@@ -211,7 +211,8 @@ ChainManager.prototype.fetchDataById = function(did, sid)
 
 //---------------------------------------------------------------------
 // PUBLIC METHOD:
-// 	Get Multi Devices Sensor Data by Period Sync
+//      SPEED UP!!!
+// 	Get Multi Devices Sensor Data by Period
 //	devices is array -> a list of device name which need get data
 // 	sensors is array -> a list of sensor name which need get data
 // 	start&end is object -> {year, month, day}
@@ -245,7 +246,7 @@ ChainManager.prototype.fetchMultiDevicesByDate2 = function(dlist, slist, start, 
 			var sobj = device.sensors[j];
 			for(var k = 0; k < this._sensorlist.length; k++) {
 				if(this._sensorlist[k] == sobj.title) {
-					console.log(sobj);
+					//console.log(sobj);
 					sobj.loadFlag = true;
 					loadTotal++;
 
@@ -323,6 +324,11 @@ ChainManager.prototype.fetchMultiDevicesByDate2 = function(dlist, slist, start, 
 							// Send device list complete event
 							// -----------------------------------
 							jQuery.publish(SERVER_DEVICE_LIST_COMPLETE);
+						} else {
+							// -----------------------------------
+							// Send device data progress event
+							// -----------------------------------
+							jQuery.publish(SERVER_DEVICE_DATA_PROGRESS, {idx:loadCount, total:loadTotal});
 						}
 					});
 

@@ -1113,8 +1113,6 @@ function getDevicesDataBySensorMenu()
 	}
 
 	jQuery.subscribe(SERVER_DEVICE_LIST_START, onDeviceData);
-	jQuery.subscribe(SERVER_DEVICE_DATA_COMPLETE, onDeviceData);
-	jQuery.subscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
 
 	if(DEBUG_MODE) {
 
@@ -1150,6 +1148,9 @@ function onDeviceData(e, i)
 	if(e.type == SERVER_DEVICE_LIST_START) {
 		// 开始载入数据集
 		jQuery.unsubscribe(SERVER_DEVICE_LIST_START, onDeviceData);
+		jQuery.subscribe(SERVER_DEVICE_DATA_COMPLETE, onDeviceData);
+		jQuery.subscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
+		jQuery.subscribe(SERVER_DEVICE_DATA_PROGRESS, onDeviceData);
 		console.log("开始载入数据集!");
 
 		// 隐藏日历
@@ -1160,14 +1161,19 @@ function onDeviceData(e, i)
 
 		// 显示loader
 		loader2start();
+	} else if(e.type == SERVER_DEVICE_DATA_PROGRESS) {
+
+		loader2progress(i.idx, i.total);
+
 	} else if(e.type == SERVER_DEVICE_DATA_COMPLETE) {
 
 		//console.log(i);
-		$(".loading-text").text("loading " + i.title + "...");
+		$(".loading-text").text("Loading " + i.title + "...");
 
 	} else if(e.type == SERVER_DEVICE_LIST_COMPLETE) {
 		jQuery.unsubscribe(SERVER_DEVICE_DATA_COMPLETE, onDeviceData);
 		jQuery.unsubscribe(SERVER_DEVICE_LIST_COMPLETE, onDeviceData);
+		jQuery.unsubscribe(SERVER_DEVICE_DATA_PROGRESS, onDeviceData);
 
 		console.log("数据集载入完毕!");
 

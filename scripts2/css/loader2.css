@@ -13,13 +13,23 @@
 	background-color:#eee;
 }
 
-.loading-text {
+.loading-frame {
 	position: absolute;
 	width: 150px;
-	bottom: -20px;
-	left: 20px;
-	font-size: 14px;
-	color: #a6aaa9;
+	height: 2px;
+	bottom: -13px;
+	left: 0px;
+	border: solid 1px;
+	border-color: rgba(86, 86, 86, 0.51);
+}
+
+.loading-text {
+	position: absolute;
+	width: 1px;
+	height: 2px;
+	bottom: -12px;
+	left: 0px;
+	background-color: #a6aaa9;
 }
 
 .ajax-load-cover {

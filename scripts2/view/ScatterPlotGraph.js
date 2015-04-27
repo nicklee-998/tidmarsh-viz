@@ -24,7 +24,7 @@ function ScatterPlotGraph()
 	this._csvobj;
 
 	// Size parameters.
-	this._size = 160;
+	this._size = 120;
 	this._padding = 10;
 	this._n = 4;
 

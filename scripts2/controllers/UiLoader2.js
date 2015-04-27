@@ -14,7 +14,6 @@ $(document).ready(function() {
 		$(that).css("left", i * 10);
 	});
 
-
 	$(window).resize(function() {
 		$("#ajax-load").css("left", window.innerWidth / 2 - l2Wid / 2);
 		$("#ajax-load").css("top", window.innerHeight / 2 - l2Hei / 2);
@@ -40,6 +39,13 @@ function loader2start()
 
 		delay = delay + 150;
 	});
+}
+
+function loader2progress(idx, total)
+{
+	var wid = (idx / total) * $(".loading-frame").width();
+	$(".loading-text").css("width", wid);
+	//$(".loading-text").animate({ width: wid }, 200);
 }
 
 function loader2end()
