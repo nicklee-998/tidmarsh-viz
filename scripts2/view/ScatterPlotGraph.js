@@ -11,26 +11,27 @@ function ScatterPlotGraph()
 	this.dataTrail = null;                 // 最后的数据
 
 	// scatter plot parameters
-	this._start_time = new Date(2014, 10, 23);
-	this._end_time = new Date(2014, 10, 29);
+	this._start_time = new Date(2014, 10, 14);
+	this._end_time = new Date(2014, 10, 15);
 
 	this._sensors = ["bmp_temperature", "illuminance", "bmp_pressure", "sht_humidity"];
 	this._sensorColorTable;
 
 	this._selectedData;
-	this._selectedQuadData;
 
 	this._csvidx;
 	this._csvobj;
 
 	// Size parameters.
-	this._size = 120;
+	this._size = 150;
 	this._padding = 10;
 	this._n = 4;
 
 	// Position scales.
 	this._x = {};
 	this._y = {};
+	// Color
+	this._color = {};
 
 	// Scatter plot svg
 	this._scatterplot_svg;
@@ -63,7 +64,6 @@ ScatterPlotGraph.prototype.initDataset = function(devices)
 
 		var url = "./res/data_sensor/" + devices[self._csvidx].title + ".csv";
 		d3.csv(url, function(dataset) {
-			console.log(url);
 			self._csvobj[devices[self._csvidx].title] = dataset;
 			self._sensorColorTable[devices[self._csvidx].title] = _getRandomColor();
 			self._csvidx++;
@@ -284,31 +284,65 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 				.attr("width", self._size - self._padding)
 				.attr("height", self._size - self._padding);
 
+			for(var i = 0; i < self._selectedData.length; i++) {
+				var d = self._selectedData[i];
+				var px = self._x[p.x](d[p.x]);
+				var py = self._y[p.y](d[p.y]);
+				d.pos = [px, py];
+			}
+
+			var hexbin = d3.hexbin()
+				.size([self._size, self._size])
+				.radius(2);
+			var darr = hexbin(self._selectedData);
+
+			// 获得最大的值
+			var max = 0;
+			for(var j = 0; j < darr.length; j++) {
+				if(max < darr[j].length) {
+					max = darr[j].length;
+				}
+			}
+
+			// Color
+			self._color[p.i+"-"+p.j] = d3.scale.linear()
+				.domain([0, max])
+				.range(["white", "steelblue"])
+				.interpolate(d3.interpolateLab);
+
+			cell.selectAll(".hexagon")
+				.data(darr)
+				.enter().append("path")
+				.attr("class", "hexagon")
+				.attr("d", hexbin.hexagon())
+				.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+				.style("fill", function(d) { return self._color[p.i+"-"+p.j](d.length); });
+
 			// Plot dots.
-			cell.selectAll("circle")
-				.data(self._selectedData)
-				.enter()
-				.append("svg:circle")
-				.style("fill", function(d) {
-					// 找到不一样的did
-					var color = self._sensorColorTable[d.did];
-					var isfind = false;
-					for(var i = 0; i < idarr.length; i++) {
-						if(idarr[i] == d.did) {
-							isfind = true;
-							break;
-						}
-					}
-					if(!isfind) {
-						// That's the problem make it slow...
-						//idarr.push({did: d.did, clr: color});
-						idarr.push(d.did)
-					}
-					return color;
-				})
-				.attr("cx", function(d) { return self._x[p.x](d[p.x]); })
-				.attr("cy", function(d) { return self._y[p.y](d[p.y]); })
-				.attr("r", 3);
+			//cell.selectAll("circle")
+			//	.data(self._selectedData)
+			//	.enter()
+			//	.append("svg:circle")
+			//	.style("fill", function(d) {
+			//		// 找到不一样的did
+			//		var color = self._sensorColorTable[d.did];
+			//		var isfind = false;
+			//		for(var i = 0; i < idarr.length; i++) {
+			//			if(idarr[i] == d.did) {
+			//				isfind = true;
+			//				break;
+			//			}
+			//		}
+			//		if(!isfind) {
+			//			// That's the problem make it slow...
+			//			//idarr.push({did: d.did, clr: color});
+			//			idarr.push(d.did)
+			//		}
+			//		return color;
+			//	})
+			//	.attr("cx", function(d) { return self._x[p.x](d[p.x]); })
+			//	.attr("cy", function(d) { return self._y[p.y](d[p.y]); })
+			//	.attr("r", 3);
 
 			// Plot brush.
 			cell.call(self._scatterplot_bursh.x(self._x[p.x]).y(self._y[p.y]));
@@ -345,22 +379,15 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 	// If the brush is empty, select all circles.
 	function brushend() {
 		if (self._scatterplot_bursh.empty()) {
+
 			var idarr = new Array();
-			self._scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
-				// 找到不一样的did
-				var color = self._sensorColorTable[d.did];
-				var isfind = false;
-				for(var i = 0; i < idarr.length; i++) {
-					if(idarr[i] == d.did) {
-						isfind = true;
-						break;
-					}
-				}
-				if(!isfind) {
-					idarr.push(d.did)
-				}
-				return color;
-			});
+			self._scatterplot_svg.selectAll("g.cell")
+				.each(function(k, i) {
+					var cell = d3.select(this);
+					cell.selectAll(".cell path").style("fill", function(d) {
+						return self._color[k.i+"-"+k.j](d.length);
+					});
+				});
 
 			// Clear select cell
 			self._currentCell = null;
@@ -414,19 +441,58 @@ ScatterPlotGraph.prototype._updateScatterPlot = function()
 	this._scatterplot_svg.selectAll("g.cell")
 		.each(function(p) {
 			var cell = d3.select(this);
-			// Plot dots.
-			cell = cell.selectAll("circle").data(self._selectedData);
+
+			for(var i = 0; i < self._selectedData.length; i++) {
+				var d = self._selectedData[i];
+				var px = self._x[p.x](d[p.x]);
+				var py = self._y[p.y](d[p.y]);
+				d.pos = [px, py];
+			}
+
+			var hexbin = d3.hexbin()
+				.size([self._size, self._size])
+				.radius(2);
+			var darr = hexbin(self._selectedData);
+
+			// 获得最大的值
+			var max = 0;
+			for(var j = 0; j < darr.length; j++) {
+				if(max < darr[j].length) {
+					max = darr[j].length;
+				}
+			}
+			// Color
+			self._color[p.i+"-"+p.j] = d3.scale.linear()
+				.domain([0, max])
+				.range(["white", "steelblue"])
+				.interpolate(d3.interpolateLab);
+
+			cell = cell.selectAll(".hexagon").data(darr);
 			cell.exit().remove();
 			cell.transition()
 				.duration(500)
-				.attr("cx", function(d) { return self._x[p.x](d[p.x]); })
-				.attr("cy", function(d) { return self._y[p.y](d[p.y]); });
+				.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+				.style("fill", function(d) { return self._color[p.i+"-"+p.j](d.length); });
 			cell.enter()
-				.append("svg:circle")
-				.style("fill", function(d) { return self._sensorColorTable[d.did]; })
-				.attr("cx", function(d) { return self._x[p.x](d[p.x]); })
-				.attr("cy", function(d) { return self._y[p.y](d[p.y]); })
-				.attr("r", 3);
+				.append("path")
+				.attr("class", "hexagon")
+				.attr("d", hexbin.hexagon())
+				.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+				.style("fill", function(d) { return self._color[p.i+"-"+p.j](d.length); });
+
+			// Plot dots.
+			//cell = cell.selectAll("circle").data(self._selectedData);
+			//cell.exit().remove();
+			//cell.transition()
+			//	.duration(500)
+			//	.attr("cx", function(d) { return self._x[p.x](d[p.x]); })
+			//	.attr("cy", function(d) { return self._y[p.y](d[p.y]); });
+			//cell.enter()
+			//	.append("svg:circle")
+			//	.style("fill", function(d) { return self._sensorColorTable[d.did]; })
+			//	.attr("cx", function(d) { return self._x[p.x](d[p.x]); })
+			//	.attr("cy", function(d) { return self._y[p.y](d[p.y]); })
+			//	.attr("r", 3);
 		});
 
 	this._updateSelectedArea();
@@ -459,52 +525,59 @@ ScatterPlotGraph.prototype._updateSelectedArea = function()
 		return;
 	}
 
-	self._scatterplot_bursh.x(self._x[self._currentCell.x]).y(self._y[self._currentCell.y]).data = self._currentCell;
+	//self._scatterplot_bursh.x(self._x[self._currentCell.x]).y(self._y[self._currentCell.y]).data = self._currentCell;
 	var e = self._scatterplot_bursh.extent();
 	var idarr = new Array();
 	var tdarr = new Array();
-	var count = 0;
 
 	self._scatterplot_svg.selectAll("g.cell")
 		.each(function(k, i) {
 			var cell = d3.select(this);
+			if(self._currentCell.i == k.i && self._currentCell.j == k.j) {
 
-			// Plot dots.
-			cell.selectAll(".cell circle").style("fill", function(d) {
+				// Plot dots.
+				cell.selectAll(".cell path").style("fill", function(d) {
+					//console.log(self._x[self._currentCell.x](e[0][0]) + ", " + self._x[self._currentCell.x](e[1][0]));
+					//console.log(self._y[self._currentCell.y](e[1][1]) + ", " + self._y[self._currentCell.y](e[0][1]));
+					//console.log(d.x + ", " + d.y);
+					if(self._x[self._currentCell.x](e[0][0]) <= d.x && d.x <= self._x[self._currentCell.x](e[1][0]) &&
+						self._y[self._currentCell.y](e[1][1]) <= d.y && d.y <= self._y[self._currentCell.y](e[0][1])) {
 
-				count++;
+						//console.log(d.x);
 
-				if(e[0][0] <= d[self._currentCell.x] &&
-					d[self._currentCell.x] <= e[1][0] &&
-					e[0][1] <= d[self._currentCell.y] &&
-					d[self._currentCell.y] <= e[1][1]) {
-					// 找到不一样的did
-					var color = self._sensorColorTable[d.did];
+						// 找到不一样的did
+						var color = self._color[k.i+"-"+k.j](d.length);
 
-					// 只在第一个格子里面寻找，这样效率又提高很多：）
-					if(i == 0) {
-						var isfind = false;
-						for(var ii = 0; ii < idarr.length; ii++) {
-							if(idarr[ii] == d.did) {
-								isfind = true;
-								break;
-							}
-						}
-						if(!isfind) {
-							// That's the problem make it slow...
-							//idarr.push({did: d.did, clr: color});
-							idarr.push(d.did)
-						}
-						tdarr.push(d.date);
+						// 只在第一个格子里面寻找，这样效率又提高很多：）
+						//if(i == 0) {
+						//	var isfind = false;
+						//	for(var ii = 0; ii < idarr.length; ii++) {
+						//		if(idarr[ii] == d.did) {
+						//			isfind = true;
+						//			break;
+						//		}
+						//	}
+						//	if(!isfind) {
+						//		// That's the problem make it slow...
+						//		//idarr.push({did: d.did, clr: color});
+						//		idarr.push(d.did)
+						//	}
+						//	tdarr.push(d.date);
+						//}
+						return color;
+					} else {
+						return null;
 					}
-					return color;
-				} else {
+				});
+			} else {
+				// Plot dots.
+				cell.selectAll(".cell path").style("fill", function(d) {
 					return null;
-				}
-			});
+				});
+			}
 		});
 
-	console.log(count);
+	//console.log(count);
 	//self._scatterplot_svg.selectAll(".cell circle").style("fill", function(d) {
 	//
 	//});
