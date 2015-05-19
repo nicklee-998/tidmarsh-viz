@@ -10,6 +10,7 @@ function ScatterPlotTimeGraph(cont_name)
 	this._width = $("#scatterplottime_panel").width();
 	this._height = $("#scatterplottime_panel").height();
 	this._left = $("#scatterplot_time").css("left");
+	//this._right = $("#scatterplot_time").css("right");
 
 	var domain = [0, 24];
 	var range = [0, this._width];
@@ -19,10 +20,24 @@ function ScatterPlotTimeGraph(cont_name)
 		.scale(this._timescale)
 		.orient("bottom");
 
+	// 背景框
+	d3.select("#scatterplottime_panel")
+		.append("svg")
+		.attr("width", this._width)
+		.attr("height", this._height)
+		.style("position", "absolute")
+		.style("left", 9)
+		.style("top", -1)
+		.style("background-color", "rgba(27, 27, 27, 0.89)")
+		.style("border", "solid 1px")
+		.style("border-color", "#a3a3a3");
+
 	this._svg = d3.select("#scatterplottime_panel")
 		.append("svg:svg")
 		.attr("width", this._width)
 		.attr("height", this._height)
+		.style("position", "absolute")
+		.style("left", 10)
 		.append("svg:g")
 		.attr("id", "time_container")
 		.attr("transform", "translate(0, 0)");
@@ -31,8 +46,10 @@ function ScatterPlotTimeGraph(cont_name)
 		.append("svg")
 		.attr("width", this._width + 50)
 		.attr("height", this._height)
+		.style("position", "absolute")
+		.style("top", 20)
 		.append("g")
-		.attr("transform", "translate(0, 0)");
+		.attr("transform", "translate(7, 0)");
 
 	svg.append("svg:g")
 		.attr("class", "x axis")

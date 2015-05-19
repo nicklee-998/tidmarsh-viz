@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Demo parallel coordinates</title>
+	<link rel="stylesheet" type="text/css" href="./scripts2/css/parallel_coordinates.css"/>
+	<style type="text/css">
+
+		html {
+			background-color: rgba(32, 36, 40, 1);
+		}
+
+		body {
+			font: 300 36px "Helvetica Neue";
+			height: 640px;
+			overflow: hidden;
+			width: 960px;
+		}
+
+		svg {
+			font-size: 14px;
+		}
+
+	</style>
+</head>
+<body>
+
+<script src="./libs/jquery-1.11.1.min.js"></script>
+<script src="./libs/jquery-ui.js"></script>
+<script src="./libs/tiny-pubsub.js"></script>
+<script src="./libs/d3.js"></script>
+<script src="./libs/stats.min.js"></script>
+<script src="scripts2/view/ParallelCoordinatesGraph.js"></script>
+<script src="scripts2/global/CustomEvent.js"></script>
+<script>
+
+	const SITE_URL = "http://chain-api.media.mit.edu/devices/?site_id=7";
+
+	var devices;
+	var parallelGraph;
+
+	var stats;
+
+	$(document).ready(function() {
+
+		stats = new Stats();
+		stats.setMode(0); // 0: fps, 1: ms
+
+		// align top-left
+		stats.domElement.style.position = 'absolute';
+		stats.domElement.style.left = '0px';
+		stats.domElement.style.top = '0px';
+		document.body.appendChild( stats.domElement );
+
+		requestAnimationFrame( update );
+
+
+		//menu = new UiScatterplotMatrix("scatterplot_menu");
+
+//		jQuery.subscribe(SCATTER_PLOT_SELECTED, function(e, d) {
+//			scatterTimeGraph.draw(d.tlist);
+//		});
+//		jQuery.subscribe(SCATTER_PLOT_PREV, function() {
+//			putBackTime(24);
+//		});
+//		jQuery.subscribe(SCATTER_PLOT_NEXT, function() {
+//			putForwardTime(24);
+//		});
+//		jQuery.subscribe(SCATTER_PLOT_PREV_FAST, function() {
+//			putBackTime(240);
+//		});
+//		jQuery.subscribe(SCATTER_PLOT_NEXT_FAST, function() {
+//			putForwardTime(240);
+//		});
+//		jQuery.subscribe(SCATTER_PLOT_DATE_SELECTED, function(e, d) {
+//			scatterGraph.resetDate(d.start, d.end);
+//		});
+
+		$.getJSON(SITE_URL, function(dat) {
+
+			// TODO: That's use a little trick way to get all sensors from on request, maybe change the way in future...
+			var url = SITE_URL + '&limit=' + dat.totalCount + '&offset=0';
+			$.getJSON(url, function(dat2) {
+				devices = dat2["_links"]["items"];
+
+				parallelGraph = new ParallelCoordinatesGraph();
+				parallelGraph.initDataset(devices);
+			});
+		});
+	});
+
+	//
+	d3.selection.prototype.moveToFront = function() {
+		return this.each(function(){
+			this.parentNode.appendChild(this);
+		});
+	};
+
+	/////////////////////////////////////////////
+	// FOR FPS
+	/////////////////////////////////////////////
+	var update = function () {
+
+		stats.begin();
+
+		// monitored code goes here
+
+		stats.end();
+
+		requestAnimationFrame( update );
+
+	};
+
+	/////////////////////////////////////////////
+	// FOR TEST
+	/////////////////////////////////////////////
+	function onKeyboardDown()
+	{
+//		// 返回键退出
+		if(d3.event.keyCode == 37) 		// LEFT
+		{
+
+		}
+		else if(d3.event.keyCode == 39) 	// RIGHT
+		{
+
+		}
+		else if(d3.event.keyCode == 38)
+		{
+
+		}
+	}
+	d3.select("body").on("keydown", onKeyboardDown);
+
+</script>
+
+</body>
+</html>

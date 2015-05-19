@@ -351,18 +351,70 @@ NodeNetwork.prototype.enterScatterPlotMode = function()
 
 NodeNetwork.prototype.selectDevicesFromScatterPlot = function(darr)
 {
+	var tempobj = {};
+	var max = 0;
+	var isfind;
+	for(var i = 0; i < darr.length; i++) {
+		var dname = darr[i];
+		isfind = false;
+		for(value in tempobj) {
+			if(value.indexOf(dname) != -1) {
+				tempobj[value] += 1;
+				isfind = true;
+
+				// find max
+				if(max < tempobj[value]) {
+					max = tempobj[value];
+				}
+
+				break;
+			}
+		}
+
+		if(!isfind) {
+			tempobj[dname] = 1;
+		}
+	}
+
+	// color scale
+	var c1 = "hsl(0, 100%, 100%)";
+	var c2 = "hsl(0, 100%, 50%)";
+	var colorScale = d3.scale.sqrt()
+		.domain([0, max])
+		.range([c1, c2])
+		.interpolate(d3.interpolateHsl);
+
+	// 清空颜色
 	for(var i = 0; i < this.devices.length; i++) {
 		var device = this.devices[i];
 		if(device.type != "blank") {
 			device.node.deselected();
-			for(var j = 0; j < darr.length; j++) {
-				if(device.id == darr[j]) {
-					device.node.selected(scatterGraph._sensorColorTable[darr[j]]);
-					break;
-				}
-			}
 		}
 	}
+
+	// 绘制颜色
+	for(value in tempobj) {
+		var device = this.getDeviceById(value);
+		if(device && device.type != "blank") {
+			device.node.selected(colorScale(tempobj[value]));
+		}
+	}
+}
+
+// -------------------------------------------------------
+//  None State
+// -------------------------------------------------------
+NodeNetwork.prototype.enterNoneMode = function()
+{
+	// Make all nodes offline
+	for(var i = 0; i < this.devices.length; i++) {
+		var device = this.devices[i];
+		if(device.type != "blank") {
+			device.node.online(false);
+		}
+	}
+
+	this._mode = this.NETWORK_MODE_NONE;
 }
 
 // -------------------------------------------------------

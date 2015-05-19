@@ -49,17 +49,18 @@
 		stats.setMode(0); // 0: fps, 1: ms
 
 		// align top-left
-		stats.domElement.style.position = 'absolute';
-		stats.domElement.style.left = '0px';
-		stats.domElement.style.top = '0px';
-		document.body.appendChild( stats.domElement );
+//		stats.domElement.style.position = 'absolute';
+//		stats.domElement.style.left = '0px';
+//		stats.domElement.style.top = '0px';
+//		document.body.appendChild( stats.domElement );
 
 		requestAnimationFrame( update );
 
 
-		menu = new UiScatterplotMatrix("scatterplot_menu");
+		//menu = new UiScatterplotMatrix("scatterplot_menu");
 
 		jQuery.subscribe(SCATTER_PLOT_SELECTED, function(e, d) {
+			console.log(d);
 			scatterTimeGraph.draw(d.tlist);
 		});
 		jQuery.subscribe(SCATTER_PLOT_PREV, function() {

@@ -11,8 +11,8 @@ function ScatterPlotGraph()
 	this.dataTrail = null;                 // 最后的数据
 
 	// scatter plot parameters
-	this._start_time = new Date(2014, 10, 14);
-	this._end_time = new Date(2014, 10, 15);
+	this._end_time = null;
+	this._start_time = null;
 
 	this._sensors = ["bmp_temperature", "illuminance", "bmp_pressure", "sht_humidity"];
 	this._sensorColorTable;
@@ -23,7 +23,7 @@ function ScatterPlotGraph()
 	this._csvobj;
 
 	// Size parameters.
-	this._size = 150;
+	this._size = 130;
 	this._padding = 10;
 	this._n = 4;
 
@@ -32,6 +32,8 @@ function ScatterPlotGraph()
 	this._y = {};
 	// Color
 	this._color = {};
+
+	this._threshold = 0;
 
 	// Scatter plot svg
 	this._scatterplot_svg;
@@ -50,14 +52,32 @@ ScatterPlotGraph.prototype.initDataset = function(devices)
 	this._csvidx = 0;
 	this._csvobj = {};
 	this._sensorColorTable = {};
+
+	// -----------------------------------
+	//  Send scatter plot start event
+	// -----------------------------------
+	jQuery.publish(SCATTER_PLOT_START);
+
 	// Start queue...
 	_startQueue();
 
 	function _startQueue() {
 		if(self._csvidx >= devices.length) {
+			// 初始化时间
+			if(self._start_time == null && self._end_time == null) {
+				self._end_time = new Date(self.dataTrail.getFullYear(), self.dataTrail.getMonth(), self.dataTrail.getDate());
+				self._start_time = new Date(self.dataTrail.getFullYear(), self.dataTrail.getMonth(), self.dataTrail.getDate());
+				self._start_time.setDate(self._start_time.getDate() - 10);
+			}
+
 			// 绘制散点图
 			self._updateDataset();
 			self._drawScatterPlot();
+
+			// -----------------------------------
+			//  Send scatter plot init event
+			// -----------------------------------
+			jQuery.publish(SCATTER_PLOT_INIT);
 
 			return;
 		}
@@ -89,6 +109,11 @@ ScatterPlotGraph.prototype.initDataset = function(devices)
 					}
 				}
 			}
+
+			// -----------------------------------
+			//  Send scatter plot progress event
+			// -----------------------------------
+			jQuery.publish(SCATTER_PLOT_PROGRESS, {idx:self._csvidx, total:devices.length});
 
 			_startQueue();
 		});
@@ -168,7 +193,7 @@ ScatterPlotGraph.prototype._updateDataset = function()
 				var date = new Date(item.date);
 				if(date > this._start_time && date < this._end_time) {
 
-					//if(date.getHours() >= 12 && date.getHours() <= 17) {
+					//if(date.getHours() >= 22 && date.getHours() <= 24) {
 
 						var flag = true;
 						this._sensors.forEach(function(d) {
@@ -199,13 +224,13 @@ ScatterPlotGraph.prototype._updateDataset = function()
 		var domain = [d3.min(self._selectedData, value), d3.max(self._selectedData, value)];
 		//var domain;
 		//if(sensor == "bmp_temperature") {
-		//	domain = [-20, 50];
+		//	domain = [-20, 70];
 		//} else if(sensor == "illuminance") {
-		//	domain = [0, 50000];
+		//	domain = [0, 70000];
 		//} else if(sensor == "bmp_pressure") {
 		//	domain = [980, 1200];
 		//} else if(sensor == "sht_humidity") {
-		//	domain = [0, 100];
+		//	domain = [0, 110];
 		//}
 		var range = [self._padding / 2, self._size - self._padding / 2];
 		var range2 = [self._size - self._padding / 2, self._padding / 2];
@@ -298,7 +323,13 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 
 			// 获得最大的值
 			var max = 0;
-			for(var j = 0; j < darr.length; j++) {
+			for(var j = darr.length - 1; j >= 0; j--) {
+
+				//if(darr.length < 60) {
+				//	darr.splice(j, 1);
+				//	continue;
+				//}
+
 				if(max < darr[j].length) {
 					max = darr[j].length;
 				}
@@ -307,7 +338,7 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 			// Color
 			self._color[p.i+"-"+p.j] = d3.scale.linear()
 				.domain([0, max])
-				.range(["white", "steelblue"])
+				.range(["#ffffff", "#ff0000"])
 				.interpolate(d3.interpolateLab);
 
 			cell.selectAll(".hexagon")
@@ -381,6 +412,7 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 		if (self._scatterplot_bursh.empty()) {
 
 			var idarr = new Array();
+			var tdarr = new Array();
 			self._scatterplot_svg.selectAll("g.cell")
 				.each(function(k, i) {
 					var cell = d3.select(this);
@@ -395,7 +427,7 @@ ScatterPlotGraph.prototype._drawScatterPlot = function()
 			// ----------------------------
 			//  Send device init event
 			// ----------------------------
-			jQuery.publish(SCATTER_PLOT_SELECTED, {list:idarr, tlist:[]});
+			//jQuery.publish(SCATTER_PLOT_SELECTED, {list:idarr, tlist:tdarr});
 		}
 	}
 
@@ -549,21 +581,11 @@ ScatterPlotGraph.prototype._updateSelectedArea = function()
 						var color = self._color[k.i+"-"+k.j](d.length);
 
 						// 只在第一个格子里面寻找，这样效率又提高很多：）
-						//if(i == 0) {
-						//	var isfind = false;
-						//	for(var ii = 0; ii < idarr.length; ii++) {
-						//		if(idarr[ii] == d.did) {
-						//			isfind = true;
-						//			break;
-						//		}
-						//	}
-						//	if(!isfind) {
-						//		// That's the problem make it slow...
-						//		//idarr.push({did: d.did, clr: color});
-						//		idarr.push(d.did)
-						//	}
-						//	tdarr.push(d.date);
-						//}
+						for(var ii = 0; ii < d.length; ii++) {
+							idarr.push(d[ii].did);
+							tdarr.push(d[ii].date);
+						}
+
 						return color;
 					} else {
 						return null;

@@ -99,6 +99,9 @@ var POWERMENU_STATISTIC_DATA = "power_menu_statistic_data";
 /***********************************
  * SCATTER PLOT EVENT
  ***********************************/
+var SCATTER_PLOT_START = "scatter_plot_start";
+var SCATTER_PLOT_PROGRESS = "scatter_plot_progress";
+var SCATTER_PLOT_INIT = "scatter_plot_init";
 var SCATTER_PLOT_SELECTED = "scatter_plot_selected";
 var SCATTER_PLOT_PREV = "scatter_plot_prev";
 var SCATTER_PLOT_NEXT = "scatter_plot_next";

@@ -254,12 +254,25 @@ function registerAllEvent()
 		scatterGraph.show();
 		scatterTimeGraph.show();
 		menuScatterGraph.show();
-		showWeatherBig(true);
 	});
 
 	// ---------------------------------------
 	//  Selected circle on scatter plot...
 	// ---------------------------------------
+	jQuery.subscribe(SCATTER_PLOT_START, function() {
+		// 显示loader
+		loader2start();
+	});
+	jQuery.subscribe(SCATTER_PLOT_PROGRESS, function(e, d) {
+		loader2progress(d.idx, d.total);
+	});
+	jQuery.subscribe(SCATTER_PLOT_INIT, function() {
+		// 隐藏loader
+		loader2end();
+		// 初始化日期菜单
+		menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
+	});
+
 	jQuery.subscribe(SCATTER_PLOT_SELECTED, function(e, d) {
 		// hidden sign
 		hideNodeSign();
@@ -600,9 +613,10 @@ function onMainMenuClick(e)
 		// 显示天气
 		// Todo: Should refresh everytime reshow weather
 		weather.create(weather_today);
-		// Show weather bar
-		showWeatherSmall(true);
-
+		// 显示气象数据
+		showWeatherBig(true);
+		// Enter scatter mode
+		network.enterNoneMode();
 		// Set 3d scene
 		setScenePerspective(1);
 
@@ -610,16 +624,14 @@ function onMainMenuClick(e)
 		// 显示动物和植物
 		if(apManager) apManager.showAP();
 		// 显示天气效果
-		if(weather) weather.create(weather_today);
+		if(weather) weather.create("CLOUDY");
 		// 显示气象数据
-		showWeatherBig(true);
 		showWeatherSmall(false);
 		// 显示scatter plot graph
 		if(scatterGraph == null) {
 			scatterGraph = new ScatterPlotGraph();
 			scatterGraph.initDataset(chainManager.devices);
 			scatterTimeGraph = new ScatterPlotTimeGraph("scatterplot_time");
-			menuScatterGraph.resetDate(scatterGraph._start_time, scatterGraph._end_time);
 		} else {
 			scatterGraph.show();
 		}
@@ -775,6 +787,8 @@ function onMainMenuChange(e)
 			if(mainmenuCurrent != e.type) {
 				// 隐藏介绍文字
 				intro.hideIntroPage();
+				// weather big
+				showWeatherBig(false);
 			}
 
 			break;
@@ -784,8 +798,6 @@ function onMainMenuChange(e)
 			if(mainmenuCurrent != e.type) {
 				// 隐藏指示牌
 				hideNodeSign();
-				// weather big
-				showWeatherBig(false);
 			}
 			// 隐藏scatter plot graph
 			scatterGraph.hide();
@@ -1010,6 +1022,8 @@ function clearLoadingScreen()
 		if(apManager) apManager.showAP();
 		// show intro
 		intro.showIntroPage(200);
+		// show big weather
+		showWeatherBig(true);
 		// set control
 		controls.minPolarAngle = controls.getPolarAngle();
 		controls.maxPolarAngle = controls.getPolarAngle();

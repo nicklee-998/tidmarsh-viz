@@ -221,12 +221,14 @@ UiDataMenu.prototype._showRealtimeFaultTip = function(flg)
 			}, 500, 'easeOutQuint');
 		}
 	} else {
-		if($('#realtime_message_fault').css('visibility') != 'hidden') {
-			$('#realtime_message_fault').animate({
-				opacity: 0
-			}, 500, 'easeOutQuint', function() {
-				$('#realtime_message_fault').css('visibility', 'hidden');
-			});
-		}
+		$('#realtime_message_fault').css('visibility', 'hidden');
+
+		//if($('#realtime_message_fault').css('visibility') != 'hidden') {
+		//	$('#realtime_message_fault').animate({
+		//		opacity: 0
+		//	}, 500, 'easeOutQuint', function() {
+		//		$('#realtime_message_fault').css('visibility', 'hidden');
+		//	});
+		//}
 	}
 }
