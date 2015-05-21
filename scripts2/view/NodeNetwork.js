@@ -719,7 +719,7 @@ NodeNetwork.prototype.updateVoronoi = function(did, sid, value, date)
 			// change color
 			var clr = "0x" + String(mobj.color).substr(1);
 			device.cell.material.color.setHex(clr);
-			//device.cell.material.ambient.setHex(clr);
+			device.cell.material.ambient.setHex(clr);
 			device.cell.material.emissive.setHex(clr);
 			if(!device.cell.userData) {
 				device.cell.userData = {value: -998, unit: "", date:null, title: ""};
