@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7d4f2cda-708d-45cd-96e4-586ac0f7b141" name="Default" comment="1. Added tooltip in data history mode&#10;2. Adjusted some effect of data history graph">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js" afterPath="$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo_scatterplot_matrix.html" afterPath="$PROJECT_DIR$/demo_scatterplot_matrix.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/data_power/list.csv" afterPath="$PROJECT_DIR$/res/data_power/list.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" afterPath="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="tidmarsh-viz.iws" />
@@ -38,8 +33,8 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.75" vertical-offset="270" max-vertical-offset="6735">
-              <caret line="32" column="22" selection-start-line="32" selection-start-column="22" selection-end-line="32" selection-end-column="22" />
+            <state vertical-scroll-proportion="-3.75" vertical-offset="270" max-vertical-offset="6735">
+              <caret line="24" column="7" selection-start-line="24" selection-start-column="7" selection-end-line="24" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -55,11 +50,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ScatterPlotGraph.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js">
+      <file leaf-file-name="NodeNetwork.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5791045" vertical-offset="7082" max-vertical-offset="9240">
-              <caret line="498" column="0" selection-start-line="498" selection-start-column="0" selection-end-line="498" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.44544095" vertical-offset="14402" max-vertical-offset="16530">
+              <caret line="980" column="48" selection-start-line="980" selection-start-column="48" selection-end-line="980" selection-end-column="48" />
               <folding />
             </state>
           </provider>
@@ -122,13 +117,13 @@
         <option value="$PROJECT_DIR$/scripts2/view/SensorNode.js" />
         <option value="$PROJECT_DIR$/scripts2/global/CustomEvent.js" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiDataMenu.js" />
-        <option value="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" />
         <option value="$PROJECT_DIR$/scripts2/view/Main.js" />
         <option value="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" />
         <option value="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" />
         <option value="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" />
         <option value="$PROJECT_DIR$/demo_scatterplot_matrix.html" />
         <option value="$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js" />
+        <option value="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" />
       </list>
     </option>
   </component>
@@ -142,7 +137,7 @@
   <component name="ProjectFrameBounds">
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="828" />
+    <option name="height" value="827" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -546,7 +541,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="828" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="827" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3255814" sideWeight="0.49964765" order="12" side_tool="false" content_ui="tabs" />
@@ -555,6 +550,8 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24947146" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25229034" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3994528" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32963988" sideWeight="0.5003524" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32831737" sideWeight="0.49964765" order="10" side_tool="false" content_ui="tabs" />
@@ -562,12 +559,10 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27111718" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3994528" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32965517" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -869,14 +864,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.38528138" vertical-offset="5853" max-vertical-offset="16425">
-          <caret line="408" column="29" selection-start-line="408" selection-start-column="29" selection-end-line="408" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.8144476" vertical-offset="925" max-vertical-offset="1710">
@@ -889,6 +876,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.38243628" vertical-offset="30" max-vertical-offset="750">
           <caret line="20" column="35" selection-start-line="20" selection-start-column="22" selection-end-line="20" selection-end-column="35" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -920,22 +908,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.75" vertical-offset="270" max-vertical-offset="6735">
-          <caret line="32" column="22" selection-start-line="32" selection-start-column="22" selection-end-line="32" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="17862" max-vertical-offset="21225">
-          <caret line="1032" column="42" selection-start-line="1032" selection-start-column="42" selection-end-line="1032" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.9773371" vertical-offset="825" max-vertical-offset="1875">
@@ -952,10 +924,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.75" vertical-offset="270" max-vertical-offset="6735">
+          <caret line="24" column="7" selection-start-line="24" selection-start-column="7" selection-end-line="24" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.5791045" vertical-offset="7082" max-vertical-offset="9240">
           <caret line="498" column="0" selection-start-line="498" selection-start-column="0" selection-end-line="498" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="17862" max-vertical-offset="21225">
+          <caret line="1032" column="42" selection-start-line="1032" selection-start-column="42" selection-end-line="1032" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44544095" vertical-offset="14402" max-vertical-offset="16530">
+          <caret line="980" column="48" selection-start-line="980" selection-start-column="48" selection-end-line="980" selection-end-column="48" />
           <folding />
         </state>
       </provider>

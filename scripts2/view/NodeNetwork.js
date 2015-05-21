@@ -851,12 +851,14 @@ NodeNetwork.prototype.render = function(mx, my)
 	}
 
 	if(this._nodeContainer) {
+
 		// find intersections
 		var vector = new THREE.Vector3(mx, my, 1).unproject(camera);
 		this._raycaster.set(camera.position, vector.sub(camera.position).normalize());
 		var intersects = this._raycaster.intersectObjects(this._nodeContainer.children, true);
 
 		if(intersects.length > 0) {
+
 			if(this.getDeviceById(intersects[0].object.name) != null && !this._isHealthAnalysis) {
 
 				if(this._intersected != intersects[0].object) {
@@ -916,12 +918,14 @@ NodeNetwork.prototype.render = function(mx, my)
 						// ------------------------
 						jQuery.publish(HEALTH_NODE_MOUSE_OUT, {name:this._intersected.name});
 					}
+
+					this._intersected = null;
 				}
-				this._intersected = null;
 			}
 
 		} else {
 			if (this._intersected) {
+
 				// 已经选定的点不要变色
 				if(this._healthSelectedNode != this._intersected) {
 					this._intersected.material.emissive.setHex( this._intersected.currentHex );
@@ -934,8 +938,9 @@ NodeNetwork.prototype.render = function(mx, my)
 					// ------------------------
 					jQuery.publish(HEALTH_NODE_MOUSE_OUT, {name:this._intersected.name});
 				}
+
+				this._intersected = null;
 			}
-			this._intersected = null;
 		}
 	}
 
@@ -970,23 +975,25 @@ NodeNetwork.prototype.render = function(mx, my)
 				}
 			} else {
 				if (this._intersectedVor) {
+
+					this._intersectedVor.material.emissive.setHex( this._intersectedVor.currentHex );
 					// mouse out in voronoi history mode
 					if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
-						this._intersectedVor.material.emissive.setHex( this._intersectedVor.currentHex );
 						this.onVoronoiMouseOut(this._intersectedVor.name);
 					}
+					this._intersectedVor = null;
 				}
-				this._intersectedVor = null;
 			}
 		} else {
 			if (this._intersectedVor) {
+
+				this._intersectedVor.material.emissive.setHex( this._intersectedVor.currentHex );
 				// mouse out in voronoi history mode
 				if(this._mode == this.NETWORK_MODE_VORONOI_HISTORY) {
-					this._intersectedVor.material.emissive.setHex( this._intersectedVor.currentHex );
 					this.onVoronoiMouseOut(this._intersectedVor.name);
 				}
+				this._intersectedVor = null;
 			}
-			this._intersectedVor = null;
 		}
 	}
 }
