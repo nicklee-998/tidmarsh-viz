@@ -80,3 +80,15 @@ function lineDistance( point1, point2 )
 
 	return Math.sqrt( xs + ys );
 }
+
+// 将个位数的数字变成两位
+function make2Int(value)
+{
+	var str;
+	if(value >= 0 && value < 10) {
+		str = "0" + value;
+	} else {
+		str = value;
+	}
+	return str;
+}

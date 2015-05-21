@@ -12,6 +12,9 @@ function UiLineChart()
 
 	this._dateScale = null;
 
+	// for auto play
+	this._timer = null;
+
 	this._viz = d3.select("#chart_div")
 		.append("svg")
 		.attr("id", "line_g_cont")
@@ -40,8 +43,10 @@ function UiLineChart()
 			//updateVGraphBySlider();
 
 			var date = new Date(self._dateScale(set_perc));
-			var cstr = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+			var cstr = make2Int(date.getHours()) + ":" + make2Int(date.getMinutes()) + ":" + make2Int(date.getSeconds());
 			d3.select("#line_chart_dragger_date").text(cstr);
+			d3.select("#history_time").text(cstr);
+
 		} else if(set_perc < 0) {
 			d3.select("#drag_bar").attr("x", self._margin.left);
 			//jQuery.publish(LINE_CHART_DRAG, precToDate(0));
@@ -122,6 +127,30 @@ function UiLineChart()
 }
 
 // ---------------------------------
+//  自动播放
+// ---------------------------------
+UiLineChart.prototype.playAnim = function()
+{
+	var self = this;
+	if(this._timer == null) {
+		this._timer = setInterval(function() {
+			var baroffsetx = d3.select("#drag_bar").attr("x");
+			var set_perc = (baroffsetx - self._margin.left) / (self._width - self._margin.left - self._margin.right);
+			var value = set_perc + 0.001;
+			if(value >= 1) {
+				clearInterval(self._timer);
+				self._timer = null;
+			} else {
+				self.updateDragger(value);
+			}
+		}, 50);
+	} else {
+		clearInterval(self._timer);
+		self._timer = null;
+	}
+}
+
+// ---------------------------------
 //  手动调整dragger的位置
 // ---------------------------------
 UiLineChart.prototype.updateDragger = function(prec)
@@ -131,8 +160,9 @@ UiLineChart.prototype.updateDragger = function(prec)
 	d3.select("#line_chart_dragger_date").attr("x", px - 23);
 
 	var date = new Date(this._dateScale(prec));
-	var cstr = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+	var cstr = make2Int(date.getHours()) + ":" + make2Int(date.getMinutes()) + ":" + make2Int(date.getSeconds());
 	d3.select("#line_chart_dragger_date").text(cstr);
+	d3.select("#history_time").text(cstr);
 
 	jQuery.publish(LINE_CHART_DRAG, date);
 }

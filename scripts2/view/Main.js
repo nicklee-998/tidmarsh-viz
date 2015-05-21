@@ -1374,7 +1374,7 @@ function onKeyboardDown()
 	}
 	else if(d3.event.keyCode == 77)	// M:
 	{
-
+		lineChart.playAnim();
 	}
 
 	//console.log(d3.event.keyCode);

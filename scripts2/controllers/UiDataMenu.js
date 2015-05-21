@@ -125,6 +125,9 @@ UiDataMenu.prototype.flashWaitMessageLabel = function(flg)
 UiDataMenu.prototype._showDate = function(flg)
 {
 	if(flg) {
+		$('#history_date_panel').clearQueue();
+		$('#history_date_panel').stop();
+
 		$('#history_date_panel').css('visibility', 'visible');
 		$('#history_date_panel').css('left', -300);
 		$('#history_date_panel').animate({
