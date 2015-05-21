@@ -1213,7 +1213,7 @@ function onDeviceData(e, i)
 		// Draw line graph
 		var start = new Date(sliderYear, sliderMonth, sliderDay, 0, 0, 0);
 		var end = new Date(sliderYear, sliderMonth, sliderDay, 23, 59, 59);
-		lineChart.make(selectSensor, start, end, chainManager._dFactory.dataset);
+		lineChart.make(selectSensor, start, end, chainManager.fetchAllData(true));
 		// init dragger positon
 		lineChart.updateDragger(0.5);
 	}

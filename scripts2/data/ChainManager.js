@@ -175,6 +175,27 @@ ChainManager.prototype.fetchDataById = function(did, sid)
 	return dats;
 }
 
+ChainManager.prototype.fetchAllData = function(hasLocation)
+{
+	if(hasLocation) {
+		var tarr = new Array();
+		for(var i = 0; i < this._dFactory.dataset.length; i++) {
+			var did = this._dFactory.dataset[i].did;
+			var device = this.getDeviceByName(did);
+			if(device) {
+				if(device.lat == 0 && device.lng == 0) {
+
+				} else {
+					tarr.push(this._dFactory.dataset[i])
+				}
+			}
+		}
+		return tarr;
+	} else {
+		return this._dFactory.dataset;
+	}
+}
+
 //----------------------------------------------
 // PUBLIC METHOD:
 // 	Get data from data factory by block
