@@ -2,20 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7d4f2cda-708d-45cd-96e4-586ac0f7b141" name="Default" comment="1. Added tooltip in data history mode&#10;2. Adjusted some effect of data history graph">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts2/view/ParallelCoordinatesGraph.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/demo_parallel_coordinates.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts2/css/parallel_coordinates.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/sensors/default.jpg" afterPath="$PROJECT_DIR$/images/sensors/default.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/global/CustomEvent.js" afterPath="$PROJECT_DIR$/scripts2/global/CustomEvent.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/Main.js" afterPath="$PROJECT_DIR$/scripts2/view/Main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" afterPath="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js" afterPath="$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/view/ScatterPlotTimeGraph.js" afterPath="$PROJECT_DIR$/scripts2/view/ScatterPlotTimeGraph.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/controllers/UiDataMenu.js" afterPath="$PROJECT_DIR$/scripts2/controllers/UiDataMenu.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" afterPath="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo_scatterplot_matrix.html" afterPath="$PROJECT_DIR$/demo_scatterplot_matrix.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/css/main.css" afterPath="$PROJECT_DIR$/scripts2/css/main.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css" afterPath="$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/data_power/list.csv" afterPath="$PROJECT_DIR$/res/data_power/list.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="tidmarsh-viz.iws" />
@@ -46,68 +38,28 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.375" vertical-offset="270" max-vertical-offset="6735">
-              <caret line="33" column="14" selection-start-line="33" selection-start-column="14" selection-end-line="33" selection-end-column="14" />
+            <state vertical-scroll-proportion="-8.75" vertical-offset="270" max-vertical-offset="6735">
+              <caret line="32" column="22" selection-start-line="32" selection-start-column="22" selection-end-line="32" selection-end-column="22" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Main.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Main.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.536036" vertical-offset="15123" max-vertical-offset="21225">
+            <state vertical-scroll-proportion="0.0" vertical-offset="17862" max-vertical-offset="21225">
               <caret line="1032" column="42" selection-start-line="1032" selection-start-column="42" selection-end-line="1032" selection-end-column="42" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UiIntroPage.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiIntroPage.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="750">
-              <caret line="20" column="35" selection-start-line="20" selection-start-column="22" selection-end-line="20" selection-end-column="35" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ScatterPlotGraph.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ScatterPlotGraph.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.814815" vertical-offset="1337" max-vertical-offset="9240">
-              <caret line="105" column="40" selection-start-line="105" selection-start-column="40" selection-end-line="105" selection-end-column="40" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CustomEvent.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="925" max-vertical-offset="1710">
-              <caret line="102" column="52" selection-start-line="102" selection-start-column="52" selection-end-line="102" selection-end-column="52" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NodeNetwork.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.888889" vertical-offset="5853" max-vertical-offset="16425">
-              <caret line="408" column="29" selection-start-line="408" selection-start-column="29" selection-end-line="408" selection-end-column="29" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SensorNode.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts2/view/SensorNode.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="655" max-vertical-offset="1575">
-              <caret line="93" column="1" selection-start-line="93" selection-start-column="1" selection-end-line="93" selection-end-column="1" />
+            <state vertical-scroll-proportion="0.5791045" vertical-offset="7082" max-vertical-offset="9240">
+              <caret line="498" column="0" selection-start-line="498" selection-start-column="0" selection-end-line="498" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -137,9 +89,6 @@
         <option value="$PROJECT_DIR$/scripts2/view/CalendarEffect.js" />
         <option value="$PROJECT_DIR$/scripts2/view/WeatherEffect.js" />
         <option value="$PROJECT_DIR$/css/main.css" />
-        <option value="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" />
-        <option value="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" />
-        <option value="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiScatterplotMatrix.js" />
         <option value="$PROJECT_DIR$/demo_3d.html" />
         <option value="$PROJECT_DIR$/scripts2/view/PowerView.js" />
@@ -168,15 +117,18 @@
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiIntroPage.js" />
         <option value="$PROJECT_DIR$/scripts2/css/main.css" />
-        <option value="$PROJECT_DIR$/demo_scatterplot_matrix.html" />
         <option value="$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css" />
         <option value="$PROJECT_DIR$/scripts2/view/ScatterPlotTimeGraph.js" />
         <option value="$PROJECT_DIR$/scripts2/view/SensorNode.js" />
         <option value="$PROJECT_DIR$/scripts2/global/CustomEvent.js" />
-        <option value="$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js" />
         <option value="$PROJECT_DIR$/scripts2/controllers/UiDataMenu.js" />
         <option value="$PROJECT_DIR$/scripts2/view/NodeNetwork.js" />
         <option value="$PROJECT_DIR$/scripts2/view/Main.js" />
+        <option value="$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html" />
+        <option value="$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html" />
+        <option value="$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html" />
+        <option value="$PROJECT_DIR$/demo_scatterplot_matrix.html" />
+        <option value="$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js" />
       </list>
     </option>
   </component>
@@ -190,7 +142,7 @@
   <component name="ProjectFrameBounds">
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="824" />
+    <option name="height" value="828" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -594,7 +546,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="824" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="828" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3255814" sideWeight="0.49964765" order="12" side_tool="false" content_ui="tabs" />
@@ -603,8 +555,6 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24947146" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25229034" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3994528" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32963988" sideWeight="0.5003524" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32831737" sideWeight="0.49964765" order="10" side_tool="false" content_ui="tabs" />
@@ -612,10 +562,12 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27111718" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3994528" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32965517" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -672,20 +624,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.04477612" vertical-offset="360" max-vertical-offset="2190">
-          <caret line="22" column="46" selection-start-line="22" selection-start-column="46" selection-end-line="22" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.04477612" vertical-offset="0" max-vertical-offset="2385">
-          <caret line="2" column="16" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/controls/OrbitControls.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="435" max-vertical-offset="10080">
@@ -718,13 +656,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="693">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.15695067" vertical-offset="270" max-vertical-offset="5475">
-          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -833,13 +764,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.38173652" vertical-offset="0" max-vertical-offset="8070">
-          <caret line="17" column="6" selection-start-line="0" selection-start-column="0" selection-end-line="532" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/tools/ScatterPlotDataToCSVTool.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-17.208334" vertical-offset="2092" max-vertical-offset="8535">
@@ -889,19 +813,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.375" vertical-offset="270" max-vertical-offset="6735">
-          <caret line="33" column="14" selection-start-line="33" selection-start-column="14" selection-end-line="33" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/view/ParallelCoordinatesGraph.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-3.6056337" vertical-offset="2665" max-vertical-offset="3375">
           <caret line="7" column="43" selection-start-line="7" selection-start-column="43" selection-end-line="7" selection-end-column="43" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -909,23 +824,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.28843337" vertical-offset="718" max-vertical-offset="7545">
           <caret line="61" column="23" selection-start-line="61" selection-start-column="23" selection-end-line="61" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/demo_scatterplot_matrix.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.52478135" vertical-offset="1005" max-vertical-offset="2745">
-          <caret line="91" column="32" selection-start-line="91" selection-start-column="32" selection-end-line="91" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.49487555" vertical-offset="1177" max-vertical-offset="1875">
-          <caret line="101" column="12" selection-start-line="101" selection-start-column="12" selection-end-line="101" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -933,7 +831,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.50512445" vertical-offset="810" max-vertical-offset="1890">
           <caret line="77" column="41" selection-start-line="77" selection-start-column="41" selection-end-line="77" selection-end-column="41" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -941,7 +838,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.259259" vertical-offset="3692" max-vertical-offset="9360">
           <caret line="261" column="71" selection-start-line="261" selection-start-column="64" selection-end-line="261" selection-end-column="71" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -949,7 +845,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-11.148149" vertical-offset="1499" max-vertical-offset="5655">
           <caret line="120" column="47" selection-start-line="120" selection-start-column="31" selection-end-line="120" selection-end-column="47" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -957,15 +852,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.32611832" vertical-offset="1529" max-vertical-offset="2235">
           <caret line="117" column="41" selection-start-line="117" selection-start-column="41" selection-end-line="117" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="925" max-vertical-offset="1710">
-          <caret line="102" column="52" selection-start-line="102" selection-start-column="52" selection-end-line="102" selection-end-column="52" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -973,46 +859,103 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.44771722" vertical-offset="2906" max-vertical-offset="3585">
           <caret line="214" column="0" selection-start-line="214" selection-start-column="0" selection-end-line="214" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.814815" vertical-offset="1337" max-vertical-offset="9240">
-          <caret line="105" column="40" selection-start-line="105" selection-start-column="40" selection-end-line="105" selection-end-column="40" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/view/SensorNode.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="865" max-vertical-offset="1575">
+        <state vertical-scroll-proportion="1.0481586" vertical-offset="655" max-vertical-offset="1575">
           <caret line="93" column="1" selection-start-line="93" selection-start-column="1" selection-end-line="93" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/view/NodeNetwork.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.888889" vertical-offset="5853" max-vertical-offset="16425">
+        <state vertical-scroll-proportion="0.38528138" vertical-offset="5853" max-vertical-offset="16425">
           <caret line="408" column="29" selection-start-line="408" selection-start-column="29" selection-end-line="408" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/global/CustomEvent.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8144476" vertical-offset="925" max-vertical-offset="1710">
+          <caret line="102" column="52" selection-start-line="102" selection-start-column="52" selection-end-line="102" selection-end-column="52" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/controllers/UiIntroPage.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="750">
+        <state vertical-scroll-proportion="0.38243628" vertical-offset="30" max-vertical-offset="750">
           <caret line="20" column="35" selection-start-line="20" selection-start-column="22" selection-end-line="20" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/tools/DataToCSVTool.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2690583" vertical-offset="270" max-vertical-offset="5475">
+          <caret line="30" column="74" selection-start-line="30" selection-start-column="74" selection-end-line="30" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/tools/SensorToCSVTool.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44843048" vertical-offset="300" max-vertical-offset="8070">
+          <caret line="40" column="34" selection-start-line="40" selection-start-column="34" selection-end-line="40" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/tools/SunsetSunriseToCSVTool.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.38116592" vertical-offset="90" max-vertical-offset="2190">
+          <caret line="23" column="39" selection-start-line="23" selection-start-column="39" selection-end-line="23" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/tools/WeatherDataToCSVTool.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.38116592" vertical-offset="0" max-vertical-offset="2385">
+          <caret line="17" column="22" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.75" vertical-offset="270" max-vertical-offset="6735">
+          <caret line="32" column="22" selection-start-line="32" selection-start-column="22" selection-end-line="32" selection-end-column="22" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts2/view/Main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.536036" vertical-offset="15123" max-vertical-offset="21225">
+        <state vertical-scroll-proportion="0.0" vertical-offset="17862" max-vertical-offset="21225">
           <caret line="1032" column="42" selection-start-line="1032" selection-start-column="42" selection-end-line="1032" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/css/scatter_plot_matrix.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.9773371" vertical-offset="825" max-vertical-offset="1875">
+          <caret line="101" column="12" selection-start-line="101" selection-start-column="12" selection-end-line="101" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_scatterplot_matrix.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.353566" vertical-offset="1432" max-vertical-offset="2730">
+          <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts2/view/ScatterPlotGraph.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5791045" vertical-offset="7082" max-vertical-offset="9240">
+          <caret line="498" column="0" selection-start-line="498" selection-start-column="0" selection-end-line="498" selection-end-column="0" />
           <folding />
         </state>
       </provider>

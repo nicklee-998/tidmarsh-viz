@@ -496,7 +496,7 @@ ScatterPlotGraph.prototype._updateScatterPlot = function()
 			// Color
 			self._color[p.i+"-"+p.j] = d3.scale.linear()
 				.domain([0, max])
-				.range(["white", "steelblue"])
+				.range(["#ffffff", "#ff0000"])
 				.interpolate(d3.interpolateLab);
 
 			cell = cell.selectAll(".hexagon").data(darr);
