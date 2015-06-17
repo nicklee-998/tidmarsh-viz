@@ -184,6 +184,8 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 	var max = null;
 	var dataset2 = new Array();
 
+	var iobj = getConfigBySensor(sid);
+
 	// set dataset
 	for (var i = 0; i < dataset.length; i++) {
 
@@ -193,6 +195,11 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 
 		//var started = false;
 		for (var j = 0; j < values.length; j++) {
+
+			// drop unnormal points
+			if(values[j].value > iobj.max || values[j].value < iobj.min) {
+				continue;
+			}
 
 			//console.log(values[j].timestamp);
 			var date = new Date(values[j].timestamp);
@@ -226,7 +233,6 @@ UiLineChart.prototype.make = function(sid, start, end, dataset)
 	}
 
 	// just in case...
-	var iobj = getConfigBySensor(sid);
 	if(min == null || max == null) {
 		min = iobj.min;
 		max = iobj.max;

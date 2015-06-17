@@ -8,7 +8,7 @@
 #scatterplot_menu {
 	position: absolute;
 	left: 50px;
-	top: 20px;
+	top: 50px;
 }
 
 .axis line {
@@ -98,7 +98,7 @@ circle {
 /*time line*/
 #scatterplot_time {
 	position: absolute;
-	top: 140px;
+	top: 170px;
 	left: 750px;
 }
 

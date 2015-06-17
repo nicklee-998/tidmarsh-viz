@@ -1376,6 +1376,22 @@ function onKeyboardDown()
 	{
 		lineChart.playAnim();
 	}
+	else if(d3.event.keyCode == 37) // Left arrow
+	{
+		controls.autoRotate = true;
+	}
+	else if(d3.event.keyCode == 39) // Right arrow
+	{
+		controls.autoRotate = false;
+	}
+	else if(d3.event.keyCode == 38) // Up arrow
+	{
+
+	}
+	else if(d3.event.keyCode == 40) // Down arrow
+	{
+
+	}
 
 	//console.log(d3.event.keyCode);
 }
