@@ -29,8 +29,8 @@ function getConfigBySensor(sname)
 		case "sht_temperature":
 			config.sensor = "sht_temperature";
 			config.title = "temperature";
-			config.min = -30;
-			config.max = 50;
+			config.min = -40;
+			config.max = 60;
 			config.avg = 20;
 			config.step = 10;
 			config.hueL = 60;
@@ -45,7 +45,7 @@ function getConfigBySensor(sname)
 			config.sensor = "illuminance";
 			config.title = "illuminance";
 			config.min = 0;
-			config.max = 30000;
+			config.max = 60000;
 			config.avg = 5000;
 			config.step = 5000;
 			config.hueL = 0;
@@ -60,7 +60,7 @@ function getConfigBySensor(sname)
 			config.sensor = "bmp_pressure";
 			config.title = "pressure";
 			config.min = 800;
-			config.max = 1200;
+			config.max = 1500;
 			config.avg = 1000;
 			config.step = 150;
 			config.hueL = 312;
